@@ -281,3 +281,33 @@ class ThemeManager:
             f'<a href="copy" style="display: inline-block; border: 1px solid {blue}; background-color: rgba(0, 120, 212, 0.1); color: {blue}; padding: 6px 15px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">📋 Copy Raw</a>'
             f'</div>'
         )
+
+    def get_tool_call_started_html(self, tool_name: str, query: str) -> str:
+        bg = "#252526" if self.current_theme == "dark" else "#f5f5f5"
+        border = "#0078d4"
+        text_color = "#cccccc" if self.current_theme == "dark" else "#555555"
+        return (
+            f'<div style="background-color: {bg}; border-left: 4px solid {border}; '
+            f'padding: 10px 15px; margin: 10px 0; border-radius: 0 5px 5px 0; color: {text_color};">'
+            f'<b>⚙️ <i>Running tool:</i> {tool_name}</b><br>'
+            f'<span style="font-size: 13px;">Query: <i>{query}</i></span><br>'
+            f'<span style="color: {border}; font-size: 13px;">⏳ Executing...</span>'
+            f'</div><br>'
+        )
+
+    def get_tool_call_finished_html(self, tool_name: str, result: str) -> str:
+        bg = "#1e3a1e" if self.current_theme == "dark" else "#e8f5e9"
+        border = "#00E676" if self.current_theme == "dark" else "#2e7d32"
+        text_color = "#cccccc" if self.current_theme == "dark" else "#555555"
+        # Truncate result if too long for display
+        import html
+        safe_result = html.escape(result)
+        short_result = safe_result[:150] + "..." if len(safe_result) > 150 else safe_result
+        
+        return (
+            f'<div style="background-color: {bg}; border-left: 4px solid {border}; '
+            f'padding: 10px 15px; margin: 10px 0; border-radius: 0 5px 5px 0; color: {text_color};">'
+            f'<b>✅ <i>Tool finished:</i> {tool_name}</b><br>'
+            f'<span style="font-size: 13px;"><i>{short_result}</i></span>'
+            f'</div><br>'
+        )

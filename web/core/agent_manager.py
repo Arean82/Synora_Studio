@@ -19,27 +19,25 @@ class AgentManager:
         return cls._instance
 
     def __init__(self):
-        # Maps user_id -> subprocess.Popen object
-        self.active_agents: Dict[str, subprocess.Popen] = {}
+        # Maps user_id -> dict of role -> subprocess.Popen object
+        self.active_agents: Dict[str, Dict[str, subprocess.Popen]] = {}
         
-    def start_agent(self, user_id: str, api_key: str, gateway_url: str) -> bool:
+    def start_agent(self, user_id: str, api_key: str, gateway_url: str, role: str = "Hermes") -> bool:
         """
-        Starts the Hermes Agent process for a specific tenant.
-        Injects the internal SaaS API Gateway and the tenant's API token so that 
-        the agent uses the BYOK credentials transparently.
+        Starts a specific Swarm Agent process for a tenant.
         """
-        if user_id in self.active_agents and self.active_agents[user_id].poll() is None:
-            logger.warning(f"Agent for user {user_id} is already running.")
+        if user_id not in self.active_agents:
+            self.active_agents[user_id] = {}
+            
+        if role in self.active_agents[user_id] and self.active_agents[user_id][role].poll() is None:
+            logger.warning(f"{role} Agent for user {user_id} is already running.")
             return True
             
-        # We need to construct the environment for the Hermes agent
         env = os.environ.copy()
-        
-        # Inject the SaaS API routing so Hermes transparently uses BYOK
-        # The agent will direct its OpenAI-compatible requests to the internal Universal API Gateway
         env["OPENAI_BASE_URL"] = gateway_url
         env["OPENAI_API_KEY"] = api_key
         env["TENANT_USER_ID"] = str(user_id)
+        env["AGENT_ROLE"] = role
         
         # Determine the agent entry point (assuming it will be placed in server/logic/agents)
         root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,8 +53,8 @@ class AgentManager:
                 bufsize=1,
                 universal_newlines=True
             )
-            self.active_agents[user_id] = process
-            logger.info(f"Started Hermes Agent for tenant {user_id} with PID {process.pid}")
+            self.active_agents[user_id][role] = process
+            logger.info(f"Started {role} Agent for tenant {user_id} with PID {process.pid}")
             
             # Spawn daemon thread to stream stdout directly via Socket.IO to the tenant's browser
             import threading
@@ -76,24 +74,25 @@ class AgentManager:
             logger.error(f"Failed to start agent for tenant {user_id}: {e}")
             return False
 
-    def stop_agent(self, user_id: str) -> bool:
-        """Stops the background agent process for a tenant."""
-        process = self.active_agents.get(user_id)
-        if process and process.poll() is None:
-            process.terminate()
-            try:
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                process.kill()
-            del self.active_agents[user_id]
-            logger.info(f"Stopped Hermes Agent for tenant {user_id}")
-            return True
+    def stop_agent(self, user_id: str, role: str = "Hermes") -> bool:
+        """Stops a specific background agent process for a tenant."""
+        if user_id in self.active_agents and role in self.active_agents[user_id]:
+            process = self.active_agents[user_id][role]
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                del self.active_agents[user_id][role]
+                logger.info(f"Stopped {role} Agent for tenant {user_id}")
+                return True
         return False
         
-    def get_status(self, user_id: str) -> str:
+    def get_status(self, user_id: str, role: str = "Hermes") -> str:
         """Returns the current process status of the tenant's agent."""
-        process = self.active_agents.get(user_id)
-        if process:
+        if user_id in self.active_agents and role in self.active_agents[user_id]:
+            process = self.active_agents[user_id][role]
             if process.poll() is None:
                 return "RUNNING"
             else:

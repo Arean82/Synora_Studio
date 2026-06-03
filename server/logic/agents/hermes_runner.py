@@ -24,11 +24,16 @@ logging.basicConfig(
 logger = logging.getLogger("HermesRunner")
 
 def run_agent_loop():
-    logger.info("Initializing Hermes Autonomous Agent Loop...")
-    
     gateway_url = os.environ.get("OPENAI_BASE_URL")
     api_key = os.environ.get("OPENAI_API_KEY")
     tenant_id = os.environ.get("TENANT_USER_ID")
+    role = os.environ.get("AGENT_ROLE", "Hermes")
+    
+    # Update logger prefix for this specific swarm agent
+    formatter = logging.Formatter(f"%(asctime)s [%(levelname)s] ({role}) %(message)s")
+    logger.handlers[0].setFormatter(formatter)
+    
+    logger.info(f"Initializing {role} Autonomous Agent Loop...")
     
     if not gateway_url or not api_key:
         logger.error("Configuration missing! Environment variables OPENAI_BASE_URL and OPENAI_API_KEY must be set.")
@@ -51,7 +56,7 @@ def run_agent_loop():
     except Exception as e:
         logger.warning(f"Failed to fetch model catalog: {e}. Falling back to default.")
     
-    logger.info("Hermes Agent loop is now running. Press Ctrl+C to terminate.")
+    logger.info(f"{role} Agent loop is now running. Press Ctrl+C to terminate.")
     
     try:
         while True:
@@ -59,7 +64,7 @@ def run_agent_loop():
             logger.info("Polling for active agent workspace jobs...")
             time.sleep(15)
     except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received. Terminating Hermes Agent...")
+        logger.info(f"Keyboard interrupt received. Terminating {role} Agent...")
         sys.exit(0)
 
 if __name__ == "__main__":

@@ -11,6 +11,8 @@ class ChatWorker(QThread):
     error_occurred = Signal(str)
     finished = Signal()
     metrics_received = Signal(dict)
+    tool_call_started = Signal(dict)
+    tool_call_finished = Signal(dict)
 
     def __init__(self, client, messages, temperature=0.7, max_tokens=4096, web_search_query=None, large_document_text=None, user_id=None, parent=None):
         super().__init__(parent)
@@ -95,20 +97,8 @@ class ChatWorker(QThread):
             return hits[:top_k]
         
     def _extract_graph_rag(self, text: str) -> str:
-        # Phase 4.1.5: GraphRAG Code Mapping
-        import re
-        classes = re.findall(r'class\s+([A-Za-z0-9_]+)', text)
-        defs = re.findall(r'def\s+([A-Za-z0-9_]+)', text)
-        imports = re.findall(r'import\s+([A-Za-z0-9_\.]+)|from\s+([A-Za-z0-9_\.]+)', text)
-        
-        graph_summary = "GraphRAG Entity Relations:\n"
-        if classes: graph_summary += f"- Classes: {', '.join(set(classes[:15]))}\n"
-        if defs: graph_summary += f"- Functions: {', '.join(set(defs[:15]))}\n"
-        
-        clean_imports = set(i[0] or i[1] for i in imports if i[0] or i[1])
-        if clean_imports: graph_summary += f"- Dependencies: {', '.join(list(clean_imports)[:15])}\n"
-        
-        return graph_summary if (classes or defs or clean_imports) else ""
+        # DEPRECATED: Replaced by server.logic.graph_rag.GraphManager
+        return ""
 
     def run(self):
         try:
@@ -199,10 +189,17 @@ class ChatWorker(QThread):
                         if top_5:
                             context_str = "\n\n---\n\n".join([h["payload"].get("text", "") for h in top_5])
                             
-                            # Phase 4.1.5: GraphRAG mapping injection
-                            graph_rag_str = self._extract_graph_rag(self.large_document_text)
-                            if graph_rag_str:
-                                context_str = f"{graph_rag_str}\n\n{context_str}"
+                            # Phase 4.1.5: Advanced GraphRAG mapping injection
+                            try:
+                                from server.logic.graph_rag import GraphManager
+                                graph_engine = GraphManager()
+                                self.thinking_chunk.emit("🕸️ Constructing Knowledge Graph from context...\n")
+                                graph_engine.ingest_document(self.large_document_text)
+                                graph_rag_str = graph_engine.query_subgraph(query_text, depth=1)
+                                if graph_rag_str:
+                                    context_str = f"{graph_rag_str}\n\n{context_str}"
+                            except Exception as e:
+                                print(f"[Worker] GraphRAG failed: {e}")
                                 
                             self.messages.insert(0, {"role": "system", "content": f"Context retrieved from document:\n{context_str}"})
                 except Exception as e:
@@ -564,10 +561,12 @@ class ChatWorker(QThread):
                         args = {}
                     query = args.get("query", "general information")
                     
-                    self.thinking_chunk.emit(f"⚙️ Action Triggered: `{name}` for query: '{query}'...\n")
+                    self.tool_call_started.emit({"name": name, "query": query})
                     
                     # Execute mock tool / local search
                     result = f"Local search results for query '{query}': Found related classes and active overrides in codebase."
+                    
+                    self.tool_call_finished.emit({"name": name, "result": result})
                     
                     tool_response_msg = {
                         "role": "tool",

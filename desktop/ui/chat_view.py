@@ -649,6 +649,8 @@ class ChatViewWidget(QWidget):
         self.current_worker.thinking_chunk.connect(self.on_thinking_chunk)
         self.current_worker.response_received.connect(self.on_response_complete)
         self.current_worker.error_occurred.connect(self.on_error)
+        self.current_worker.tool_call_started.connect(self.on_tool_call_started)
+        self.current_worker.tool_call_finished.connect(self.on_tool_call_finished)
 
         if api_queue:
             self.current_worker.response_received.connect(lambda resp: api_queue.put(resp))
@@ -699,6 +701,27 @@ class ChatViewWidget(QWidget):
         if "Assistant is typing..." in text:
             cursor.removeSelectedText()
             cursor.deletePreviousChar()
+
+    def on_tool_call_started(self, payload: dict):
+        if self.current_response_text == "":
+            self.remove_typing_indicator()
+            
+        tool_name = payload.get("name", "unknown_tool")
+        query = payload.get("query", "")
+        
+        html = self.theme_manager.get_tool_call_started_html(tool_name, query)
+        self.chat_display.insertHtml(html)
+        self.chat_html_history.append(html)
+        self.scroll_to_bottom()
+        
+    def on_tool_call_finished(self, payload: dict):
+        tool_name = payload.get("name", "unknown_tool")
+        result = payload.get("result", "")
+        
+        html = self.theme_manager.get_tool_call_finished_html(tool_name, result)
+        self.chat_display.insertHtml(html)
+        self.chat_html_history.append(html)
+        self.scroll_to_bottom()
 
     def on_stream_chunk(self, chunk: str):
         if not self.window.is_connected:
