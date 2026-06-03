@@ -81,8 +81,9 @@ class StorageService(BaseService):
             driver = LibSQLStorageDriver(url, token)
 
         else:
-            from server.logic.storage_drivers.sqlite_driver import LocalSQLiteDriver
-            driver = LocalSQLiteDriver(db_path)
+            from server.logic.storage_drivers.libsql_driver import LibSQLStorageDriver
+            url = f"file:{db_path.as_posix()}"
+            driver = LibSQLStorageDriver(url, None)
 
         # Cache driver instance
         self.drivers[tenant_id] = driver

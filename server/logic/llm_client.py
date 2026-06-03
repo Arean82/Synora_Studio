@@ -1,7 +1,10 @@
 # logic/llm_client.py
 # Enhanced Multi-Provider LLM Client supporting NVIDIA (OpenAI) & Google Gemini.
 
+import hashlib
 import json
+import base64
+import os
 import re
 import time
 from pathlib import Path
@@ -22,11 +25,16 @@ class LLMClient:
         self.google_api_key = None # Google API Key
         self.current_model = None
         self.base_url = OPENAI_BASE_URL
+        self.current_user_id = "default_user"
         
         # Clients
         self.client = None  # OpenAI/Nvidia Client instance
         self.google_client = None # Modern Google GenAI Client
         self.genai_configured = False
+
+    def set_user_context(self, user_id: str):
+        """Sets the active tenant or user context for this LLM session."""
+        self.current_user_id = str(user_id)
 
     def hydrate(self):
         """Loads available credentials from OS Keyring to restore session state with deep search."""
@@ -156,9 +164,9 @@ class LLMClient:
                 if m.get("multimodal") is True or str(m.get("multimodal")).lower() == "true":
                      return True
                       
-        # Heuristic fallback for vision
+        # Strict Regex Heuristic fallback for vision
         mid_lower = self.current_model.lower()
-        if "vision" in mid_lower or "-vl" in mid_lower or "pixtral" in mid_lower or "gemini" in mid_lower:
+        if re.search(r'\b(vision|-vl|pixtral|gemini)\b', mid_lower):
             return True
         return False
 
@@ -176,9 +184,9 @@ class LLMClient:
                 if m.get("audio") is True or str(m.get("audio")).lower() == "true":
                     return True
         
-        # Fallback keywords if metadata is missing
+        # Strict Regex keywords if metadata is missing
         mid_lower = self.current_model.lower()
-        if "audio" in mid_lower or "voice" in mid_lower or "canary" in mid_lower or "gemini" in mid_lower:
+        if re.search(r'\b(audio|voice|canary|gemini)\b', mid_lower):
             return True
         return False
 
@@ -196,9 +204,9 @@ class LLMClient:
                 if m.get("video") is True or str(m.get("video")).lower() == "true":
                     return True
         
-        # Fallback keywords if metadata is missing (Gemini 1.5/2.0 natively support video)
+        # Strict Regex keywords if metadata is missing (Gemini 1.5/2.0 natively support video)
         mid_lower = self.current_model.lower()
-        if "video" in mid_lower or "gemini-1.5" in mid_lower or "gemini-2.0" in mid_lower or "gemini-exp" in mid_lower:
+        if re.search(r'\b(video|gemini-1\.5|gemini-2\.0|gemini-exp)\b', mid_lower):
             return True
         return False
 
@@ -216,9 +224,9 @@ class LLMClient:
                 if m.get("coding") is True or str(m.get("coding")).lower() == "true":
                     return True
         
-        # Fallback keywords if metadata is missing
+        # Strict Regex keywords if metadata is missing
         mid_lower = self.current_model.lower()
-        if "code" in mid_lower or "coder" in mid_lower or "codellama" in mid_lower or "gemini" in mid_lower or "gpt-4" in mid_lower:
+        if re.search(r'\b(code|coder|codellama|gemini|gpt-4)\b', mid_lower):
             return True
         return False
 
@@ -336,8 +344,8 @@ class LLMClient:
                     "temperature": temperature,
                     # Anthropic supports a dedicated system field; include system prompt explicitly
                     "system": system_msg,
-                    # Include metadata for abuse tracking; replace placeholder with actual hashed user ID at runtime
-                    "metadata": {"user_id": "<hashed_user_id_placeholder>"},
+                    # Include metadata for abuse tracking; securely hash the tenant ID
+                    "metadata": {"user_id": hashlib.sha256(self.current_user_id.encode('utf-8')).hexdigest()},
                 }
                 # Override max_tokens if a valid lower value is provided
                 if isinstance(max_tokens, int) and max_tokens <= MAX_TOKENS:
@@ -355,7 +363,7 @@ class LLMClient:
                     max_tokens=req_params["max_tokens"],
                     temperature=temperature,
                     system=system_msg,
-                    metadata={"user_id": "<hashed_user_id_placeholder>"},
+                    metadata={"user_id": hashlib.sha256(self.current_user_id.encode('utf-8')).hexdigest()},
                     **({"extra": req_params["extra"]} if "extra" in req_params else {}),
                 )
                 # Anthropic response: validate stop_reason THEN extract content

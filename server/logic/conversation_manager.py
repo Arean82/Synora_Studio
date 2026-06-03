@@ -1,4 +1,5 @@
 # logic/conversation_manager.py
+
 import os
 import json
 from datetime import datetime
@@ -77,9 +78,10 @@ class ConversationManager:
             from server.logic.storage_drivers.libsql_driver import LibSQLStorageDriver
             self.driver = LibSQLStorageDriver(url, token)
         else:
-            # Fallback legacy local SQLite database driver
-            from server.logic.storage_drivers.sqlite_driver import LocalSQLiteDriver
-            self.driver = LocalSQLiteDriver(self.db_path)
+            # ZERO-CONFIGURATION DEFAULT: Dynamic Local libSQL file execution
+            url = f"file:{self.db_path.as_posix()}"
+            from server.logic.storage_drivers.libsql_driver import LibSQLStorageDriver
+            self.driver = LibSQLStorageDriver(url, None)
         
         # Run legacy json migrations (if any JSON files exist to import)
         self.migrate_json_files()

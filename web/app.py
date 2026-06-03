@@ -140,6 +140,22 @@ def create_saas_app():
             "timestamp": int(time.time())
         })
 
+    @app.route('/v1/system/shutdown', methods=['POST'])
+    def system_shutdown():
+        """Graceful shutdown endpoint for Master Orchestrator."""
+        # Only allow requests from localhost
+        if request.remote_addr not in ['127.0.0.1', '::1', 'localhost']:
+            return jsonify({"success": False, "error": "Unauthorized"}), 403
+            
+        import signal
+        def shutdown():
+            time.sleep(0.5)
+            os.kill(os.getpid(), signal.SIGINT)
+            
+        import threading
+        threading.Thread(target=shutdown, daemon=True).start()
+        return jsonify({"success": True, "message": "Flushing databases and shutting down."})
+
     @app.route('/api/admin/system_prompts', methods=['GET', 'POST'])
     @app.route('/v1/admin/system_prompts', methods=['GET', 'POST'])
     @app.route('/v2/admin/system_prompts', methods=['GET', 'POST'])
@@ -475,7 +491,12 @@ def create_saas_app():
         <p>Your secured SaaS sandbox has been successfully provisioned.</p>
         <p><b>Key Type Tier:</b> {key_type.upper()}</p>
         """
-        send_alert_email(email, "Workspace Provisoned - Synora Studio", welcome_html)
+        import threading
+        threading.Thread(
+            target=send_alert_email, 
+            args=(email, "Workspace Provisoned - Synora Studio", welcome_html), 
+            daemon=True
+        ).start()
 
         try:
             from server.logic.services import ServiceRegistry

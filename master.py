@@ -44,6 +44,18 @@ def main():
     except KeyboardInterrupt:
         print("\n[*] Orchestrator terminated by user. Shutting down modules...")
     finally:
+        import urllib.request
+        print("[*] Initiating graceful REST shutdowns...")
+        for port, name in [(5000, "Backend Server"), (8888, "Web SaaS")]:
+            try:
+                req = urllib.request.Request(f"http://localhost:{port}/v1/system/shutdown", method="POST")
+                urllib.request.urlopen(req, timeout=1.0)
+                print(f" [+] Graceful shutdown signal sent to {name}.")
+            except Exception:
+                pass
+                
+        time.sleep(1.0)  # Allow databases to flush WAL
+
         for name, p in processes:
             if p.poll() is None:
                 print(f"[*] Terminating {name}...")

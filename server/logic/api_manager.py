@@ -81,7 +81,8 @@ class ApiManager:
             params.update(kwargs)
             handler(params)
             try:
-                return response_queue.get(timeout=60)
+                # Dynamic timeout handling for slower local models (Default: 5 mins)
+                return response_queue.get(timeout=kwargs.get("timeout", 300))
             except queue.Empty:
                 return "Error: Request timed out"
         return "Error: No handler"

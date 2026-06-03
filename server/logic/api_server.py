@@ -155,6 +155,19 @@ class APIServer:
         @self.app.route('/health', methods=['GET'])
         def health():
             return jsonify({"status": "running", "model": self.llm_client.current_model})
+            
+        @self.app.route('/v1/system/shutdown', methods=['POST'])
+        def system_shutdown():
+            if request.remote_addr not in ['127.0.0.1', '::1', 'localhost']:
+                return jsonify({"error": "Unauthorized"}), 403
+            
+            import threading
+            def delayed_stop():
+                import time
+                time.sleep(0.5)
+                self.stop()
+            threading.Thread(target=delayed_stop, daemon=True).start()
+            return jsonify({"success": True, "message": "API Server shutting down."})
     
     def stream_response(self, user_message, system_message="", temperature=0.7, max_tokens=4096, messages_list=None):
         """Generator for streaming responses"""

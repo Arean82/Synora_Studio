@@ -42,7 +42,7 @@ Born from the drive for a truly ecosystem-agnostic environment, it breaks vendor
 - 🔧 **Smart Tabbed Generation Parameters:** Take granular control over LLM outputs and RAG options through a beautiful, responsive tabbed interface. Tweak temperature, presets, and response lengths under "Model Parameters", and configure the dynamic two-stage reranker, endpoints, and secure API keys under "Retrieval Reranking".
 - 🧠 **Reasoning Support:** Automatically detects and beautifully formats model "thinking/reasoning" tokens.
 - 🎨 **Rich Markdown Rendering:** Stunning display of code blocks with syntax highlighting, tables, and bold formatting.
-- 💾 **Robust History Management:** Uses a high-performance **SQLite** backend with **WAL (Write-Ahead Logging)** mode to ensure data integrity and prevent corruption, even during crashes or power loss.
+- 💾 **Robust History Management:** Uses a high-performance **Turso (libSQL)** backend with edge replication and **WAL (Write-Ahead Logging)** mode to ensure data integrity and prevent corruption, even during crashes or power loss.
 - 🚅 **Instant Loading (HTML Cache):** Near-instant conversation loading thanks to an intelligent HTML caching system that pre-renders messages, bypassing heavy markdown parsing during UI refresh.
 - 🔐 **State Memory:** Remembers your API keys, selected models, and theme preferences via `QSettings` (OS-native registry/config).
 - 🖥️ **Distraction-Free UI:** Forced maximized, clean light/dark interface so you can focus purely on your prompt.
@@ -75,7 +75,7 @@ For IDE integration instructions, see [IDE Integration Guide](IDE_INTEGRATION.md
 
 The application ships with isolated, administrative Operator Tools that execute completely outside the main process to ensure safety and bypass UI locks.
 
-- **Operation Companion**: An automated database, web host/port, and configuration relocator tool. It safely migrates Turso SQL credentials, Local SQLite blobs, Qdrant Vector Data, and user profiles across environments (Local to SaaS, or SaaS to Local), and manages network interface configurations.
+- **Operation Companion**: An automated database, web host/port, and configuration relocator tool. It safely migrates Turso/libSQL edge databases, Local offline blobs, Qdrant Vector Data, and user profiles across environments (Local to SaaS, or SaaS to Local), and manages network interface configurations.
 - **Admin Reset Utility**: A specialized recovery tool designed to purge corrupted registries, wipe compromised API keys, and re-provision default Admin/Tenant databases without touching user chat history.
 
 📂 **Browse the Full Gallery:** See more detailed interface caps in the [📂 resources/screenshots](./resources/screenshots) folder.
