@@ -21,6 +21,10 @@ from flask import Flask, request, jsonify, Response, stream_with_context, render
 from web.core.tenant_db import TenantDatabaseManager
 from server.logic.llm_client import LLMClient
 from server.utils.storage_config import StorageManager
+from flask_socketio import SocketIO, join_room
+
+# Global Socket.IO instance for real-time background orchestration
+socketio = SocketIO(cors_allowed_origins="*")
 
 def create_saas_app():
     """
@@ -39,6 +43,17 @@ def create_saas_app():
     
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
     db = TenantDatabaseManager()
+    
+    # Initialize real-time WebSocket subsystem
+    socketio.init_app(app)
+    
+    @socketio.on('join')
+    def handle_join(data):
+        """Secure room registration mapping UI clients to their backend tenant ID."""
+        user_id = data.get('user_id')
+        if user_id:
+            join_room(user_id)
+            print(f"[Socket.IO] Authenticated client joined room: {user_id}")
     
     # Load Optional SMTP definitions
     def send_alert_email(to_email, subject, html_content):

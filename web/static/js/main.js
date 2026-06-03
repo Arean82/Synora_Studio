@@ -4,7 +4,8 @@ import { login, register, validatePassport } from './auth.js';
 import { updateProfile } from './api.js';
 import { 
     fillPrompt, toggleArenaMode, startNewOrbit, loadModels,
-    dispatchPrompt, handleShareOrbit, loadMemoryRoster, loadAdminDashboard
+    dispatchPrompt, handleShareOrbit, loadMemoryRoster, loadAdminDashboard,
+    initializeAgentSocket
 } from './workspace.js';
 import { loadSettingsHub, switchSettingsTab } from './settings_hub.js';
 
@@ -285,6 +286,11 @@ function launchWorkspace() {
          App.tallyComp = App.user.usage.comp_tokens || 0;
          document.getElementById('counter-prompt').textContent = App.tallyPrompt.toLocaleString();
          document.getElementById('counter-comp').textContent = App.tallyComp.toLocaleString();
+    }
+    
+    // Initialize Hermes Agent WebSocket bridge
+    if (App.user && App.user.id) {
+        initializeAgentSocket(App.user.id);
     }
     
     startNewOrbit();

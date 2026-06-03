@@ -855,3 +855,24 @@ function appendAgentLog(message) {
     consoleDiv.appendChild(msgDiv);
     consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
+
+// --- REAL-TIME WEBSOCKET AGENT LOGGING ---
+let agentSocket = null;
+
+export function initializeAgentSocket(userId) {
+    if (agentSocket) return;
+    if (typeof io !== 'undefined') {
+        agentSocket = io();
+        agentSocket.on('connect', () => {
+            console.log("[Socket.IO] Connected to WebSocket channel");
+            agentSocket.emit('join', { user_id: userId });
+        });
+        agentSocket.on('agent_log', (data) => {
+            if (data.log) {
+                appendAgentLog(data.log);
+            }
+        });
+    } else {
+        console.warn("[Socket.IO] io is not defined. Ensure library is loaded.");
+    }
+}

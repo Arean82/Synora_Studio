@@ -19,7 +19,11 @@ Born from the drive for a truly ecosystem-agnostic environment, it breaks vendor
 ## ✨ Features
 
 - ☁️ **SaaS Multi-Tenant Gateway:** An enterprise-grade web orchestration layer supporting Admin Vault and BYOK (Bring Your Own Key) tiers. Features real-time telemetry, Dead Letter Queues (DLQ), live worker metrics, and physical tenant isolation.
-- 🤖 **Hermes Autonomous Agent:** Seamlessly integrates autonomous background agents into the tenant sandbox, featuring omnichannel messaging connections (e.g., Telegram) and centralized persistent memory loops tied directly to the tenant's BYOK credentials.
+- 🤖 **Hermes Autonomous Agent:** Seamlessly integrates an autonomous background orchestrator into every tenant sandbox.
+  - **Real-Time WebSocket Streaming:** Utilizes a highly concurrent `Flask-SocketIO` multiplexer to pipe the daemon's internal reasoning logs directly to the frontend UI instantly, eliminating HTTP polling overhead.
+  - **Dynamic Skills & API Hooks:** Tenants can dynamically inject and manage custom Python execution skills via the Web SaaS portal.
+  - **Centralized Memory Loops:** Operates on a persistent cognition loop securely tied directly to the tenant's PBKDF2-encrypted BYOK credentials.
+  - **Isolated Orchestration:** Safely managed by the `AgentManager` singleton to run fully decoupled from the UI, ensuring zero interface locking while processing complex, long-running agentic tasks.
 - ✨ **Premium Glassmorphic UI:** Stunning 4K visual design featuring dynamic glowing gradients, micro-animations, and seamless Dark/Light theme switching for both the Desktop and Web environments.
 - ⚔️ **AI Model Arena:** Brand-new competitive benchmark engine. Run dual LLMs concurrently side-by-side with real-time visual comparison, blind-mode evaluation, and victory elections.
 - 🧬 **Hybrid Vector RAG Memory:** Deep long-term recollections. Synthesizes high-velocity NumPy TF-IDF crawls with industrial-grade, local Qdrant Vector Database storage for persistent semantic retrieval.

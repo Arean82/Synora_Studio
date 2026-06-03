@@ -46,15 +46,31 @@ class AgentManager:
         agent_script = os.path.join(root_dir, "server", "logic", "agents", "hermes_runner.py")
         
         try:
-            # We use python executable to launch the agent
+            # We use python executable to launch the agent with piped I/O for real-time streaming
             process = subprocess.Popen(
                 [sys.executable, agent_script],
                 env=env,
-                stdout=subprocess.DEVNULL, # In a real implementation, we would route this to a tenant-specific log file
-                stderr=subprocess.DEVNULL
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                bufsize=1,
+                universal_newlines=True
             )
             self.active_agents[user_id] = process
             logger.info(f"Started Hermes Agent for tenant {user_id} with PID {process.pid}")
+            
+            # Spawn daemon thread to stream stdout directly via Socket.IO to the tenant's browser
+            import threading
+            from web.app import socketio
+            
+            def stream_logs(proc, uid):
+                # Read line-by-line as the agent thinks and flush to WebSocket
+                for line in iter(proc.stdout.readline, ''):
+                    if line:
+                        socketio.emit('agent_log', {'log': line.strip()}, to=str(uid))
+                proc.stdout.close()
+                
+            threading.Thread(target=stream_logs, args=(process, user_id), daemon=True).start()
+            
             return True
         except Exception as e:
             logger.error(f"Failed to start agent for tenant {user_id}: {e}")

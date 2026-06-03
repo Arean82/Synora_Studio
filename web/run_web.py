@@ -19,9 +19,9 @@ def main():
     print(f"[+] SaaS Web Portal is live. Listening on http://{host}:{port}...")
     
     try:
-        from werkzeug.serving import make_server
-        server = make_server(host, port, app, threaded=True)
-        server.serve_forever()
+        from web.app import socketio
+        # Run using SocketIO to support real-time WebSocket connections
+        socketio.run(app, host=host, port=port, use_reloader=False)
     except KeyboardInterrupt:
         print("\n[*] Shutting down Web Portal...")
     except Exception as e:
