@@ -1,0 +1,64 @@
+# UI Framework
+PySide6>=6.11.0
+
+# LLM, RAG & API Clients
+openai>=1.0.0
+requests>=2.31.0
+google-genai>=1.0.0
+google-generativeai>=0.4.0
+qdrant-client>=1.18.0
+numpy>=1.26.0
+
+# OS Cryptography & Vault
+keyring>=24.3.0
+
+# Document Ingestion & Office Data Engines
+pandas>=2.1.0
+openpyxl>=3.1.0
+pypdf>=3.17.0
+docx2txt>=0.8
+python-pptx>=0.6.23
+odfpy>=1.4.1
+
+# Text Processing & Rendering
+markdown>=3.5.0
+Pygments>=2.17.0
+
+# Universal API Server
+flask>=3.0.0
+werkzeug>=3.0.0
+
+# AI SDKs & Model Drivers
+openai
+google-genai
+anthropic
+cohere
+mistralai
+groq
+together
+ollama
+replicate
+huggingface_hub
+transformers
+boto3
+google-cloud-aiplatform
+azure-ai-inference
+vllm
+litellm
+
+# Database Drivers
+libsql-client
+pg8000
+redis>=5.0.0
+
+# Networking & Tunneling
+sshtunnel>=0.4.0
+paramiko>=3.0.0
+
+# Development & Packaging
+pyinstaller>=6.3.0
+Pillow>=10.0.0
+
+# Optional Database Drivers for Migration & Pre-flight checks
+psycopg2-binary>=2.9.0
+mysql-connector-python>=8.0.0

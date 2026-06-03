@@ -1,0 +1,77 @@
+# Python & IDEs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+.vscode/
+.idea/
+
+# PyInstaller & Build Artifacts
+build/
+dist/
+*.spec
+!LLM_Chat_App_combined.spec
+!LLM_Chat_App_onefile.spec
+!LLM_Chat_App_onedir.spec
+*.spec.bak
+
+# Windows Installer (Inno Setup)
+installer_output/
+
+# Linux Build Artifacts
+*.deb
+*.AppImage
+*.zsync
+build_deb_pkg/
+LLMChatApp.AppDir/
+appimagetool
+
+# macOS Build Artifacts
+*.pkg
+*.dmg
+
+# User Data & Caches
+resources/badge_cache/
+resources/update_log.txt
+resources/chat_history.db
+conversations/
+cache/
+update_log.txt
+resources/settings.ini
+config.json
+logs/app.log
+
+
+# OS Specific
+.DS_Store
+.DS_Store?
+._*
+ehthumbs.db
+Thumbs.db
+data/saas_tenants.db-shm
+data/saas_tenants.db-wal
+
+
+# VS Code Extension Source
+vscode-llm-chat/node_modules/
+vscode-llm-chat/out/
+vscode-llm-chat/*.vsix
+
+# JetBrains Plugin Source
+jetbrains-llm-chat/build/
+jetbrains-llm-chat/.gradle/
+jetbrains-llm-chat/bin/
+jetbrains-llm-chat/out/
+jetbrains-llm-chat/target/
+
+# Bundled Extensions (the ones being distributed)
+extension/*.vsix
+extension/*.zip
+
+
+
+

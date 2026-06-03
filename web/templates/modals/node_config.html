@@ -1,0 +1,413 @@
+<!-- 🛠️ SCREEN E: NODE CONFIG MODAL (TABBED) -->
+<div id="node-config-modal"
+    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="glass-panel modal-content animate-slide-up"
+        style="width: 95%; max-width: 1000px; padding: 2rem; border-radius: var(--radius-lg); max-height: 90vh; overflow-y: auto; background: var(--bg-dark);">
+        <div class="modal-header"
+            style="margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+            <h3><i class="fa-solid fa-server"></i> Node Config</h3>
+
+            <button id="btn-close-node-config"
+                style="background: transparent; border: none; color: #e74c3c; font-size: 2rem; font-weight: bold; cursor: pointer; padding: 0 8px; line-height: 1;"
+                title="Close">&times;</button>
+        </div>
+
+        <!-- Tab Headers -->
+        <div class="settings-tabs">
+            <button id="tab-btn-nc-sys-instruct" class="settings-tab active">
+                <i class="fa-solid fa-robot"></i> System Instruction Tray
+            </button>
+            <button id="tab-btn-nc-gen-params" class="settings-tab">
+                <i class="fa-solid fa-sliders"></i> Generation Params
+            </button>
+            <button id="tab-btn-nc-rerank" class="settings-tab">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> Retrieval Reranking
+            </button>
+            <button id="tab-btn-nc-telemetry" class="settings-tab">
+                <i class="fa-solid fa-satellite-dish"></i> Telemetry Logging
+            </button>
+            <!-- Admin Only Tabs -->
+            <button id="tab-btn-nc-auth-alerts" class="settings-tab admin-only-tab hidden">
+                <i class="fa-solid fa-shield-cat"></i> <span data-i18n="node_config.tab_alerts">Auth Alerts</span>
+            </button>
+            <button id="tab-btn-nc-tenants" class="settings-tab admin-only-tab hidden">
+                <i class="fa-solid fa-users-gear"></i> <span data-i18n="node_config.tab_tenants">Tenants</span>
+            </button>
+            <button id="tab-btn-nc-local-api" class="settings-tab admin-only-tab hidden">
+                <i class="fa-solid fa-plug-circle-bolt"></i> Local API Control
+            </button>
+            <button id="tab-btn-nc-extensions" class="settings-tab">
+                <i class="fa-solid fa-plug"></i> IDE Plugins
+            </button>
+        </div>
+
+        <!-- Tab 1: System Instruction Tray -->
+        <div id="tab-content-nc-sys-instruct" class="settings-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: var(--text-dim);">Manage System Prompts. Select the checkbox to set the active
+                    persona.</span>
+                <input type="text" id="sys-search-input" placeholder="🔍 Search instructions..."
+                    style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-glow); background: rgba(0,0,0,0.3); color: white; width: 200px;">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button id="btn-sys-add" class="btn-new"
+                    style="background: var(--bg-card); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 5px 10px; border-radius: 4px;"><i
+                        class="fa-solid fa-plus"></i> Add</button>
+                <button id="btn-sys-edit" class="btn-new"
+                    style="background: var(--bg-card); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 5px 10px; border-radius: 4px;"><i
+                        class="fa-solid fa-pen"></i> Edit</button>
+                <button id="btn-sys-delete" class="btn-new"
+                    style="background: var(--bg-card); border: 1px solid #e74c3c; color: #e74c3c; padding: 5px 10px; border-radius: 4px;"><i
+                        class="fa-solid fa-trash"></i> Delete</button>
+            </div>
+
+            <div
+                style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-glow); border-radius: 4px; background: var(--bg-dark);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead style="background: rgba(0,0,0,0.5); position: sticky; top: 0;">
+                        <tr>
+                            <th
+                                style="padding: 8px; width: 60px; text-align: center; border-bottom: 1px solid var(--border-glow);">
+                                Active</th>
+                            <th style="padding: 8px; border-bottom: 1px solid var(--border-glow);">Instruction Name
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="nc-sys-tbody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <label><b>Preview:</b></label>
+                <textarea id="nc-sys-preview" rows="4"
+                    style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-glow); color: var(--text-dim); padding: 10px; border-radius: 4px; margin-top: 5px;"
+                    readonly placeholder="Select an instruction to preview..."></textarea>
+            </div>
+        </div>
+
+        <!-- Instruction Editor Sub-Modal -->
+        <div id="sys-editor-modal"
+            style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; border-radius: var(--radius-lg);">
+            <div
+                style="background: var(--bg-card); padding: 20px; border: 1px solid var(--border-glow); border-radius: 8px; width: 90%; max-width: 500px;">
+                <h3 id="sys-editor-title" style="margin-top: 0; margin-bottom: 20px;">Edit Instruction</h3>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px;">Instruction Name:</label>
+                    <input type="text" id="sys-editor-name"
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-glow); border-radius: 4px; background: var(--bg-dark); color: white;">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px;">Instruction Text:</label>
+                    <textarea id="sys-editor-text" rows="8" placeholder="Enter the detailed instructions here..."
+                        style="width: 100%; padding: 8px; border: 1px solid var(--border-glow); border-radius: 4px; background: var(--bg-dark); color: white; resize: vertical;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button id="btn-sys-editor-cancel"
+                        style="padding: 8px 15px; background: transparent; border: 1px solid var(--border-glow); color: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                    <button id="btn-sys-editor-save"
+                        style="padding: 8px 15px; background: var(--accent-cyan); border: none; color: black; font-weight: bold; border-radius: 4px; cursor: pointer;">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Generation Params -->
+        <div id="tab-content-nc-gen-params" class="settings-content">
+            <div style="margin-bottom: 15px; color: var(--text-dim);">
+                Adjust advanced AI model parameters.
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="nc-preset"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Preset</label>
+                <select id="nc-preset"
+                    style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    <option value="0">Custom</option>
+                    <option value="1">Precise (Code/Math)</option>
+                    <option value="2">Balanced (Default)</option>
+                    <option value="3">Creative (Storytelling)</option>
+                    <option value="4">Model Default (Cloud Baseline)</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <label for="nc-temp">Temperature: <span id="nc-temp-val">0.7</span></label>
+                    <input type="range" id="nc-temp" min="0" max="2" step="0.1" value="0.7" style="width: 100%;">
+                    <small id="nc-temp-desc"
+                        style="color: var(--text-dim); display: block; margin-top: 5px; height: 35px;">🤝
+                        **Balanced**: Standard defaults.</small>
+                </div>
+                <div class="input-group">
+                    <label for="nc-max-tokens">Max Tokens</label>
+                    <input type="number" id="nc-max-tokens" value="4096"
+                        style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    <small id="nc-token-desc"
+                        style="color: var(--text-dim); display: block; margin-top: 5px; height: 35px;">📏 Ceiling
+                        for response length.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Retrieval Reranking -->
+        <div id="tab-content-nc-rerank" class="settings-content">
+            <div style="margin-bottom: 15px; color: var(--text-dim);">
+                Configure Advanced Retrieval Reranking (Local vs Cloud).
+            </div>
+            <div
+                style="border: 1px solid var(--border-glow); border-radius: 6px; padding: 15px; background: rgba(0,0,0,0.2);">
+                <div style="font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="nc-rerank-enable"> Enable Retrieval Reranking
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="input-group">
+                        <label>Reranker Engine</label>
+                        <select id="nc-rerank-engine" disabled
+                            style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                            <option value="local">Local Mode</option>
+                            <option value="cloud_cohere">Cloud Cohere</option>
+                            <option value="cloud_custom">Custom OpenAPI</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>RAG K-Value (Documents to rerank)</label>
+                        <input type="number" id="nc-rag-k" value="5" min="1" max="20"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div id="nc-rerank-custom-fields" style="display: none; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label>Endpoint URL</label>
+                        <input type="text" id="nc-rerank-endpoint" placeholder="https://api..."
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                    <div class="input-group">
+                        <label>Secret API Key</label>
+                        <input type="password" id="nc-rerank-key" placeholder="••••••••"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Telemetry Logging -->
+        <div id="tab-content-nc-telemetry" class="settings-content">
+            <div style="margin-bottom: 15px; color: var(--text-dim);">
+                Configure Personal Telemetry and Logging preferences.
+            </div>
+            <div class="input-group">
+                <label
+                    style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 15px; border: 1px solid var(--border-glow); border-radius: 4px; background: rgba(0,0,0,0.2);">
+                    <input type="checkbox" id="nc-logging-opt">
+                    <b>Enable Personal Logging Telemetry</b>
+                </label>
+                <small style="color: var(--text-dim); display: block; margin-top: 5px;">When enabled, diagnostic
+                    traces will be saved locally.</small>
+            </div>
+        </div>
+
+        <!-- Tab 5: Auth Alerts (Admin Only) -->
+        <div id="tab-content-nc-auth-alerts" class="settings-content">
+            <div style="margin-bottom: 15px; color: var(--accent-cyan);">
+                System-wide Authentication Alerts (SMTP Relay Config)
+            </div>
+            <div
+                style="border: 1px solid var(--border-glow); border-radius: 6px; padding: 15px; background: rgba(0,0,0,0.2);">
+                <div style="font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="nc-smtp-enable"> Enable Autonomous SMTP Alerts
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="input-group">
+                        <label>SMTP Host</label>
+                        <input type="text" id="nc-smtp-host" placeholder="smtp.gmail.com"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                    <div class="input-group">
+                        <label>Port</label>
+                        <input type="number" id="nc-smtp-port" value="587"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label>SMTP User</label>
+                        <input type="text" id="nc-smtp-user" placeholder="alertbot@domain.com"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                    <div class="input-group">
+                        <label>SMTP Password</label>
+                        <input type="password" id="nc-smtp-pass" placeholder="••••••••"
+                            style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 6: Tenants (Admin Only) -->
+        <div id="tab-content-nc-tenants" class="settings-content">
+            <div class="section-title"><i class="fa-solid fa-users-viewfinder"></i> Active Tenants & Limits</div>
+            <div class="glass-panel" style="padding: 1rem; margin-bottom: 1rem;">
+                <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <th style="padding: 8px;">Tenant ID</th>
+                            <th style="padding: 8px;">Type</th>
+                            <th style="padding: 8px;">Rate Limit (Req/min)</th>
+                            <th style="padding: 8px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="nc-tenants-table-body">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 7: Local API Control (Admin Only) -->
+        <div id="tab-content-nc-local-api" class="settings-content">
+            <div class="section-title"><i class="fa-solid fa-plug-circle-bolt"></i> Local Universal API</div>
+
+            <div class="glass-panel"
+                style="padding: 1rem; border: 1px solid var(--accent); margin-bottom: 15px; border-left: 4px solid var(--danger);">
+                <div style="color: var(--danger); font-weight: bold; margin-bottom: 5px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Security Note
+                </div>
+                <div style="font-size: 0.9rem; opacity: 0.85;">
+                    Disabling the API will instantly shut down the local Desktop app's server and close port 5000.
+                    Regenerating the key will destroy the old key and forcefully restart the server to sever active
+                    connections.
+                    <br><br><b>Changes made here take effect instantly.</b> This does not affect the SaaS multi-tenant
+                    gateway on port 8000.
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group" style="flex: 2;">
+                    <label>Current Local API Key (Read-Only)</label>
+                    <input type="text" id="nc-local-api-key" readonly
+                        style="font-family: monospace; background: rgba(0,0,0,0.5); opacity: 0.8;">
+                </div>
+            </div>
+
+            <div class="settings-actions" style="display: flex; gap: 15px; margin-top: 20px;">
+                <button type="button" id="btn-nc-local-api-toggle" class="btn-primary"
+                    style="flex: 1; margin-top: 0; background: var(--accent-error);" onclick="toggleLocalApi()">
+                    Disable API
+                </button>
+                <button type="button" id="btn-nc-local-api-regen" class="btn-primary"
+                    style="flex: 1; margin-top: 0;" onclick="regenLocalApiKey()">
+                    <i class="fa-solid fa-rotate-right"></i> Regenerate Key
+                </button>
+            </div>
+
+            <script>
+                // Load Local API status when the tab is shown
+                document.getElementById('tab-btn-nc-local-api').addEventListener('click', function () {
+                    fetch('/api/admin/local_api', {
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}` }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('nc-local-api-key').value = data.key;
+                                updateLocalApiButtons(data.enabled);
+                            }
+                        });
+                });
+
+                function updateLocalApiButtons(enabled) {
+                    const toggleBtn = document.getElementById('btn-nc-local-api-toggle');
+                    const regenBtn = document.getElementById('btn-nc-local-api-regen');
+                    if (enabled) {
+                        toggleBtn.textContent = 'Disable API';
+                        toggleBtn.style.background = 'var(--accent-error)';
+                        regenBtn.disabled = false;
+                        regenBtn.style.opacity = '1.0';
+                        regenBtn.style.cursor = 'pointer';
+                    } else {
+                        toggleBtn.textContent = 'Enable API';
+                        toggleBtn.style.background = 'var(--accent-success)';
+                        regenBtn.disabled = true;
+                        regenBtn.style.opacity = '0.3';
+                        regenBtn.style.cursor = 'not-allowed';
+                    }
+                }
+
+                function toggleLocalApi() {
+                    const btn = document.getElementById('btn-nc-local-api-toggle');
+                    const actionName = btn.textContent.includes('Disable') ? 'disable' : 'enable';
+                    if (!confirm(`Are you sure you want to ${actionName} the Local API? This takes effect immediately.`)) return;
+
+                    fetch('/api/admin/local_api', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: 'toggle' })
+                    }).then(res => res.json()).then(data => {
+                        if (data.success) {
+                            updateLocalApiButtons(data.enabled);
+                            showNotification(`Local API is now ${data.enabled ? 'Enabled' : 'Disabled'}.`, 'success');
+                        } else {
+                            showNotification(data.error || 'Failed to toggle API.', 'error');
+                        }
+                    });
+                }
+
+                function regenLocalApiKey() {
+                    if (!confirm('Are you sure you want to regenerate the Local API Key? This will instantly drop all active local connections.')) return;
+
+                    fetch('/api/admin/local_api', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: 'regen' })
+                    }).then(res => res.json()).then(data => {
+                        if (data.success) {
+                            document.getElementById('nc-local-api-key').value = data.key;
+                            showNotification('Local API Key Regenerated & Server Restarted.', 'success');
+                        } else {
+                            showNotification(data.error || 'Failed to regenerate key.', 'error');
+                        }
+                    });
+                }
+            </script>
+        </div>
+
+        <!-- Tab 8: IDE Plugins -->
+        <div id="tab-content-nc-extensions" class="settings-content" style="padding: 10px 0;">
+            <div style="display: flex; gap: 24px; min-height: 400px; max-height: 55vh; overflow: hidden;">
+                <!-- Left Panel: Available Packages -->
+                <div style="width: 320px; border-right: 1px solid var(--border-glow); display: flex; flex-direction: column; overflow-y: auto; padding-right: 15px; gap: 12px;">
+                    <h4 style="margin-top: 0; color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px;">Available Extensions</h4>
+                    <div id="extensions-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+                
+                <!-- Right Panel: Markdown Changelog / Admin Settings -->
+                <div id="extension-details-panel" style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-right: 10px;">
+                    <div style="display: flex; height: 100%; align-items: center; justify-content: center; color: var(--text-dim); font-size: 1.1rem; flex-direction: column; gap: 10px;">
+                        <i class="fa-solid fa-arrow-left" style="font-size: 1.5rem;"></i> Select an extension package to view details and download
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button id="btn-nc-apply" class="btn-primary btn-glow-effect" style="padding: 10px 20px;">Apply
+                Configuration</button>
+        </div>
+    </div>
+</div>

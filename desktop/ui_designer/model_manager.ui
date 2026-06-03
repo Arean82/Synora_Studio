@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ModelManagerDialog</class>
+ <widget class="QDialog" name="ModelManagerDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1069</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Model Manager</string>
+  </property>
+  <property name="styleSheet">
+   <string>
+      QDialog {
+          background-color: #11111b;
+          color: #cdd6f4;
+      }
+      
+      QLabel#headerLabel {
+          font-size: 24px;
+          font-weight: bold;
+          color: #ffffff;
+          background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #89b4fa, stop:1 #cba6f7);
+          border-radius: 10px;
+          padding: 15px 25px;
+          margin: 10px;
+          min-height: 40px;
+      }
+      
+      QLabel#countLabel {
+          background: rgba(137, 180, 250, 0.2);
+          color: #89b4fa;
+          padding: 6px 16px;
+          border-radius: 15px;
+          font-weight: bold;
+          font-size: 13px;
+          margin-top: 15px;
+      }
+      
+      QLabel#infoLabel {
+          color: #6c7086;
+          font-size: 13px;
+          padding: 0 20px 10px 20px;
+      }
+      
+      QTabWidget::pane {
+          border: 1px solid #313244;
+          background-color: #181825;
+          border-radius: 15px;
+          margin: 10px;
+          padding: 5px;
+      }
+      
+      QTabBar {
+          background-color: transparent;
+          margin-left: 20px;
+      }
+      
+      QTabBar::tab {
+          background-color: #1e1e2e;
+          color: #a6adc8;
+          padding: 12px 25px;
+          border-top-left-radius: 12px;
+          border-top-right-radius: 12px;
+          margin-right: 4px;
+          font-weight: bold;
+          border: 1px solid #313244;
+          border-bottom: none;
+      }
+      
+      QTabBar::tab:selected {
+          background-color: #181825;
+          color: #89b4fa;
+          border-bottom: 3px solid #89b4fa;
+      }
+      
+      QTabBar::tab:hover:!selected {
+          background-color: #313244;
+          color: #f5e0dc;
+      }
+      
+      QTableWidget {
+          background-color: transparent;
+          alternate-background-color: #1e1e2e;
+          gridline-color: transparent;
+          color: #cdd6f4;
+          selection-background-color: rgba(137, 180, 250, 0.2);
+          selection-color: #89b4fa;
+          border: none;
+          padding: 10px;
+      }
+      
+      QHeaderView::section {
+          background-color: transparent;
+          color: #585b70;
+          padding: 10px;
+          border: none;
+          font-weight: bold;
+          font-size: 11px;
+          text-transform: uppercase;
+      }
+      
+      QPushButton {
+          background-color: #313244;
+          color: #cdd6f4;
+          border-radius: 12px;
+          padding: 12px 24px;
+          font-weight: bold;
+          font-size: 13px;
+          border: 1px solid #45475a;
+      }
+      
+      QPushButton:hover {
+          background-color: #45475a;
+          border: 1px solid #89b4fa;
+          color: #ffffff;
+      }
+      
+      QPushButton#add_btn {
+          background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #a6e3a1, stop:1 #81c8be);
+          color: #11111b;
+          border: none;
+      }
+      
+      QPushButton#delete_btn {
+          background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f38ba8, stop:1 #e06c75);
+          color: #ffffff;
+          border: none;
+      }
+      
+      QPushButton#edit_btn {
+          background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f9e2af, stop:1 #e5c07b);
+          color: #11111b;
+          border: none;
+      }
+      
+      QPushButton#fetch_free_btn, QPushButton#fetch_paid_btn {
+          background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #89b4fa, stop:1 #b4befe);
+          color: #11111b;
+          border: none;
+      }
+      
+      QPushButton#close_btn {
+          background: transparent;
+          color: #f38ba8;
+          border: 2px solid #f38ba8;
+      }
+   </string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <widget class="QLabel" name="headerLabel">
+       <property name="text">
+        <string>📦 Model Configuration</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="countLabel"/>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="generate_desc_btn">
+       <property name="text">
+        <string>✨ Generate Descriptions</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="infoLabel">
+     <property name="text">
+      <string>Manage models available in the model selector. Changes are saved directly to models.json</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <widget class="QPushButton" name="add_btn">
+       <property name="text">
+        <string>➕ Add Model</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="edit_btn">
+       <property name="text">
+        <string>✏️ Edit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="delete_btn">
+       <property name="text">
+        <string>🗑️ Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer2">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="close_btn">
+       <property name="text">
+        <string>Close</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="fetch_free_btn">
+       <property name="text">
+        <string>🆓 Fetch Models</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="filter_label">
+       <property name="styleSheet">
+        <string notr="true">color: #a6adc8; font-weight: bold; font-size: 13px;</string>
+       </property>
+       <property name="text">
+        <string>Filter:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="capability_filter">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>35</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QComboBox {
+    background-color: #313244;
+    border: 1px solid #45475a;
+    border-radius: 12px;
+    padding: 5px 15px;
+    color: #cdd6f4;
+    font-weight: bold;
+}
+QComboBox::drop-down {
+    border: none;
+}
+QComboBox QAbstractItemView {
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    selection-background-color: rgba(137, 180, 250, 0.2);
+    selection-color: #89b4fa;
+    border: 1px solid #45475a;
+}</string>
+       </property>
+        <item>
+         <property name="text">
+          <string>🌐 All Capabilities</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>💬 General Chat</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>🛠️ Supports Tools</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>👁️ Multimodal / Vision</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>🔌 Embeddings</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>🔄 Rerankers</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>🎙️ Audio / Voice</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>🎥 Video / Media</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>💻 Coding / Software</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     <item>
+      <widget class="QPushButton" name="fetch_paid_btn">
+       <property name="text">
+        <string>💎 Paid Models</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="refresh_btn">
+       <property name="text">
+        <string>🔄 Refresh</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

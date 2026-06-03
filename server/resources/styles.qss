@@ -1,0 +1,323 @@
+/* ============================================
+   DARK THEME (default)
+   ============================================ */
+
+QMainWindow[theme="dark"] #connection_status_btn {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    padding: 0px;
+}
+
+QMainWindow[theme="dark"] {
+    background-color: #252526;
+}
+
+QMainWindow[theme="dark"] #top_bar {
+    background-color: #252526;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+QMainWindow[theme="dark"] #model_btn {
+    background-color: #2d2d2d;
+    border: 1px solid #3c3c3c;
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: #d4d4d4;
+    text-align: left;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+QMainWindow[theme="dark"] #model_btn:hover {
+    background-color: #3c3c3c;
+    border: 1px solid #0078d4;
+}
+
+QMainWindow[theme="dark"] #model_btn:disabled {
+    color: #888;
+    border: 1px solid #2d2d2d;
+}
+
+QMainWindow[theme="dark"] #model_desc_label {
+    color: #888888;
+    font-size: 12px;
+    font-style: italic;
+    padding-left: 10px;
+}
+
+QMainWindow[theme="dark"] #theme_toggle_btn {
+    background-color: #2d2d2d;
+    border: 1px solid #3c3c3c;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+QMainWindow[theme="dark"] #theme_toggle_btn:hover {
+    background-color: #3c3c3c;
+    border: 1px solid #0078d4;
+}
+
+QMainWindow[theme="dark"] #chat_display {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    border: none;
+    padding: 20px;
+    font-size: 15px;
+}
+
+QMainWindow[theme="dark"] #input_field {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #3c3c3c;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+}
+
+QMainWindow[theme="dark"] #input_field:focus {
+    border: 1px solid #0078d4;
+}
+
+QMainWindow[theme="dark"] #input_field:disabled {
+    background-color: #1e1e1e;
+    color: #888;
+}
+
+QMainWindow[theme="dark"] #send_btn {
+    background-color: #0078d4;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+QMainWindow[theme="dark"] #send_btn:hover {
+    background-color: #106ebe;
+}
+
+QMainWindow[theme="dark"] #send_btn:disabled {
+    background-color: #3c3c3c;
+    color: #888;
+}
+
+QMainWindow[theme="dark"] QListWidget {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-radius: 5px;
+}
+
+QMainWindow[theme="dark"] QScrollBar:vertical {
+    background-color: #1e1e1e;
+    width: 10px;
+    border: none;
+}
+
+QMainWindow[theme="dark"] QScrollBar::handle:vertical {
+    background-color: #555555;
+    border-radius: 5px;
+    min-height: 30px;
+}
+
+QMainWindow[theme="dark"] QScrollBar::handle:vertical:hover {
+    background-color: #777777;
+}
+
+QMainWindow[theme="dark"] QScrollBar::add-line:vertical,
+QMainWindow[theme="dark"] QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Arena Mode Dark Specifics */
+QMainWindow[theme="dark"] #arena_title {
+    color: #00bfff;
+}
+QMainWindow[theme="dark"] #model_btn_a {
+    background-color: rgba(0, 120, 212, 0.2);
+    border: 2px dashed #00bfff;
+    color: #ffffff;
+    font-weight: bold;
+}
+QMainWindow[theme="dark"] #model_btn_a:hover {
+    background-color: rgba(0, 120, 212, 0.4);
+}
+QMainWindow[theme="dark"] #model_btn_b {
+    background-color: rgba(156, 39, 176, 0.2);
+    border: 2px dashed #d500f9;
+    color: #ffffff;
+    font-weight: bold;
+}
+QMainWindow[theme="dark"] #model_btn_b:hover {
+    background-color: rgba(156, 39, 176, 0.4);
+}
+QMainWindow[theme="dark"] #stats_a, QMainWindow[theme="dark"] #stats_b {
+    color: #bbbbbb;
+    background-color: #202020;
+    border-radius: 4px;
+    padding: 2px;
+}
+QMainWindow[theme="dark"] #chat_display_a, QMainWindow[theme="dark"] #chat_display_b {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+}
+QMainWindow[theme="dark"] QSplitter::handle {
+    background-color: #333;
+    width: 4px;
+}
+
+/* ============================================
+   LIGHT THEME
+   ============================================ */
+
+QMainWindow[theme="light"] #connection_status_btn {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    padding: 0px;
+}
+
+QMainWindow[theme="light"] {
+    background-color: #ffffff;
+}
+
+QMainWindow[theme="light"] #top_bar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+QMainWindow[theme="light"] #model_btn {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 8px 15px;
+    color: #333333;
+    text-align: left;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+QMainWindow[theme="light"] #model_btn:hover {
+    background-color: #e8e8e8;
+    border: 1px solid #0078d4;
+}
+
+QMainWindow[theme="light"] #model_btn:disabled {
+    color: #aaaaaa;
+    border: 1px solid #e0e0e0;
+    background-color: #f0f0f0;
+}
+
+QMainWindow[theme="light"] #model_desc_label {
+    color: #666666;
+    font-size: 12px;
+    font-style: italic;
+    padding-left: 10px;
+}
+
+QMainWindow[theme="light"] #theme_toggle_btn {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+QMainWindow[theme="light"] #theme_toggle_btn:hover {
+    background-color: #e8e8e8;
+    border: 1px solid #0078d4;
+}
+
+QMainWindow[theme="light"] #chat_display {
+    background-color: #ffffff;
+    color: #333333;
+    border: none;
+    padding: 20px;
+    font-size: 15px;
+}
+
+QMainWindow[theme="light"] #input_field {
+    background-color: #f5f5f5;
+    color: #333333;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+}
+
+QMainWindow[theme="light"] #input_field:focus {
+    border: 1px solid #0078d4;
+    background-color: #ffffff;
+}
+
+QMainWindow[theme="light"] #input_field:disabled {
+    background-color: #f0f0f0;
+    color: #aaaaaa;
+}
+
+QMainWindow[theme="light"] #send_btn {
+    background-color: #0078d4;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+QMainWindow[theme="light"] #send_btn:hover {
+    background-color: #106ebe;
+}
+
+QMainWindow[theme="light"] #send_btn:disabled {
+    background-color: #e0e0e0;
+    color: #aaaaaa;
+}
+
+QMainWindow[theme="light"] QListWidget {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+}
+
+QMainWindow[theme="light"] QScrollBar:vertical {
+    background-color: #f5f5f5;
+    width: 10px;
+    border: none;
+}
+
+QMainWindow[theme="light"] QScrollBar::handle:vertical {
+    background-color: #c0c0c0;
+    border-radius: 5px;
+    min-height: 30px;
+}
+
+QMainWindow[theme="light"] QScrollBar::handle:vertical:hover {
+    background-color: #a0a0a0;
+}
+
+QMainWindow[theme="light"] QScrollBar::add-line:vertical,
+QMainWindow[theme="light"] QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Arena Mode Light Specifics */
+QMainWindow[theme="light"] #arena_title {
+    color: #005a9e;
+}
+QMainWindow[theme="light"] #model_btn_a {
+    background-color: rgba(0, 120, 212, 0.05);
+    border: 2px dashed #0078d4;
+    color: #005a9e;
+}
+QMainWindow[theme="light"] #model_btn_b {
+    background-color: rgba(156, 39, 176, 0.05);
+    border: 2px dashed #9c27b0;
+    color: #7b1fa2;
+}
+QMainWindow[theme="light"] QSplitter::handle {
+    background-color: #e0e0e0;
+    width: 4px;
+}

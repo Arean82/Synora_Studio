@@ -1,0 +1,28 @@
+/* model_popup.css - Pure isolated styles for the standalone model selection modal */
+
+#pure-model-selection-modal {
+    font-family: 'Inter', sans-serif;
+}
+
+#pure-model-table-body .pure-model-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#pure-model-table-body .pure-model-row td {
+    vertical-align: middle;
+}
+
+/* Custom scrollbar for the table container */
+#pure-model-selection-modal > div > div:nth-child(3)::-webkit-scrollbar {
+    width: 8px;
+}
+#pure-model-selection-modal > div > div:nth-child(3)::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+#pure-model-selection-modal > div > div:nth-child(3)::-webkit-scrollbar-thumb {
+    background: var(--border-glow);
+    border-radius: 4px;
+}
+#pure-model-selection-modal > div > div:nth-child(3)::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dim);
+}

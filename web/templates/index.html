@@ -1,0 +1,39 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <!-- SCREEN A: SECURE PASSPORT GATEWAY (AUTH/ONBOARDING) -->
+    {% include 'partials/auth_screen.html' %}
+
+    <!-- SCREEN B: SAAS WORKSPACE SHELL (DASHBOARD) -->
+    <main id="workspace-screen" class="view-container hidden animate-fade-in">
+        <!-- 📦 COMMAND SIDEBAR (Navigation & History) -->
+        {% include 'partials/sidebar.html' %}
+
+        <!-- 🗺️ CENTRAL WORKSPACE STREAM -->
+        <section class="workspace-main">
+            <!-- Telemetry Header & Deployment Selectors -->
+            {% include 'partials/header.html' %}
+            
+            <!-- Chat Scroll Area, Welcoming & Input Actions -->
+            {% include 'partials/chat_pane.html' %}
+        </section>
+    </main>
+
+    <!-- SCREEN E: SEMANTIC MEMORY EXPLORER -->
+    {% include 'partials/memory_screen.html' %}
+
+    <!-- SCREEN F: AGENT HUB -->
+    {% include 'partials/agent_screen.html' %}
+
+    <!-- SCREEN D: OPERATOR COMMAND CONSOLE -->
+    {% include 'partials/admin_screen.html' %}
+
+    <!-- OVERLAY CONFIGURATION VAULTS & DIALOGS -->
+    {% include 'modals/credentials.html' %}
+    {% include 'modals/system_health.html' %}
+    {% include 'modals/settings.html' %}
+    {% include 'modals/node_config.html' %}
+    {% include 'modals/model_selection.html' %}
+    {% include 'modals/documents.html' %}
+    {% include 'modals/extensions.html' %}
+{% endblock %}
