@@ -43,7 +43,9 @@ class BadgeCacheWorker(QThread):
                     with urllib.request.urlopen(req, timeout=5) as response:
                         with open(local_path, 'wb') as f:
                             f.write(response.read())
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     return match.group(0) 
             
             local_url = QUrl.fromLocalFile(str(local_path.absolute())).toString()
@@ -166,7 +168,9 @@ class FileViewerDialog(QDialog):
                 try:
                     content = path.read_text(encoding="utf-8")
                     break
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     content = f"<i>Error reading file: {name}</i>"
                     
         if is_markdown:
@@ -268,7 +272,9 @@ class FileViewerDialog(QDialog):
             try:
                 # Detach callback pointer ensuring thread cannot invoke methods on a freed C++ viewport
                 self.cache_worker.finished.disconnect(self.on_badges_cached)
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
         super().done(result)
 

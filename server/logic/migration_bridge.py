@@ -276,7 +276,9 @@ def migrate_saas_tenant_database(source_driver, dest_driver, progress_callback=N
             if isinstance(embedding, bytes):
                 try:
                     embedding = embedding.decode('utf-8')
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
             dst_cur.execute(f"""
                 INSERT INTO chunk_cache (chunk_hash, user_id, chunk_text, embedding_blob, created_at)

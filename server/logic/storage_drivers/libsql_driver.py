@@ -59,13 +59,17 @@ class LibSQLStorageDriver(BaseStorageDriver):
             # Migration check: Ensure messages_html column exists for older database migrations
             try:
                 client.execute('ALTER TABLE conversations ADD COLUMN messages_html TEXT')
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
 
             # Migration check: Ensure version column exists for OCC (Phase 6.3.1)
             try:
                 client.execute('ALTER TABLE conversations ADD COLUMN version INTEGER DEFAULT 1')
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
 
             # Phase 8: JSON Config Purge

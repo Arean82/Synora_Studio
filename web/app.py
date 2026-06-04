@@ -16,6 +16,7 @@ import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from server.utils.security_utils import admin_required
 from flask import Flask, request, jsonify, Response, stream_with_context, render_template, send_from_directory
 
 from web.core.tenant_db import TenantDatabaseManager
@@ -300,19 +301,9 @@ def create_saas_app():
     @app.route('/api/admin/gen_params', methods=['GET', 'POST'])
     @app.route('/v1/admin/gen_params', methods=['GET', 'POST'])
     @app.route('/v2/admin/gen_params', methods=['GET', 'POST'])
+    @admin_required(audit_message="Admin parameters access")
     def admin_gen_params():
-        user = getattr(request, 'tenant', None)
-        try:
-            from server.logic.services import ServiceRegistry
-            security_svc = ServiceRegistry.get("security")
-            if not security_svc.check_permission(user, "admin"):
-                security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin parameters access denied", "FAILED")
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            security_svc.log_audit(user.get('id'), request.path, "Admin parameters access granted", "SUCCESS")
-        except Exception:
-            if not user or user.get('key_type') != 'admin_funded':
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            
+                    
         config_file = get_resource_path("resources/config.json")
 
         if request.method == 'GET':
@@ -343,19 +334,9 @@ def create_saas_app():
     @app.route('/api/admin/local_api', methods=['GET', 'POST'])
     @app.route('/v1/admin/local_api', methods=['GET', 'POST'])
     @app.route('/v2/admin/local_api', methods=['GET', 'POST'])
+    @admin_required(audit_message="Admin local API access")
     def admin_local_api():
-        user = getattr(request, 'tenant', None)
-        try:
-            from server.logic.services import ServiceRegistry
-            security_svc = ServiceRegistry.get("security")
-            if not security_svc.check_permission(user, "admin"):
-                security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin local API access denied", "FAILED")
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            security_svc.log_audit(user.get('id'), request.path, "Admin local API access granted", "SUCCESS")
-        except Exception:
-            if not user or user.get('key_type') != 'admin_funded':
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            
+                    
         from server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         
@@ -393,19 +374,9 @@ def create_saas_app():
     @app.route('/api/admin/saas_config', methods=['GET', 'POST'])
     @app.route('/v1/admin/saas_config', methods=['GET', 'POST'])
     @app.route('/v2/admin/saas_config', methods=['GET', 'POST'])
+    @admin_required(audit_message="Admin SaaS config access")
     def admin_saas_config():
-        user = getattr(request, 'tenant', None)
-        try:
-            from server.logic.services import ServiceRegistry
-            security_svc = ServiceRegistry.get("security")
-            if not security_svc.check_permission(user, "admin"):
-                security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin SaaS config access denied", "FAILED")
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            security_svc.log_audit(user.get('id'), request.path, "Admin SaaS config access granted", "SUCCESS")
-        except Exception:
-            if not user or user.get('key_type') != 'admin_funded':
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            
+                    
         try:
             from web.core.config_manager import SaaSConfigManager
             saas_cfg = SaaSConfigManager()
@@ -435,19 +406,9 @@ def create_saas_app():
     @app.route('/api/admin/models', methods=['POST'])
     @app.route('/v1/admin/models', methods=['POST'])
     @app.route('/v2/admin/models', methods=['POST'])
+    @admin_required(audit_message="Admin models access")
     def admin_models():
-        user = getattr(request, 'tenant', None)
-        try:
-            from server.logic.services import ServiceRegistry
-            security_svc = ServiceRegistry.get("security")
-            if not security_svc.check_permission(user, "admin"):
-                security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin models access denied", "FAILED")
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            security_svc.log_audit(user.get('id'), request.path, "Admin models access granted", "SUCCESS")
-        except Exception:
-            if not user or user.get('key_type') != 'admin_funded':
-                return jsonify({"success": False, "error": "Unauthorized action scope."}), 403
-            
+                    
         try:
             from server.logic.model_io import load_all_models, save_models
             data = request.get_json(silent=True) or {}
@@ -518,7 +479,9 @@ def create_saas_app():
             auth_service = ServiceRegistry.get("auth")
             user_data = {"id": user_id, "username": username, "email": email, "key_type": key_type}
             jwt_token = auth_service.generate_token(user_data)
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             jwt_token = api_key
 
         return jsonify({
@@ -600,7 +563,9 @@ def create_saas_app():
             jwt_token = auth_service.generate_token(refreshed)
             refreshed['passport_token'] = jwt_token
             refreshed['token'] = jwt_token
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             refreshed['passport_token'] = refreshed.get('api_key', '')
         
         return jsonify({
@@ -687,7 +652,9 @@ def create_saas_app():
                     "api_key": passport_key,
                     "status": "active"
                 }
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             user = None
 
         # B. Fallback to passport API key lookup
@@ -712,7 +679,9 @@ def create_saas_app():
                     telemetry_service = ServiceRegistry.get("telemetry")
                     if telemetry_service:
                         telemetry_service.record_rate_limit_block()
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
                 return jsonify({"error": "Too Many Requests", "message": "Global IP rate limit exceeded."}), 429
 
@@ -725,7 +694,9 @@ def create_saas_app():
                         telemetry_service = ServiceRegistry.get("telemetry")
                         if telemetry_service:
                             telemetry_service.record_rate_limit_block()
-                    except Exception:
+                    except Exception as e: 
+                        import logging
+                        logging.error(f"Caught exception: {e}", exc_info=True)
                         pass
                     return jsonify({"error": "Too Many Requests", "message": f"Tenant rate limit of {rpm_limit} RPM exceeded."}), 429
         except Exception as e:
@@ -823,7 +794,9 @@ def create_saas_app():
                         security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Add system provider access denied", "FAILED")
                         return jsonify({"error": "Forbidden. Operator access only."}), 403
                     security_svc.log_audit(user.get('id'), request.path, "Add system provider access granted", "SUCCESS")
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     if not user or user.get('key_type') != 'admin_funded':
                         return jsonify({"error": "Forbidden. Operator access only."}), 403
                     
@@ -976,7 +949,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin list users denied", "FAILED")
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin list users granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             if not user or user.get('key_type') != 'admin_funded':
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             
@@ -999,7 +974,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin stats access denied", "FAILED")
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin stats access granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             if not user or user.get('key_type') != 'admin_funded':
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             
@@ -1019,7 +996,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin telemetry access denied", "FAILED")
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin telemetry access granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             if not user or user.get('key_type') != 'admin_funded':
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             
@@ -1073,7 +1052,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin set tenant rate limit denied", "FAILED")
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin set tenant rate limit granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             if not user or user.get('key_type') != 'admin_funded':
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             
@@ -1112,7 +1093,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin get DLQ access denied", "FAILED")
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin get DLQ access granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             if not user or user.get('key_type') != 'admin_funded':
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             
@@ -1137,7 +1120,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin retry DLQ job denied", "FAILED")
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin retry DLQ job granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             if not user or user.get('key_type') != 'admin_funded':
                 return jsonify({"error": "Forbidden. Operator access only."}), 403
             
@@ -1245,7 +1230,9 @@ def create_saas_app():
         # Parse the JSON string back to an object for the Jinja template
         try:
             orbit['messages'] = json.loads(orbit['conversation_data'])
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             orbit['messages'] = []
             
         return render_template('share.html', orbit=orbit)
@@ -1456,7 +1443,9 @@ def create_saas_app():
                         moderation_fn = getattr(llm_client.client, "moderations")
                         moderation_create = getattr(moderation_fn, "create")
                         moderation_create(input=user_msg)
-                    except Exception:
+                    except Exception as e: 
+                        import logging
+                        logging.error(f"Caught exception: {e}", exc_info=True)
                         pass
 
                 from openai import RateLimitError, APIError
@@ -1532,7 +1521,9 @@ def create_saas_app():
                                 moderation_fn = getattr(llm_client.client, "moderations")
                                 moderation_create = getattr(moderation_fn, "create")
                                 moderation_create(input=user_msg)
-                            except Exception:
+                            except Exception as e: 
+                                import logging
+                                logging.error(f"Caught exception: {e}", exc_info=True)
                                 pass
 
                         completions_fn = getattr(llm_client.client.chat, "completions")
@@ -1751,7 +1742,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin save extension meta denied", "FAILED")
                 return jsonify({"success": False, "error": "Unauthorized"}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin save extension meta granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             is_admin = user and user.get('key_type') == 'admin_funded'
             if not is_admin:
                 return jsonify({"success": False, "error": "Unauthorized"}), 403
@@ -1767,7 +1760,9 @@ def create_saas_app():
             try:
                 with open(config_path, 'r', encoding='utf-8') as f:
                     config_data = json.load(f)
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
 
         if filename not in config_data:
@@ -1797,7 +1792,9 @@ def create_saas_app():
                 security_svc.log_audit(user.get('id', 'anonymous'), request.path, "Admin generate extension desc denied", "FAILED")
                 return jsonify({"success": False, "error": "Unauthorized"}), 403
             security_svc.log_audit(user.get('id'), request.path, "Admin generate extension desc granted", "SUCCESS")
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             is_admin = user and user.get('key_type') == 'admin_funded'
             if not is_admin:
                 return jsonify({"success": False, "error": "Unauthorized"}), 403
@@ -1878,7 +1875,9 @@ def create_saas_app():
                         config_data = json.load(f)
                         if not config_data.get(filename, {}).get("is_visible", False):
                             return jsonify({"success": False, "error": "Unauthorized Access"}), 403
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     return jsonify({"success": False, "error": "Unauthorized Access"}), 403
             else:
                 return jsonify({"success": False, "error": "Unauthorized Access"}), 403

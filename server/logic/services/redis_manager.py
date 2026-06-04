@@ -236,7 +236,9 @@ class RedisManager(BaseService):
             if self.pool:
                 try:
                     self.pool.disconnect()
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
                 self.pool = None
                 

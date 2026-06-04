@@ -3,7 +3,126 @@ import time
 import json
 from pathlib import Path
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QFileDialog, QApplication, QListWidgetItem, QAbstractItemView, QSizePolicy
-from PySide6.QtCore import Qt, QTimer, QUrl
+from PySide6.QtCore import Qt, QTimer, QUrl, QThread, Signal
+
+class IngestionWorker(QThread):
+    finished = Signal(str, int)
+    error = Signal(str)
+
+    def __init__(self, folder_path, parent=None):
+        super().__init__(parent)
+        self.folder_path = folder_path
+
+    def run(self):
+        try:
+            folder = Path(self.folder_path)
+            ignored_dirs = {'.git', 'node_modules', '__pycache__', 'venv', '.venv', 'build', 'dist', '.ruby-lsp', '.idea', '.vscode'}
+            supported_exts = {'.py', '.js', '.ts', '.html', '.css', '.json', '.xml', '.yaml', '.yml', '.md', '.txt', '.c', '.cpp', '.h', '.hpp', '.java', '.go', '.rs', '.rb', '.php', '.sql', '.sh', '.bat', '.ps1', '.ui'}
+            
+            agg_content = []
+            file_count = 0
+            
+            def crawl(current_dir, current_depth, max_depth=5):
+                nonlocal file_count
+                if current_depth > max_depth: return
+                try:
+                    for item in current_dir.iterdir():
+                        if item.is_dir() and item.name not in ignored_dirs:
+                            crawl(item, current_depth + 1, max_depth)
+                        elif item.is_file() and item.suffix.lower() in supported_exts:
+                            try:
+                                with open(item, 'r', encoding='utf-8', errors='ignore') as f:
+                                    text = f.read()
+                                    if text.strip():
+                                        rel_path = item.relative_to(folder)
+                                        file_block = (
+                                            f"# FILE: {rel_path}\\n"
+                                            "--- CODE STARTS ---\\n"
+                                            f"{text}\\n"
+                                            "--- CODE ENDS ---"
+                                        )
+                                        agg_content.append(file_block)
+                                        file_count += 1
+                            except Exception as e: 
+                                import logging
+                                logging.error(f"Caught exception: {e}", exc_info=True)
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
+                    
+            crawl(folder, 1)
+            self.finished.emit("\\n\\n".join(agg_content), file_count)
+        except Exception as e:
+            self.error.emit(str(e))
+
+class AutoSaveWorker(QThread):
+    saved = Signal(str, bool)
+
+    def __init__(self, conversation_manager, chat_history, chat_html_history, model_id, current_conv_id, parent=None):
+        super().__init__(parent)
+        self.conversation_manager = conversation_manager
+        self.chat_history = chat_history.copy() if chat_history else []
+        self.chat_html_history = chat_html_history.copy() if chat_html_history else []
+        self.model_id = model_id
+        self.current_conv_id = current_conv_id
+
+    def _extract_safe_text(self, item):
+        if isinstance(item, str): return item
+        if isinstance(item, list):
+            return " ".join([i.get("text", "") for i in item if i.get("type") == "text"])
+        return ""
+
+    def run(self):
+        try:
+            if not self.chat_history: return
+            title = "New Conversation"
+            for m in self.chat_history:
+                if m['role'] == 'user':
+                    safe_title = self._extract_safe_text(m.get('content', ''))
+                    title = safe_title[:30] + "..."
+                    break
+            
+            is_new = (self.current_conv_id is None)
+            new_id = self.conversation_manager.save_conversation(
+                self.chat_history, title=title, conv_id=self.current_conv_id,
+                model_id=self.model_id, messages_html=json.dumps(self.chat_html_history)
+            )
+            
+            if len(self.chat_history) >= 2 and new_id:
+                user_content = None
+                assistant_content = None
+                for i in range(len(self.chat_history) - 1, -1, -1):
+                    item = self.chat_history[i]
+                    if item.get('role') == 'assistant' and not assistant_content:
+                        assistant_content = self._extract_safe_text(item.get('content', ''))
+                    elif item.get('role') == 'user' and assistant_content and not user_content:
+                        user_content = self._extract_safe_text(item.get('content', ''))
+                        break
+
+                if user_content and assistant_content:
+                    try:
+                        from server.logic.services.base_service import ServiceRegistry
+                        queue_broker = ServiceRegistry.get("queue_broker")
+                        
+                        task_payload = {
+                            "task_type": "vector_index",
+                            "user_text": user_content,
+                            "assistant_text": assistant_content,
+                            "conversation_id": new_id,
+                            "model_id": self.model_id,
+                            "user_id": 1
+                        }
+                        queue_broker.enqueue("quantum_tasks", task_payload)
+                    except Exception as e: 
+                        import logging
+                        logging.error(f"Caught exception: {e}", exc_info=True)
+                        pass
+
+            self.saved.emit(new_id, is_new)
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
+            pass
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QTextCursor
 
@@ -206,23 +325,42 @@ class ChatViewWidget(QWidget):
         for file_path in paths:
             p = Path(file_path)
             if p.is_dir():
-                self.add_system_message(f"📁 **Crawling directory for codebase context:** `{p.name}`...")
-                agg_content, count = self.ingest_folder(p)
-                if count > 0:
-                    # Context Gate: Estimate tokens (char count / 3). 20k tokens ≈ 60,000 chars
-                    gate_warning = ""
-                    if len(agg_content) > 60000:
-                         gate_warning = "\n⚡ *Scale crosses Context Gate (>20k tokens). Local semantic routing ready.*"
-                    self.attached_files.append({
-                        'name': f"{p.name}/ (Codebase)",
-                        'content': agg_content
-                    })
-                    self.add_system_message(f"✅ **Synthesized {count} source files** from directory: `{p.name}`{gate_warning}")
-                else:
-                    self.add_system_message(f"⚠️ No supported source code files found in directory: `{p.name}`")
+                self.add_system_message(f"📁 **Crawling directory for codebase context:** `{p.name}` (Running in background...)")
+                self._start_async_folder_ingestion(p)
             elif p.is_file():
                 self.process_single_file(str(p))
         self._refresh_context_staging_ui()
+
+    def _start_async_folder_ingestion(self, p):
+        if not hasattr(self, 'ingest_workers'):
+            self.ingest_workers = []
+        worker = IngestionWorker(str(p), self)
+        
+        def on_finished(agg_content, count):
+            if count > 0:
+                gate_warning = ""
+                if len(agg_content) > 60000:
+                     gate_warning = "\n⚡ *Scale crosses Context Gate (>20k tokens). Local semantic routing ready.*"
+                self.attached_files.append({
+                    'name': f"{p.name}/ (Codebase)",
+                    'content': agg_content
+                })
+                self.add_system_message(f"✅ **Synthesized {count} source files** from directory: `{p.name}`{gate_warning}")
+            else:
+                self.add_system_message(f"⚠️ No supported source code files found in directory: `{p.name}`")
+            self._refresh_context_staging_ui()
+            if worker in self.ingest_workers:
+                self.ingest_workers.remove(worker)
+            
+        def on_error(err):
+            self.add_system_message(f"❌ Failed to read directory {p.name}: {err}")
+            if worker in self.ingest_workers:
+                self.ingest_workers.remove(worker)
+            
+        worker.finished.connect(on_finished)
+        worker.error.connect(on_error)
+        self.ingest_workers.append(worker)
+        worker.start()
 
     def process_single_file(self, file_path):
         """Standalone extractor isolating file system IO from interaction handlers."""
@@ -360,46 +498,7 @@ class ChatViewWidget(QWidget):
         except Exception as e:
             self.add_system_message(f"❌ Parse Crash [{file_name}]: {str(e)}")
 
-    def ingest_folder(self, folder_path):
-        """Recursively crawl directory and concatenate supported files in target markdown block formats."""
-        folder = Path(folder_path)
-        ignored_dirs = {'.git', 'node_modules', '__pycache__', 'venv', '.venv', 'build', 'dist', '.ruby-lsp', '.idea', '.vscode'}
-        supported_exts = {'.py', '.js', '.ts', '.html', '.css', '.json', '.xml', '.yaml', '.yml', '.md', '.txt', '.c', '.cpp', '.h', '.hpp', '.java', '.go', '.rs', '.rb', '.php', '.sql', '.sh', '.bat', '.ps1', '.ui'}
-        
-        agg_content = []
-        file_count = 0
-        
-        def crawl(current_dir, current_depth, max_depth=5):
-            nonlocal file_count
-            if current_depth > max_depth:
-                return
-            try:
-                for item in current_dir.iterdir():
-                    if item.is_dir():
-                        if item.name not in ignored_dirs:
-                            crawl(item, current_depth + 1, max_depth)
-                    elif item.is_file():
-                        if item.suffix.lower() in supported_exts:
-                            try:
-                                with open(item, 'r', encoding='utf-8', errors='ignore') as f:
-                                    text = f.read()
-                                    if text.strip():
-                                        rel_path = item.relative_to(folder)
-                                        file_block = (
-                                            f"# FILE: {rel_path}\n"
-                                            "--- CODE STARTS ---\n"
-                                            f"{text}\n"
-                                            "--- CODE ENDS ---"
-                                        )
-                                        agg_content.append(file_block)
-                                        file_count += 1
-                            except Exception:
-                                pass
-            except Exception:
-                pass
-                
-        crawl(folder, 1)
-        return "\n\n".join(agg_content), file_count
+    # ingest_folder removed in favor of asynchronous IngestionWorker
 
     def dragEnterEvent(self, event):
         """Authorize dynamic drag-and-drop gestures carrying local URIs."""
@@ -1021,51 +1120,22 @@ class ChatViewWidget(QWidget):
 
     def auto_save_current_chat(self):
         if not self.chat_history: return
-        title = "New Conversation"
-        for m in self.chat_history:
-            if m['role'] == 'user':
-                safe_title = self._extract_safe_text(m.get('content', ''))
-                title = safe_title[:30] + "..."
-                break
-        is_new = (self.current_conv_id is None)
-        self.current_conv_id = self.conversation_manager.save_conversation(
-            self.chat_history, title=title, conv_id=self.current_conv_id,
-            model_id=self.model_btn.text(), messages_html=json.dumps(self.chat_html_history)
-        )
-        
-        # 🧠 Persistent Dense RAG: Queue the latest exchange for background embedding and vector sync
-        if len(self.chat_history) >= 2 and self.current_conv_id:
-            user_content = None
-            assistant_content = None
-            # Retrace from reverse to grab latest consecutive user-assistant block
-            for i in range(len(self.chat_history) - 1, -1, -1):
-                item = self.chat_history[i]
-                if item.get('role') == 'assistant' and not assistant_content:
-                    assistant_content = self._extract_safe_text(item.get('content', ''))
-                elif item.get('role') == 'user' and assistant_content and not user_content:
-                    user_content = self._extract_safe_text(item.get('content', ''))
-                    break # Block matched
-
-            if user_content and assistant_content:
-                try:
-                    from server.logic.services.base_service import ServiceRegistry
-                    queue_broker = ServiceRegistry.get("queue_broker")
+        if not hasattr(self, 'auto_save_worker') or not self.auto_save_worker.isRunning():
+            self.auto_save_worker = AutoSaveWorker(
+                self.conversation_manager, 
+                self.chat_history, 
+                self.chat_html_history, 
+                self.model_btn.text(), 
+                self.current_conv_id, 
+                self
+            )
+            def on_saved(new_id, is_new):
+                self.current_conv_id = new_id
+                if is_new:
+                    self.refresh_history_list()
                     
-                    task_payload = {
-                        "task_type": "vector_index",
-                        "user_text": user_content,
-                        "assistant_text": assistant_content,
-                        "conversation_id": self.current_conv_id,
-                        "model_id": self.model_btn.text(),
-                        "user_id": 1
-                    }
-                    
-                    job_id = queue_broker.enqueue("quantum_tasks", task_payload)
-                    print(f"[Dense RAG Ingest] Job enqueued on 'quantum_tasks' queue successfully. Job ID: {job_id}")
-                except Exception as vec_e:
-                    print(f"[Dense RAG Ingest] Failed to enqueue indexing job: {vec_e}")
-
-        if is_new: self.refresh_history_list()
+            self.auto_save_worker.saved.connect(on_saved)
+            self.auto_save_worker.start()
 
     def refresh_history_list(self):
         self.ui.chat_history_list.clear()

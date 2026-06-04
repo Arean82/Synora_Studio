@@ -122,7 +122,9 @@ class ConversationManager:
         for bak_file in self.conversations_dir.glob("*.json.bak"):
              try:
                  bak_file.unlink()
-             except Exception:
+             except Exception as e: 
+                 import logging
+                 logging.error(f"Caught exception: {e}", exc_info=True)
                  pass
 
     def save_conversation(self, conversation: list, title: str = "New Conversation", 

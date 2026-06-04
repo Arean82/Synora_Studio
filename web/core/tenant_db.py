@@ -12,6 +12,7 @@ Supported backends:
 
 import os
 import configparser
+import threading
 from pathlib import Path
 
 
@@ -57,15 +58,14 @@ class TenantDatabaseManager:
         user = db.authenticate_by_passport("my_api_key")
     """
     
-    _instance = None
-    _driver = None
+    _thread_local = threading.local()
     
     def __new__(cls, db_name=None):
-        """Singleton pattern — reuse the same driver across all callers."""
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._driver = cls._create_driver(db_name)
-        return cls._instance
+        """Thread-Local Singleton pattern — isolate DB connections per thread."""
+        if not hasattr(cls._thread_local, 'instance'):
+            cls._thread_local.instance = super().__new__(cls)
+            cls._thread_local.instance._driver = cls._create_driver(db_name)
+        return cls._thread_local.instance
     
     @classmethod
     def _create_driver(cls, db_name_override=None):
@@ -101,8 +101,8 @@ class TenantDatabaseManager:
     @classmethod
     def reset_instance(cls):
         """Force re-creation of the singleton (useful after config changes or migration)."""
-        cls._instance = None
-        cls._driver = None
+        if hasattr(cls._thread_local, 'instance'):
+            del cls._thread_local.instance
     
     # --- DELEGATE ALL METHOD CALLS TO THE UNDERLYING DRIVER ---
     
@@ -131,9 +131,13 @@ class TenantDatabaseManager:
     @staticmethod
     def decrypt_byok(cipher: str) -> str:
         import base64
+        import logging
         try:
             return base64.b64decode(cipher.encode('utf-8')).decode('utf-8')
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
+            pass
             return cipher
 
     @staticmethod

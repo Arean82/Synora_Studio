@@ -46,4 +46,31 @@ class ToolManager:
                 
             return "\n\n".join(formatted)
         except Exception as e:
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             return f"⚠️ Web Search Tool Fault: {str(e)}"
+
+    @staticmethod
+    def execute_hybrid_search(query: str, limit: int = 5) -> str:
+        """Attempts Google Search first, falls back to DuckDuckGo on rate-limit/errors."""
+        if not query or len(query.strip()) < 2:
+            return ""
+            
+        try:
+            from googlesearch import search
+            results = list(search(query, num_results=limit, advanced=True))
+            if not results:
+                return ToolManager.execute_web_search(query, limit)
+                
+            formatted = [f"--- LIVE WEB SEARCH RESULTS FOR: '{query}' (Google) ---"]
+            for i, res in enumerate(results, 1):
+                title = getattr(res, 'title', 'Untitled')
+                description = getattr(res, 'description', '')
+                url = getattr(res, 'url', 'N/A')
+                formatted.append(f"[{i}] Source: {url}\n    Snippet: {description}")
+                
+            return "\n\n".join(formatted)
+        except Exception as e:
+            print(f"[ToolManager] Google search failed or blocked ({e}). Falling back to DuckDuckGo...")
+            return ToolManager.execute_web_search(query, limit)
+

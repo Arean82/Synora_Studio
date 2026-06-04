@@ -404,7 +404,9 @@ class SaaSSettingsDialogClass(QDialog):
             try:
                 with open(config_path, 'r', encoding='utf-8') as f:
                     self.ext_config_data = json.load(f)
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
 
         if not os.path.exists(ext_dir):

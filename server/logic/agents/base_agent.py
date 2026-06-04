@@ -21,7 +21,8 @@ class BaseAgent:
         try:
             redis_svc = ServiceRegistry.get("redis")
             self.state_store = AgentStateStore(redis_svc)
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error initializing state store: {e}", exc_info=True)
             logger.warning("Redis service not found. State persistence disabled.")
 
     def run(self, task_payload: dict) -> dict:

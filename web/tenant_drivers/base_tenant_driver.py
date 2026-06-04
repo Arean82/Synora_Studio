@@ -31,10 +31,24 @@ class BaseTenantDriver(ABC):
 
     @staticmethod
     def hash_password(password: str) -> str:
-        """Secure SHA-256 salted password hashing routine."""
-        import hashlib
-        salt = "SaaS_Passport_Salt_v7_"
-        return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
+        """Secure bcrypt password hashing routine."""
+        import bcrypt
+        # Hash a password for the first time, with a randomly-generated salt
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        return hashed.decode('utf-8')
+
+    @staticmethod
+    def verify_password(password_raw: str, hashed_password: str) -> bool:
+        """Seamlessly verifies both bcrypt and legacy SHA-256 passwords."""
+        if hashed_password.startswith("$2b$"):
+            import bcrypt
+            return bcrypt.checkpw(password_raw.encode('utf-8'), hashed_password.encode('utf-8'))
+        else:
+            # Legacy SHA-256 validation for backward compatibility
+            import hashlib
+            salt = "SaaS_Passport_Salt_v7_"
+            legacy_hash = hashlib.sha256((salt + password_raw).encode('utf-8')).hexdigest()
+            return legacy_hash == hashed_password
 
     @staticmethod
     def encrypt_byok(key: str) -> str:
@@ -44,9 +58,12 @@ class BaseTenantDriver(ABC):
     @staticmethod
     def decrypt_byok(cipher: str) -> str:
         import base64
+        import logging
         try:
             return base64.b64decode(cipher.encode('utf-8')).decode('utf-8')
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             return cipher
 
     # --- CORE MULTI-TENANT GATEWAYS ---

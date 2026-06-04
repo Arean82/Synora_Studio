@@ -174,7 +174,9 @@ class ToolExecutionSandbox:
             try:
                 if os.path.exists(script_path):
                     os.remove(script_path)
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
 
     def cleanup(self):

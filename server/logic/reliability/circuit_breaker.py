@@ -190,7 +190,9 @@ class CircuitBreaker(BaseService):
                         if str(t['id']) == str(tenant_id) and t['username'] == 'admin':
                             is_admin = True
                             break
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
                     
                 if not is_admin:

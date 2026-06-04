@@ -12,6 +12,8 @@ networkx>=3.0
 
 # OS Cryptography & Vault
 keyring>=24.3.0
+bcrypt>=4.0.0
+googlesearch-python>=1.2.0
 
 # Document Ingestion & Office Data Engines
 pandas>=2.1.0

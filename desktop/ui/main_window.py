@@ -417,7 +417,9 @@ class MainWindowClass(QMainWindow):
         # Auto-save active conversation before shutdown
         try:
             self.chat_view.auto_save_current_chat()
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             pass
 
         import subprocess
@@ -617,7 +619,9 @@ class MainWindowClass(QMainWindow):
         try:
             from server.logic.services import ServiceRegistry
             ServiceRegistry.shutdown_all()
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             pass
 
         # 1. Stop background API server if running
@@ -685,7 +689,9 @@ class MainWindowClass(QMainWindow):
         try:
             from server.logic.services import ServiceRegistry
             ServiceRegistry.shutdown_all()
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             pass
         
         # 1. Stop global window-level workers

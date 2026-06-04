@@ -163,17 +163,22 @@ class TursoTenantDriver(BaseTenantDriver):
             # 4. SEED DEFAULT SUPER ADMIN
             cursor = conn.execute("SELECT COUNT(*) FROM users")
             if cursor.fetchone()[0] == 0:
-                admin_hash = BaseTenantDriver.hash_password("admin")
+                import secrets
+                initial_password = secrets.token_urlsafe(12)
+                initial_api_key = f"sk-admin-{secrets.token_urlsafe(24)}"
+                admin_hash = BaseTenantDriver.hash_password(initial_password)
                 try:
                     conn.execute("""
                         INSERT INTO users (username, email, password_hash, api_key, key_type)
                         VALUES (?, ?, ?, ?, ?)
-                    """, ("admin", "admin@synora-studio.local", admin_hash, "admin_master_passport", "admin_funded"))
+                    """, ("admin", "admin@synora-studio.local", admin_hash, initial_api_key, "admin_funded"))
                     conn.commit()
                     print(f"===========================================================")
                     print(f"[SECURITY NOTIFICATION]: Default Super Admin Provisioned")
                     print(f"Username: admin")
-                    print(f"Password: admin")
+                    print(f"Password: {initial_password}")
+                    print(f"API Key:  {initial_api_key}")
+                    print(f"PLEASE SAVE THESE CREDENTIALS SECURELY.")
                     print(f"===========================================================")
                 except Exception as e:
                     print(f"[SQL Warning]: Super Admin provisioning aborted: {e}")
@@ -212,14 +217,14 @@ class TursoTenantDriver(BaseTenantDriver):
             return None
 
     def authenticate_by_login(self, username_or_email: str, password_raw: str):
-        pw_hash = self.hash_password(password_raw)
         with self.get_connection() as conn:
             row = conn.execute("""
-                SELECT id, username, email, api_key, key_type, status FROM users 
-                WHERE (username = ? OR email = ?) AND password_hash = ? AND status = 'active'
-            """, (username_or_email, username_or_email, pw_hash)).fetchone()
-            if row:
+                SELECT id, username, email, api_key, key_type, status, password_hash FROM users 
+                WHERE (username = ? OR email = ?) AND status = 'active'
+            """, (username_or_email, username_or_email)).fetchone()
+            if row and self.verify_password(password_raw, row['password_hash']):
                 res = dict(row)
+                del res['password_hash']
                 res['passport_token'] = res.get('api_key', '')
                 return res
             return None
@@ -261,7 +266,9 @@ class TursoTenantDriver(BaseTenantDriver):
                 try:
                     import json
                     return json.loads(row['settings_blob'])
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
             return {}
 
@@ -320,23 +327,30 @@ class TursoTenantDriver(BaseTenantDriver):
 
     # --- ADMIN ROUTINES ---
 
-    def reset_admin_account(self, new_password="admin"):
-        admin_hash = self.hash_password(new_password)
+    def reset_admin_account(self, new_password=None):
+        import secrets
+        password = new_password or secrets.token_urlsafe(12)
+        new_api_key = f"sk-admin-{secrets.token_urlsafe(24)}"
+        admin_hash = self.hash_password(password)
         with self.get_connection() as conn:
             cursor = conn.execute("SELECT id FROM users WHERE username = 'admin'")
             row = cursor.fetchone()
             if row:
                 conn.execute("""
                     UPDATE users 
-                    SET password_hash = ?, api_key = 'admin_master_passport', email = 'admin@synora-studio.local', key_type = 'admin_funded', status = 'active'
+                    SET password_hash = ?, api_key = ?, email = 'admin@synora-studio.local', key_type = 'admin_funded', status = 'active'
                     WHERE username = 'admin'
-                """, (admin_hash,))
+                """, (admin_hash, new_api_key))
             else:
                 conn.execute("""
                     INSERT INTO users (username, email, password_hash, api_key, key_type, status)
-                    VALUES ('admin', 'admin@synora-studio.local', ?, 'admin_master_passport', 'admin_funded', 'active')
-                """, (admin_hash,))
+                    VALUES ('admin', 'admin@synora-studio.local', ?, ?, 'admin_funded', 'active')
+                """, (admin_hash, new_api_key))
             conn.commit()
+            print(f"[SECURITY] Admin account reset successfully.")
+            if not new_password:
+                print(f"New Password: {password}")
+            print(f"New API Key: {new_api_key}")
             return True
 
     def get_all_tenants(self):
@@ -403,7 +417,9 @@ class TursoTenantDriver(BaseTenantDriver):
                 import json
                 try:
                     return json.loads(row['embedding_blob'])
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
             return None
 

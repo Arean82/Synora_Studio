@@ -162,17 +162,22 @@ class PostgresTenantDriver(BaseTenantDriver):
             # SEED DEFAULT SUPER ADMIN
             cur.execute("SELECT COUNT(*) FROM users")
             if cur.fetchone()[0] == 0:
-                admin_hash = BaseTenantDriver.hash_password("admin")
+                import secrets
+                initial_password = secrets.token_urlsafe(12)
+                initial_api_key = f"sk-admin-{secrets.token_urlsafe(24)}"
+                admin_hash = BaseTenantDriver.hash_password(initial_password)
                 try:
                     cur.execute("""
                         INSERT INTO users (username, email, password_hash, api_key, key_type)
                         VALUES (%s, %s, %s, %s, %s)
-                    """, ("admin", "admin@synora-studio.local", admin_hash, "admin_master_passport", "admin_funded"))
+                    """, ("admin", "admin@synora-studio.local", admin_hash, initial_api_key, "admin_funded"))
                     conn.commit()
                     print(f"===========================================================")
                     print(f"[SECURITY NOTIFICATION]: Default Super Admin Provisioned (PostgreSQL)")
                     print(f"Username: admin")
-                    print(f"Password: admin")
+                    print(f"Password: {initial_password}")
+                    print(f"API Key:  {initial_api_key}")
+                    print(f"PLEASE SAVE THESE CREDENTIALS SECURELY.")
                     print(f"===========================================================")
                 except Exception as e:
                     conn.rollback()
@@ -223,18 +228,19 @@ class PostgresTenantDriver(BaseTenantDriver):
             conn.close()
 
     def authenticate_by_login(self, username_or_email: str, password_raw: str):
-        pw_hash = self.hash_password(password_raw)
         conn = self.get_connection()
         try:
             cur = conn.cursor()
             cur.execute("""
-                SELECT id, username, email, api_key, key_type, status FROM users 
-                WHERE (username = %s OR email = %s) AND password_hash = %s AND status = 'active'
-            """, (username_or_email, username_or_email, pw_hash))
+                SELECT id, username, email, api_key, key_type, status, password_hash FROM users 
+                WHERE (username = %s OR email = %s) AND status = 'active'
+            """, (username_or_email, username_or_email))
             res = self._fetchone_dict(cur)
-            if res:
+            if res and self.verify_password(password_raw, res['password_hash']):
+                del res['password_hash']
                 res['passport_token'] = res.get('api_key', '')
-            return res
+                return res
+            return None
         finally:
             conn.close()
 
@@ -281,7 +287,9 @@ class PostgresTenantDriver(BaseTenantDriver):
                 import json
                 try:
                     return json.loads(row[0])
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
             return {}
         finally:
@@ -361,8 +369,11 @@ class PostgresTenantDriver(BaseTenantDriver):
 
     # --- ADMIN ROUTINES ---
 
-    def reset_admin_account(self, new_password="admin"):
-        admin_hash = self.hash_password(new_password)
+    def reset_admin_account(self, new_password=None):
+        import secrets
+        password = new_password or secrets.token_urlsafe(12)
+        new_api_key = f"sk-admin-{secrets.token_urlsafe(24)}"
+        admin_hash = self.hash_password(password)
         conn = self.get_connection()
         try:
             cur = conn.cursor()
@@ -371,15 +382,19 @@ class PostgresTenantDriver(BaseTenantDriver):
             if row:
                 cur.execute("""
                     UPDATE users 
-                    SET password_hash = %s, api_key = 'admin_master_passport', email = 'admin@synora-studio.local', key_type = 'admin_funded', status = 'active'
+                    SET password_hash = %s, api_key = %s, email = 'admin@synora-studio.local', key_type = 'admin_funded', status = 'active'
                     WHERE username = 'admin'
-                """, (admin_hash,))
+                """, (admin_hash, new_api_key))
             else:
                 cur.execute("""
                     INSERT INTO users (username, email, password_hash, api_key, key_type, status)
-                    VALUES ('admin', 'admin@synora-studio.local', %s, 'admin_master_passport', 'admin_funded', 'active')
-                """, (admin_hash,))
+                    VALUES ('admin', 'admin@synora-studio.local', %s, %s, 'admin_funded', 'active')
+                """, (admin_hash, new_api_key))
             conn.commit()
+            print(f"[SECURITY] Admin account reset successfully.")
+            if not new_password:
+                print(f"New Password: {password}")
+            print(f"New API Key: {new_api_key}")
             return True
         finally:
             conn.close()
@@ -470,7 +485,9 @@ class PostgresTenantDriver(BaseTenantDriver):
                 import json
                 try:
                     return json.loads(row[0])
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
             return None
         finally:

@@ -371,7 +371,9 @@ class ChatWorker(QThread):
                 user_msg_content = next((m["content"] for m in reversed(finalized_msgs) if m.get("role") == "user"), "")
                 if user_msg_content:
                     self.client.client.moderations.create(input=user_msg_content)
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             pass
 
         # Loop up to 3 times to handle multi-turn tool calling!
@@ -563,8 +565,12 @@ class ChatWorker(QThread):
                     
                     self.tool_call_started.emit({"name": name, "query": query})
                     
-                    # Execute mock tool / local search
-                    result = f"Local search results for query '{query}': Found related classes and active overrides in codebase."
+                    # Execute real hybrid search tool
+                    if name == "web_search":
+                        from server.logic.tool_manager import ToolManager
+                        result = ToolManager.execute_hybrid_search(query)
+                    else:
+                        result = f"Tool '{name}' executed successfully but returned no data."
                     
                     self.tool_call_finished.emit({"name": name, "result": result})
                     

@@ -242,7 +242,9 @@ class TelemetryManager(BaseService):
             circuit_breaker = ServiceRegistry.get("circuit_breaker")
             if circuit_breaker.state == "OPEN":
                 health_status["llm"] = "DEGRADED"
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             pass
 
         return health_status

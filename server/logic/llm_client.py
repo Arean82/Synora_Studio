@@ -571,7 +571,9 @@ class LLMClient:
                     )
                     if result and result.embeddings:
                         vector = result.embeddings[0].values
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
             else:
                 if client:
@@ -582,7 +584,9 @@ class LLMClient:
                             timeout=15.0
                         )
                         vector = resp.data[0].embedding
-                    except Exception:
+                    except Exception as e: 
+                        import logging
+                        logging.error(f"Caught exception: {e}", exc_info=True)
                         pass
             return vector
 

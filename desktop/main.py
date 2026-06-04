@@ -35,7 +35,9 @@ try:
     if (_root / "test_reranker.py").exists():
         (_root / "scratch").mkdir(exist_ok=True)
         shutil.move(str(_root / "test_reranker.py"), str(_root / "scratch/test_reranker.py"))
-except Exception:
+except Exception as e: 
+    import logging
+    logging.error(f"Caught exception: {e}", exc_info=True)
     pass
 # -----------------------------------------------------------------
 

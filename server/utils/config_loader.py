@@ -48,7 +48,9 @@ class INISettings:
                 if 'PySide6.QtCore' in sys.modules:
                     from PySide6.QtCore import QByteArray
                     return QByteArray.fromHex(val[5:].encode())
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
         return val
 
@@ -58,7 +60,9 @@ class INISettings:
             try:
                 # Convert QByteArray to a hex string for safe INI storage
                 value = f"hex!!{value.toHex().data().decode()}"
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
         
         if not self.parser.has_section("General"):

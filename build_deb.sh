@@ -4,7 +4,7 @@
 APP_NAME="synorastudio"
 VERSION="9.0.0"
 PACKAGE_DIR="build_deb_pkg"
-BUILD_OUTPUT="dist/LLM_Chat_dir"
+BUILD_OUTPUT="dist/Synora_Studio"
 
 echo "Building .deb package for $APP_NAME v$VERSION..."
 

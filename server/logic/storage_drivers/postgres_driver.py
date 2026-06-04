@@ -57,7 +57,9 @@ class PostgreSQLConnectionPool:
             try:
                 conn.cursor().execute("SELECT 1")
                 return conn
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 # Dead connection, create a new one
                 with self._lock:
                     self._created_count -= 1
@@ -79,7 +81,9 @@ class PostgreSQLConnectionPool:
         except queue.Full:
             try:
                 conn.close()
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
             with self._lock:
                 self._created_count -= 1
@@ -90,7 +94,9 @@ class PostgreSQLConnectionPool:
             try:
                 conn = self._pool.get_nowait()
                 conn.close()
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
         with self._lock:
             self._created_count = 0
@@ -163,7 +169,9 @@ class PostgreSQLStorageDriver(BaseStorageDriver):
             # Migration check: Add version column for OCC (Phase 6.3.1)
             try:
                 cursor.execute('ALTER TABLE conversations ADD COLUMN version INTEGER DEFAULT 1')
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 conn.rollback()
                 
             # Phase 8: JSON Config Purge

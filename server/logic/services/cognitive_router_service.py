@@ -72,7 +72,9 @@ class CognitiveRouterService(BaseService):
             is_healthy = response.status_code < 500
             self.provider_health[provider] = is_healthy
             return is_healthy
-        except Exception:
+        except Exception as e: 
+            import logging
+            logging.error(f"Caught exception: {e}", exc_info=True)
             self.provider_health[provider] = False
             return False
 

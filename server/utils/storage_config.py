@@ -67,8 +67,8 @@ class StorageManager:
                 self.is_portable = False
                 self.base_data_path = saved_path_obj
                 return self.base_data_path
-            except Exception:
-                pass
+            except Exception as e:
+                logging.error(f"Failed to initialize storage path: {e}", exc_info=True)
         return None
 
     def finalize_setup(self, selected_mode: str, custom_path: Path = None):

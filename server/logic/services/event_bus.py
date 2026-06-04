@@ -57,7 +57,9 @@ class EventBusService(BaseService):
         if self.pubsub:
             try:
                 self.pubsub.close()
-            except Exception:
+            except Exception as e: 
+                import logging
+                logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
             self.pubsub = None
             
@@ -176,7 +178,9 @@ class EventBusService(BaseService):
                             with self._lock:
                                 for ch in self._subscribers.keys():
                                     self.pubsub.subscribe(ch)
-                        except Exception:
+                        except Exception as e: 
+                            import logging
+                            logging.error(f"Caught exception: {e}", exc_info=True)
                             pass
                             
         logger.info("Event Bus listener loop terminated cleanly.")

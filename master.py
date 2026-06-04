@@ -45,14 +45,15 @@ def main():
         print("\n[*] Orchestrator terminated by user. Shutting down modules...")
     finally:
         import urllib.request
+        import logging
         print("[*] Initiating graceful REST shutdowns...")
         for port, name in [(5000, "Backend Server"), (8888, "Web SaaS")]:
             try:
                 req = urllib.request.Request(f"http://localhost:{port}/v1/system/shutdown", method="POST")
                 urllib.request.urlopen(req, timeout=1.0)
                 print(f" [+] Graceful shutdown signal sent to {name}.")
-            except Exception:
-                pass
+            except Exception as e:
+                logging.error(f"Failed to send shutdown signal to {name}: {e}", exc_info=True)
                 
         time.sleep(1.0)  # Allow databases to flush WAL
 

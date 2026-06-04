@@ -139,7 +139,9 @@ def run_headless_saas():
                 try:
                     if hasattr(llm_client.client, "moderations"):
                         llm_client.client.moderations.create(input=user_msg)
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
                 
                 messages = get_messages_payload(user_msg, messages_list, system_message)
@@ -211,7 +213,9 @@ def run_headless_saas():
                 try:
                     if hasattr(llm_client.client, "moderations"):
                         llm_client.client.moderations.create(input=user_msg)
-                except Exception:
+                except Exception as e: 
+                    import logging
+                    logging.error(f"Caught exception: {e}", exc_info=True)
                     pass
                 
                 messages = get_messages_payload(user_msg, messages_list, system_message)
