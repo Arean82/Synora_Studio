@@ -1,4 +1,6 @@
-# ui/system_health.py
+# desktop/ui/system_health.py
+# System Health & Telemetry Standalone Observability Dialog.
+
 """
 System Health & Telemetry Standalone Observability Dialog.
 Monitors execution thread pool, transparent failover statuses,

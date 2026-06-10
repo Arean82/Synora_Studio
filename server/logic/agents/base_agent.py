@@ -1,4 +1,6 @@
-# logic/agents/base_agent.py
+# server/logic/agents/base_agent.py
+# Module containing classes: BaseAgent, functions: run, save_checkpoint, load_checkpoint.
+
 import logging
 import uuid
 from typing import Optional

@@ -1,4 +1,6 @@
-# utils/logger.py
+# server/utils/logger.py
+# Module containing classes: PrintLogger, AppLogger, functions: write, flush, get_instance.
+
 import sys
 import logging
 from pathlib import Path

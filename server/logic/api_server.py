@@ -1,3 +1,6 @@
+# server/logic/api_server.py
+# Module containing classes: APIServer, functions: setup_security, setup_routes, stream_response.
+
 import threading
 
 from flask import Flask, request, jsonify, Response, stream_with_context

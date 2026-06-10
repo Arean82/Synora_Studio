@@ -1,4 +1,6 @@
-# workers/connection_worker.py
+# server/workers/connection_worker.py
+# Module containing classes: ConnectionWorker, functions: run, check_connection, stop.
+
 from PySide6.QtCore import QThread, Signal
 import socket
 

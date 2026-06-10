@@ -1,5 +1,5 @@
-# workers/update_logger.py
-# Logger class for model fetching and updating process. This logger collects logs in memory and also writes them to a file in the user's resources directory under "resources/update_log.txt". It emits signals for new log entries so that the UI can update in real-time. The logger supports different log levels (INFO, WARNING, ERROR) and timestamps each entry. A singleton pattern is used to ensure that all parts of the application use the same logger instance.    
+# server/workers/update_logger.py
+# Module containing classes: UpdateLogger, functions: get_logger, add_log, get_logs.
 
 from PySide6.QtCore import QObject, Signal
 from datetime import datetime

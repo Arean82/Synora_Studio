@@ -3,19 +3,18 @@
     <!-- Empty state instructions -->
     <div id="chat-welcome-screen" class="chat-intro animate-fade-in">
         <i class="fa-solid fa-cubes-stacked intro-icon"></i>
-        <h2 data-i18n="workspace.welcome_title">Quantum Virtual Sandbox Provisioned</h2>
-        <p data-i18n="workspace.welcome_desc">Your communications are isolated and mapped strictly into
-            your private server directory. Enter a prompt to mobilize the compute cluster.</p>
+        <h2 data-i18n="workspace.welcome_title">{{ _('Quantum Virtual Sandbox Provisioned') }}</h2>
+        <p data-i18n="workspace.welcome_desc">{{ _('Your communications are isolated and mapped strictly into your private server directory. Enter a prompt to mobilize the compute cluster.') }}</p>
 
         <div class="quick-prompts">
             <button class="quick-p-btn"
                 onclick="fillPrompt('Explain the architectural implications of multi-tenant isolation.')"
-                data-i18n="workspace.prompt_suggest_1">💡 Explain Multi-Tenancy</button>
+                data-i18n="workspace.prompt_suggest_1">{{ _('💡 Explain Multi-Tenancy') }}</button>
             <button class="quick-p-btn"
                 onclick="fillPrompt('Write a clean Python function processing real-time SSE chunks.')"
-                data-i18n="workspace.prompt_suggest_2">💻 Python SSE Processor</button>
+                data-i18n="workspace.prompt_suggest_2">{{ _('💻 Python SSE Processor') }}</button>
             <button id="btn-share-orbit" class="quick-p-btn" title="Generate Public Link"><i
-                    class="fa-solid fa-share-nodes"></i> Share</button>
+                    class="fa-solid fa-share-nodes"></i> {{ _('Share') }}</button>
         </div>
     </div>
 
@@ -26,12 +25,12 @@
     <div id="arena-chat-grid" class="arena-grid hidden">
         <div class="arena-column" id="arena-col-left">
             <div class="arena-header"><i class="fa-solid fa-bolt-lightning"></i> <span
-                    data-i18n="workspace.arena_col_a">Orbit Module A</span></div>
+                    data-i18n="workspace.arena_col_a">{{ _('Orbit Module A') }}</span></div>
             <div id="arena-bubbles-left" class="bubble-stream"></div>
         </div>
         <div class="arena-column" id="arena-col-right">
             <div class="arena-header"><i class="fa-solid fa-fire-flame-curved"></i> <span
-                    data-i18n="workspace.arena_col_b">Orbit Module B</span></div>
+                    data-i18n="workspace.arena_col_b">{{ _('Orbit Module B') }}</span></div>
             <div id="arena-bubbles-right" class="bubble-stream"></div>
         </div>
     </div>
@@ -46,12 +45,12 @@
         <div class="input-actions">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="mode-indicator"><i class="fa-solid fa-bolt"></i> <span
-                        data-i18n="workspace.mode_streaming">Streaming Engine Enabled</span></div>
+                        data-i18n="workspace.mode_streaming">{{ _('Streaming Engine Enabled') }}</span></div>
                 <label
                     style="display: flex; align-items: center; gap: 5px; color: var(--text-dim); font-size: 0.8rem; cursor: pointer; transition: color 0.2s ease;">
                     <input type="checkbox" id="web-search-toggle"
                         style="accent-color: var(--accent-cyan);">
-                    <i class="fa-solid fa-globe"></i> Web Search
+                    <i class="fa-solid fa-globe"></i> {{ _('Web Search') }}
                 </label>
             </div>
             <button id="btn-send-prompt" class="btn-send-circle" disabled>

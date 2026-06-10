@@ -1,6 +1,8 @@
-# saas/tenant_db.py
+# web/core/tenant_db.py
+# SaaS Multi-Tenant Database Factory Manager
+
 """
-SaaS Multi-Tenant Database Factory Manager (Phase 10.2 Refactor)
+SaaS Multi-Tenant Database Factory Manager
 Acts as a switchboard that dynamically loads the correct tenant driver
 based on config.ini settings. Downstream callers never need to change.
 

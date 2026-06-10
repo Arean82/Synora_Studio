@@ -1,4 +1,6 @@
 # server/build.py
+# Synora Studio - Server Build Script
+
 """
 Synora Studio - Server Build Script
 """

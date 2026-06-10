@@ -1,4 +1,6 @@
-# logic/formatter.py
+# server/logic/formatter.py
+# Module containing classes: MessageFormatter, functions: format_ai_response, escape_html, replacer.
+
 import re
 import markdown
 import base64

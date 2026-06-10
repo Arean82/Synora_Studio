@@ -1,5 +1,5 @@
-# logic/vector_db.py
-# Local Qdrant Vector Engine providing Persistent Dense Retrieval storage capabilities.
+# server/logic/vector_db.py
+# Module containing classes: VectorDatabase, functions: get_instance, ensure_collection, upsert_segment.
 
 import os
 import uuid

@@ -1,3 +1,6 @@
+# server/logic/services/auth_service.py
+# Module containing classes: AuthService, functions: on_initialize, on_shutdown, authenticate_login.
+
 import logging
 import datetime
 import hashlib

@@ -1,5 +1,5 @@
-# workers/vector_indexer_worker.py
-# Background worker designed to async compute embeddings and upsert conversational pairs to Qdrant.
+# server/workers/vector_indexer_worker.py
+# Module containing classes: VectorIndexerWorker, functions: run.
 
 from PySide6.QtCore import QThread, Signal
 from datetime import datetime

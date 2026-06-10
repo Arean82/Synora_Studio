@@ -1,4 +1,5 @@
-# logic/services/queue_broker.py
+# server/logic/services/queue_broker.py
+# Module containing classes: RedisQueueBroker, functions: on_initialize, on_shutdown, enqueue.
 
 import json
 import uuid

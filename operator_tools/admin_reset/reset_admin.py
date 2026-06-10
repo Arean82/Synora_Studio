@@ -1,5 +1,6 @@
-# operator_tools/reset_admin.py
-# Universal Master Password Reset Sequence for SaaS, Desktop GUI, and CLI Headless Gates
+# operator_tools/admin_reset/reset_admin.py
+# Module containing classes: ResetAdminController, functions: run_gui_reset, main, on_reset.
+
 # Designed to run securely as a standalone binary (reset_admin.exe) and compatible with system services.
 
 import sys

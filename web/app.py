@@ -1,9 +1,12 @@
+# web/app.py
+# Module containing classes: SaaSServer, functions: create_saas_app, get_locale, handle_join.
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-# saas/app.py
+
 """
-Unified SaaS Multi-Tenant Flask Application Engine (Phase 6)
+Unified SaaS Multi-Tenant Flask Application Engine
 Orchestrates JWT/Passport gateway auth, dynamic workspace routing, 
 economic feature locks on Model Arena, and autonomous SMTP alerts.
 """
@@ -17,7 +20,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from server.utils.security_utils import admin_required
-from flask import Flask, request, jsonify, Response, stream_with_context, render_template, send_from_directory
+from flask import Flask, request, jsonify, Response, stream_with_context, render_template, send_from_directory, g
+from flask_babel import Babel
 
 from web.core.tenant_db import TenantDatabaseManager
 from server.logic.llm_client import LLMClient
@@ -43,6 +47,15 @@ def create_saas_app():
     mimetypes.add_type('application/javascript', '.js')
     
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+    
+    # Configure localization
+    app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = os.path.join(os.path.dirname(__file__), 'locales')
+    
+    def get_locale():
+        return request.accept_languages.best_match(['en', 'es', 'fr', 'de'])
+        
+    babel = Babel(app, locale_selector=get_locale)
     db = TenantDatabaseManager()
     
     # Initialize real-time WebSocket subsystem

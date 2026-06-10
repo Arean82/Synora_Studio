@@ -1,5 +1,6 @@
-# logic/headless_engine.py
-# Dedicated background engine for Headless/SaaS execution.
+# desktop/headless/engine.py
+# Module containing classes: HeadlessEngine, functions: ensure_initialized, request_handler.
+
 # Decoupled from GUI via Callback Patterns.
 
 from desktop.headless.worker import HeadlessWorker

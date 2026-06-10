@@ -1,4 +1,6 @@
-# logic/agents/sandbox.py
+# server/logic/agents/sandbox.py
+# 5.1.1.b — Tool Execution Sandbox
+
 """
 5.1.1.b — Tool Execution Sandbox
 

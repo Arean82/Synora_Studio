@@ -1,3 +1,6 @@
+# web/run_web.py
+# Module containing functions: main.
+
 import sys
 import os
 

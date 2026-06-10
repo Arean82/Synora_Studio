@@ -1,5 +1,6 @@
 # operator_tools/companion/companion_operation.py
-# Standalone Companion Operation App (Phase 11.4)
+# Module containing classes: SaasMigrationWorker, DashboardDialog, functions: check_admin_access, save_config, run_headless_migration.
+
 # Dual-Mode: Multi-Tab GUI Wizard + Headless CLI Terminal
 
 import sys

@@ -1,4 +1,6 @@
 # scripts/build.py
+# Synora Studio - Unified Build & Packaging Orchestrator (v9.0.0)
+
 """
 Synora Studio - Unified Build & Packaging Orchestrator (v9.0.0)
 Auto-detects host environment and bundles public clients, admin panels, and extensions.

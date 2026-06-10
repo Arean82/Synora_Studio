@@ -1,6 +1,5 @@
-# ui/model_popup.py
-# This module defines a reusable dialog for selecting the active model from a list defined in models.json. It displays the model name and description, and allows the user to select one as active. The selection is saved to QSettings for persistence. 
-
+# desktop/ui/model_popup.py
+# Module containing classes: ModelPopupClass, functions: closeEvent, setup_table, populate_models.
 
 import sys
 import os

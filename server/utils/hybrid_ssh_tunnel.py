@@ -1,4 +1,6 @@
-# utils/hybrid_ssh_tunnel.py
+# server/utils/hybrid_ssh_tunnel.py
+# Module containing classes: HybridSSHTunnel, functions: start_tunnel, execute_remote_command, sftp_get.
+
 import os
 import sys
 import platform

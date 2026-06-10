@@ -1,4 +1,6 @@
-# logic/repositories/conversation_repository.py
+# server/logic/repositories/conversation_repository.py
+# Module containing classes: ConversationRepository, functions: storage, save_conversation, load_conversation.
+
 import logging
 from typing import List, Dict, Any, Optional
 from server.logic.services.base_service import ServiceRegistry

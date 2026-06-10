@@ -1,4 +1,6 @@
-# ui/log_viewer.py
+# desktop/ui/log_viewer.py
+# Module containing classes: LogViewerDialog, functions: closeEvent, load_logs, on_new_log.
+
 from PySide6.QtWidgets import QDialog, QMessageBox
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader

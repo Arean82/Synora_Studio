@@ -1,5 +1,5 @@
-# ui/user_login.py
-# Native desktop admin login gate controller
+# desktop/ui/user_login.py
+# Module containing classes: UserLoginClass, functions: create_eye_icon, toggle_password_visibility, handle_login.
 
 from PySide6.QtWidgets import QDialog, QMessageBox, QVBoxLayout, QLineEdit, QPushButton, QLabel
 from PySide6.QtCore import Qt, QSettings

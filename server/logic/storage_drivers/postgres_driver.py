@@ -1,4 +1,6 @@
-# logic/storage_drivers/postgres_driver.py
+# server/logic/storage_drivers/postgres_driver.py
+# Module containing classes: PostgreSQLConnectionPool, PostgreSQLStorageDriver, functions: get_connection, return_connection, close_all.
+
 import json
 import threading
 import queue
@@ -166,7 +168,7 @@ class PostgreSQLStorageDriver(BaseStorageDriver):
             # Index high-traffic timestamp column to preserve sidebar speed over scale
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON conversations(timestamp);')
 
-            # Migration check: Add version column for OCC (Phase 6.3.1)
+            # Migration check: Add version column for OCC
             try:
                 cursor.execute('ALTER TABLE conversations ADD COLUMN version INTEGER DEFAULT 1')
             except Exception as e: 

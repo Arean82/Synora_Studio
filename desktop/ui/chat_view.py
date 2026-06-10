@@ -1,4 +1,6 @@
-# ui/chat_view.py
+# desktop/ui/chat_view.py
+# Module containing classes: IngestionWorker, AutoSaveWorker, ChatViewWidget, functions: run, run, load_layout_settings.
+
 import time
 import json
 from pathlib import Path

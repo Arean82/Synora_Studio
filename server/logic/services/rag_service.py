@@ -1,3 +1,6 @@
+# server/logic/services/rag_service.py
+# Module containing classes: RAGService, functions: on_initialize, on_shutdown, chunk_document.
+
 import re
 import math
 import logging
@@ -142,7 +145,7 @@ class RAGService(BaseService):
         if v_norm > 0:
             query_vector = [x / v_norm for x in query_vector]
 
-        # Enforce metadata tenant filtering (Phase 4.1.8)
+        # Enforce metadata tenant filtering
         filters = {"tenant_id": tenant_id}
         dense_hits = self.vector_db.search_similar(collection_name, query_vector, limit=20, score_threshold=0.1, metadata_filters=filters)
         

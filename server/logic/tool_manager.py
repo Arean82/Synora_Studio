@@ -1,4 +1,6 @@
-# logic/tool_manager.py
+# server/logic/tool_manager.py
+# Module containing classes: ToolManager, functions: get_live_os_context, execute_web_search, execute_hybrid_search.
+
 import datetime
 import platform
 import sys

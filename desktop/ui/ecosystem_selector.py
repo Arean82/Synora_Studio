@@ -1,5 +1,5 @@
-# ui/ecosystem_selector.py
-# Ecosystem Selector dialog for hot-swapping AI providers cleanly
+# desktop/ui/ecosystem_selector.py
+# Module containing classes: EcosystemSelectorClass, functions: load_provider_definitions, setup_connections, on_group_switched.
 
 import sys
 import os

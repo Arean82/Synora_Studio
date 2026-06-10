@@ -3,10 +3,10 @@
     <div class="sidebar-header">
         <div class="app-logo mini">
             <img src="/app_icon.ico" alt="App Logo" style="width: 24px; height: 24px; margin-right: 8px;">
-            <h2><span>Quantum</span>SaaS</h2>
+            <h2><span>{{ _('Quantum') }}</span>{{ _('SaaS') }}</h2>
         </div>
         <button id="btn-new-chat" class="btn-new"><i class="fa-solid fa-plus"></i> <span
-                data-i18n="workspace.new_orbit">New Orbit</span></button>
+                data-i18n="workspace.new_orbit">{{ _('New Orbit') }}</span></button>
         <div class="sidebar-nav" style="margin-top: 1rem; display: flex; gap: 8px;">
             <button id="nav-chat" class="btn-new" style="margin-top: 0; flex: 1;" title="Chat Console"><i
                     class="fa-solid fa-message"></i></button>
@@ -19,15 +19,15 @@
         </div>
         <button id="btn-arena-toggle" class="btn-arena" data-i18n-title="workspace.arena_tooltip"
             title="Initiate Dual-Model Confrontation"><i class="fa-solid fa-bolt-lightning"></i> <span
-                data-i18n="workspace.btn_arena">Model Arena</span></button>
+                data-i18n="workspace.btn_arena">{{ _('Model Arena') }}</span></button>
     </div>
 
     <nav class="chat-history-container">
-        <div class="section-label" data-i18n="workspace.history_section_label">Physical Sandboxed Streams
+        <div class="section-label" data-i18n="workspace.history_section_label">{{ _('Physical Sandboxed Streams') }}
         </div>
         <div id="history-list" class="history-list">
             <!-- Dynamically filled by JS -->
-            <div class="empty-history" data-i18n="workspace.empty_history">No active orbital streams found.
+            <div class="empty-history" data-i18n="workspace.empty_history">{{ _('No active orbital streams found.') }}
             </div>
         </div>
     </nav>
@@ -37,9 +37,9 @@
             title="Open Grid Security & API Vault">
             <div class="avatar"><i class="fa-solid fa-user"></i></div>
             <div class="user-info">
-                <div class="username" id="display-username">Guest Pilot
+                <div class="username" id="display-username">{{ _('Guest Pilot') }}
                 </div>
-                <div class="key-tag byok" id="display-tier">BYOK Tier</div>
+                <div class="key-tag byok" id="display-tier">{{ _('BYOK Tier') }}</div>
             </div>
         </div>
         <div class="footer-actions">

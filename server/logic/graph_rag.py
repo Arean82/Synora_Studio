@@ -1,4 +1,6 @@
 # server/logic/graph_rag.py
+# Module containing classes: GraphManager, functions: clear, ingest_document, query_subgraph.
+
 import re
 import networkx as nx
 

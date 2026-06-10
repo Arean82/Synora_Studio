@@ -1,5 +1,5 @@
-# logic/llm_client.py
-# Enhanced Multi-Provider LLM Client supporting NVIDIA (OpenAI) & Google Gemini.
+# server/logic/llm_client.py
+# Module containing classes: LLMClient, MockLLMClient, functions: get_mock_llm_client, set_user_context, hydrate.
 
 import hashlib
 import json

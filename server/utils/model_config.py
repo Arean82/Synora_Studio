@@ -1,4 +1,6 @@
-# utils/model_config.py
+# server/utils/model_config.py
+# Module containing functions: get_context_limit, does_model_support_tools, update_model_capability.
+
 import json
 import os
 from server.utils.path_utils import get_models_path

@@ -1,4 +1,6 @@
-# saas/config_manager.py
+# web/core/config_manager.py
+# SaaS Configuration Manager
+
 """
 SaaS Configuration Manager
 Governs standard-compliant INI file reading/writing for server operators.

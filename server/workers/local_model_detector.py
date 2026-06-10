@@ -1,5 +1,5 @@
-# workers/local_model_detector.py
-# Non-blocking Sweep engine designed to auto-detect and register local self-hosted LLMs (Ollama/LM Studio).
+# server/workers/local_model_detector.py
+# Module containing classes: LocalModelDetector, functions: run.
 
 import requests
 from PySide6.QtCore import QThread, Signal

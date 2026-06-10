@@ -1,3 +1,6 @@
+# desktop/ui/agent_hub_view.py
+# Module containing classes: AgentHubViewWidget, functions: go_back, start_agent, stop_agent.
+
 import os
 from PySide6.QtWidgets import QWidget, QMessageBox, QListWidgetItem, QVBoxLayout
 from PySide6.QtUiTools import QUiLoader

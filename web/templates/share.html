@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synora Studio SaaS - Shared Orbit</title>
+    <title>{{ _('Synora Studio SaaS - Shared Orbit') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+    {{ _('<style>
         body {
             background-color: var(--bg-dark);
             color: var(--text-bright);
@@ -32,7 +32,7 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
-    </style>
+    </style>') }}
 </head>
 <body class="theme-light">
 
@@ -42,25 +42,25 @@
     <div class="share-container">
         <header class="share-header">
             <i class="fa-solid fa-brain cyber-logo"></i>
-            <h1 style="font-family:'Outfit', sans-serif;">Public <span>Orbit</span> Share</h1>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">Read-only conversational log snapshot.</p>
+            <h1 style="font-family:'Outfit', sans-serif;">{{ _('Public') }} <span>{{ _('Orbit') }}</span> {{ _('Share') }}</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">{{ _('Read-only conversational log snapshot.') }}</p>
         </header>
 
         <div class="bubble-stream">
             {% for msg in orbit.messages %}
                 <div class="chat-bubble {{ msg.role }}">
                     <div class="bubble-meta">
-                        {% if msg.role == 'user' %} Satellite Feed (User) {% else %} Compute Result {% endif %}
+                        {% if msg.role == 'user' %} {{ _('Satellite Feed (User)') }} {% else %} {{ _('Compute Result') }} {% endif %}
                     </div>
                     <div class="bubble-content">{{ msg.content }}</div>
                 </div>
             {% else %}
-                <div style="text-align:center; color:var(--text-dim);">No orbital data found in this transmission.</div>
+                <div style="text-align:center; color:var(--text-dim);">{{ _('No orbital data found in this transmission.') }}</div>
             {% endfor %}
         </div>
         
         <div style="text-align:center; margin-top: 4rem; color:var(--text-dim); font-size: 0.8rem;">
-            Powered by <a href="/" style="color:var(--accent-cyan); text-decoration:none;">Synora Studio SaaS</a>
+            {{ _('Powered by') }} <a href="/" style="color:var(--accent-cyan); text-decoration:none;">{{ _('Synora Studio SaaS') }}</a>
         </div>
     </div>
 

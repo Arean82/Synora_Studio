@@ -1,6 +1,8 @@
-# saas/tenant_drivers/mysql_tenant_driver.py
+# web/tenant_drivers/mysql_tenant_driver.py
+# MySQL/MariaDB Tenant Driver
+
 """
-MySQL/MariaDB Tenant Driver (Phase 10.2)
+MySQL/MariaDB Tenant Driver
 Implements BaseTenantDriver using PyMySQL for enterprise scaling.
 Compatible with MySQL 8.x, MariaDB 10.x, and TiDB.
 Requires: pip install pymysql
@@ -100,7 +102,7 @@ class MySQLTenantDriver(BaseTenantDriver):
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             """)
 
-            # 5. L2 Chunk Cache (Phase 9)
+            # 5. L2 Chunk Cache
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS chunk_cache (
                     chunk_hash VARCHAR(128) PRIMARY KEY,
@@ -112,7 +114,7 @@ class MySQLTenantDriver(BaseTenantDriver):
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             """)
 
-            # 6. L3 Semantic Query Cache (Phase 9)
+            # 6. L3 Semantic Query Cache
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS semantic_query_cache (
                     id INT AUTO_INCREMENT PRIMARY KEY,

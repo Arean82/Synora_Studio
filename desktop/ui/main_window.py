@@ -1,5 +1,5 @@
-# ui/main_window.py
-# Shell Controller for Modular Platform Architecture
+# desktop/ui/main_window.py
+# Module containing classes: MainWindowClass, functions: start_services, show_chat_mode, show_arena_mode.
 
 import sys
 import os

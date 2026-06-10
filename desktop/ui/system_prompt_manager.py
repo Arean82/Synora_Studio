@@ -1,4 +1,6 @@
-# ui/system_prompt_manager.py
+# desktop/ui/system_prompt_manager.py
+# Module containing classes: InstructionEditorDialog, SystemPromptManagerClass, functions: get_data, setup_connections_and_style, load_data_from_settings.
+
 import json
 from pathlib import Path
 from desktop.ui.shared_widgets import set_app_icon

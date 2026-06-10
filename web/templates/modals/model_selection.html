@@ -7,7 +7,7 @@
         <div
             style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-glow); display: flex; justify-content: space-between; align-items: center;">
             <h3 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-list"></i> Select Active Model
+                <i class="fa-solid fa-list"></i> {{ _('Select Active Model') }}
             </h3>
         </div>
 
@@ -16,17 +16,17 @@
             <label
                 style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-dim); font-size: 0.9rem;">
                 <input type="checkbox" id="pure-model-show-all"
-                    onchange="if(window.renderDesktopCloneTable) window.renderDesktopCloneTable()"> Show models from
-                all providers
+                    onchange="if(window.renderDesktopCloneTable) window.renderDesktopCloneTable()"> {{ _('Show models from
+                all providers') }}
             </label>
 
             <select id="pure-model-capability-filter"
                 onchange="if(window.renderDesktopCloneTable) window.renderDesktopCloneTable()"
                 style="background: var(--bg-card); color: var(--text-bright); border: 1px solid var(--border-glow); border-radius: 4px; padding: 4px 8px; font-size: 0.85rem; outline: none;">
-                <option value="0">All Capabilities</option>
-                <option value="1">General Chat</option>
-                <option value="2">Supports Tools</option>
-                <option value="3">Multimodal / Vision</option>
+                <option value="0">{{ _('All Capabilities') }}</option>
+                <option value="1">{{ _('General Chat') }}</option>
+                <option value="2">{{ _('Supports Tools') }}</option>
+                <option value="3">{{ _('Multimodal / Vision') }}</option>
             </select>
         </div>
 
@@ -37,14 +37,14 @@
                     <tr>
                         <th
                             style="padding: 10px; border-bottom: 1px solid var(--border-glow); width: 60px; text-align: center;">
-                            Active</th>
+                            {{ _('Active') }}</th>
                         <th style="padding: 10px; border-bottom: 1px solid var(--border-glow); width: 120px;">
-                            Ecosystem</th>
+                            {{ _('Ecosystem') }}</th>
                         <th style="padding: 10px; border-bottom: 1px solid var(--border-glow); width: 120px;">
-                            Developer</th>
-                        <th style="padding: 10px; border-bottom: 1px solid var(--border-glow); width: 200px;">Model
-                            Name</th>
-                        <th style="padding: 10px; border-bottom: 1px solid var(--border-glow);">Description</th>
+                            {{ _('Developer') }}</th>
+                        <th style="padding: 10px; border-bottom: 1px solid var(--border-glow); width: 200px;">{{ _('Model
+                            Name') }}</th>
+                        <th style="padding: 10px; border-bottom: 1px solid var(--border-glow);">{{ _('Description') }}</th>
                     </tr>
                 </thead>
                 <tbody id="pure-model-table-body">
@@ -57,10 +57,10 @@
             style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-glow); display: flex; justify-content: flex-end; gap: 10px; background: rgba(0,0,0,0.2);">
             <button onclick="document.getElementById('pure-model-selection-modal').style.display='none'"
                 class="btn-new"
-                style="background: transparent; border: 1px solid var(--text-dim); color: var(--text-dim);">Cancel</button>
+                style="background: transparent; border: 1px solid var(--text-dim); color: var(--text-dim);">{{ _('Cancel') }}</button>
             <button id="pure-model-apply-btn" onclick="if(window.applyModelSelection) window.applyModelSelection()"
                 class="btn-new" style="background: var(--accent-cyan); color: #000; font-weight: 600;"
-                disabled>Apply</button>
+                disabled>{{ _('Apply') }}</button>
         </div>
 
     </div>

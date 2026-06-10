@@ -1,4 +1,6 @@
-# saas/tenant_drivers/base_tenant_driver.py
+# web/tenant_drivers/base_tenant_driver.py
+# Abstract Base Class (ABC) for all Tenant Database Drivers.
+
 """
 Abstract Base Class (ABC) for all Tenant Database Drivers.
 Mirrors the BaseStorageDriver pattern used for conversation storage.

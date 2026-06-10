@@ -1,5 +1,6 @@
-# ui/file_viewer.py
-# This module defines a reusable dialog for displaying text files (Markdown or Plain Text) with support for external images. It uses a custom QTextBrowser to handle image loading. 
+# desktop/ui/file_viewer.py
+# Module containing classes: BadgeCacheWorker, MarkdownBrowser, FileViewerDialog, functions: run, mousePressEvent, load_file.
+
 # The BadgeCacheWorker runs in a background thread to download badge images and update the HTML content without freezing the UI.    
 
 import re

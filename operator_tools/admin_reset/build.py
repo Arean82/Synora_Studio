@@ -1,4 +1,6 @@
 # operator_tools/admin_reset/build.py
+# Synora Studio - Admin Reset Tool Build Script
+
 """
 Synora Studio - Admin Reset Tool Build Script
 """

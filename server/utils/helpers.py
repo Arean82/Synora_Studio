@@ -1,4 +1,6 @@
-# utils/helpers.py
+# server/utils/helpers.py
+# Module containing functions: strip_markdown, format_timestamp, truncate_text.
+
 import re
 import json
 from pathlib import Path

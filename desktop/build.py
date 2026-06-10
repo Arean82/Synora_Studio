@@ -1,4 +1,6 @@
 # desktop/build.py
+# Synora Studio - Desktop Build Script
+
 """
 Synora Studio - Desktop Build Script
 """

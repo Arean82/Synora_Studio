@@ -1,4 +1,5 @@
-# logic/agents/__init__.py
+# server/logic/agents/__init__.py
+# Utility script or configuration module.
 
 from .planner import AgentPlanner, PlanStep
 from .sandbox import ToolExecutionSandbox

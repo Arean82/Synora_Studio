@@ -1,5 +1,6 @@
-# logic/headless_worker.py
-# DEDICATED Headless Engine Worker (Zero Qt/PySide6 dependencies)
+# desktop/headless/worker.py
+# Module containing classes: HeadlessWorker, functions: stop, run.
+
 import threading
 import time
 

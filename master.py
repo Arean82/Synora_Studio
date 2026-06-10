@@ -1,3 +1,6 @@
+# master.py
+# Module containing functions: start_process, main.
+
 import subprocess
 import sys
 import os

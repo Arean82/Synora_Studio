@@ -1,4 +1,5 @@
-# workers/paid_model_fetch_worker.py
+# server/workers/paid_model_fetch_worker.py
+# Module containing classes: PaidModelFetchWorker, functions: run.
 
 from PySide6.QtCore import QThread, Signal
 from openai import OpenAI

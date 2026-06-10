@@ -1,5 +1,6 @@
-# ui/model_manager.py
-# This file defines the ModelManagerDialog class, which provides a UI for managing LLM models. It allows users to add, edit, and delete models that are stored in models.json. The dialog displays a table of existing models with their ID, name, description, and whether they are free or    not. Users can select a model to edit or delete, or add a new model using the ModelEditDialog. Changes are saved back to models.json and the active model selection is updated in QSettings if necessary.  
+# desktop/ui/model_manager.py
+# Module containing classes: ModelManagerDialog, functions: populate_table, on_table_selection_changed, get_selected_row_index.
+
 # The dialog also includes buttons to fetch free and paid models directly from NVIDIA's API, which will merge with existing models while preserving user-added descriptions. The UI is designed to be clean and user-friendly, with support for both light and dark themes. 
 
 import json

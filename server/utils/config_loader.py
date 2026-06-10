@@ -1,4 +1,6 @@
-# utils/config_loader.py
+# server/utils/config_loader.py
+# Module containing classes: INISettings, functions: load, save, value.
+
 import json
 import os
 from pathlib import Path

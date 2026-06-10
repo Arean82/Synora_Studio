@@ -1,4 +1,5 @@
-# workers/async_worker.py
+# server/workers/async_worker.py
+# Module containing classes: AsyncWorker, functions: start.
 
 import os
 import sys

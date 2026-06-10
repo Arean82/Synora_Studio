@@ -1,6 +1,8 @@
-# saas/tenant_drivers/turso_tenant_driver.py
+# web/tenant_drivers/turso_tenant_driver.py
+# Turso/libSQL Tenant Driver
+
 """
-Turso/libSQL Tenant Driver (Phase 10.2)
+Turso/libSQL Tenant Driver
 Extracted from the original saas/tenant_db.py TenantDatabaseManager.
 Implements BaseTenantDriver using local sqlite3 connections with WAL mode.
 """
@@ -96,7 +98,7 @@ class TursoTenantDriver(BaseTenantDriver):
                 )
             """)
 
-            # 5. L2 Chunk Cache (Phase 9)
+            # 5. L2 Chunk Cache
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS chunk_cache (
                     chunk_hash TEXT PRIMARY KEY,
@@ -108,7 +110,7 @@ class TursoTenantDriver(BaseTenantDriver):
                 )
             """)
 
-            # 6. L3 Semantic Query Cache (Phase 9)
+            # 6. L3 Semantic Query Cache
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS semantic_query_cache (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,

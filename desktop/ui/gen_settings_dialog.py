@@ -1,4 +1,6 @@
-# ui/gen_settings_dialog.py
+# desktop/ui/gen_settings_dialog.py
+# Module containing classes: GenSettingsDialog, functions: setup_api_credentials_ui, update_api_buttons_ui, on_toggle_api.
+
 import os
 import uuid
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QDoubleSpinBox, QSpinBox, QComboBox, QLabel, QPushButton, QCheckBox

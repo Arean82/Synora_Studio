@@ -1,4 +1,5 @@
-# logic/services/short_term_memory.py
+# server/logic/services/short_term_memory.py
+# Module containing classes: ShortTermMemoryService, functions: on_initialize, on_shutdown, save_session.
 
 import json
 import logging

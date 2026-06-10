@@ -1,4 +1,6 @@
-# logic/rerank_engine.py
+# server/logic/rerank_engine.py
+# Module containing classes: RerankEngine, functions: get_instance, rerank.
+
 import re
 import json
 import urllib.request

@@ -1,4 +1,6 @@
-# utils/storage_config.py
+# server/utils/storage_config.py
+# Module containing classes: StorageManager, functions: get_instance, get_exe_dir, check_dir_writable.
+
 import sys
 import os
 from pathlib import Path

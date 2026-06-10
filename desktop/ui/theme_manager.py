@@ -1,4 +1,6 @@
-# ui/theme_manager.py
+# desktop/ui/theme_manager.py
+# Module containing classes: ThemeManager, functions: apply_theme, toggle_theme, refresh_auth_button_style.
+
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtWidgets import QSystemTrayIcon, QMessageBox, QApplication
 from server.utils.path_utils import get_resource_path, get_app_settings

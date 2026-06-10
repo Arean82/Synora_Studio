@@ -1,5 +1,5 @@
-# utils/constants.py
-# This file contains constant values used throughout the Synora Studio.
+# server/utils/constants.py
+# Utility script or configuration module.
 
 APP_NAME = "Synora Studio"
 APP_VERSION = "9.0.0"

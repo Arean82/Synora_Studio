@@ -1,4 +1,5 @@
-# logic/services/redis_manager.py
+# server/logic/services/redis_manager.py
+# Module containing classes: MockPubSub, MockRedis, RedisManager, functions: subscribe, unsubscribe, push_message.
 
 import logging
 import threading

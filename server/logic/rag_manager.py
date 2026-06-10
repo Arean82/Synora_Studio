@@ -1,4 +1,6 @@
-# logic/rag_manager.py
+# server/logic/rag_manager.py
+# Module containing classes: RAGManager, functions: clear, ingest_document, ingest_chunks.
+
 import re
 import math
 import numpy as np

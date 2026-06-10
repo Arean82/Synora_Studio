@@ -1,3 +1,6 @@
+# server/logic/reliability/circuit_breaker.py
+# Module containing classes: CircuitBreakerState, CircuitBreaker, functions: on_initialize, on_shutdown, is_enabled.
+
 import time
 import logging
 import threading

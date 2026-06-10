@@ -1,3 +1,6 @@
+# server/logic/queue/job_queue.py
+# Module containing classes: JobQueueEngine, functions: datetime_str, get_dlq_entries, add_to_dlq.
+
 import os
 import json
 import time

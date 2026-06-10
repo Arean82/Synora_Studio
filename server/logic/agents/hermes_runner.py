@@ -1,4 +1,6 @@
 # server/logic/agents/hermes_runner.py
+# Hermes Agent Runner (v9.0.0)
+
 """
 Hermes Agent Runner (v9.0.0)
 Decoupled background process executing autonomous reasoning loops for tenants.

@@ -1,4 +1,6 @@
-# logic/storage_drivers/libsql_driver.py
+# server/logic/storage_drivers/libsql_driver.py
+# Module containing classes: LibSQLStorageDriver, functions: init_db, save_conversation, load_conversation.
+
 import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
@@ -64,7 +66,7 @@ class LibSQLStorageDriver(BaseStorageDriver):
                 logging.error(f"Caught exception: {e}", exc_info=True)
                 pass
 
-            # Migration check: Ensure version column exists for OCC (Phase 6.3.1)
+            # Migration check: Ensure version column exists for OCC
             try:
                 client.execute('ALTER TABLE conversations ADD COLUMN version INTEGER DEFAULT 1')
             except Exception as e: 

@@ -1,4 +1,5 @@
-# utils/path_utils.py
+# server/utils/path_utils.py
+# Module containing functions: get_resource_path, get_models_path, get_models_directory_path.
 
 import sys
 import os

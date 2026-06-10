@@ -1,3 +1,6 @@
+# server/logic/services/cache_service.py
+# Module containing classes: CacheService, functions: on_initialize, on_shutdown, get_query_cache.
+
 import time
 import logging
 import hashlib

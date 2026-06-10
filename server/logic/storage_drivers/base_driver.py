@@ -1,4 +1,6 @@
-# logic/storage_drivers/base_driver.py
+# server/logic/storage_drivers/base_driver.py
+# Module containing classes: ConcurrencyError, BaseStorageDriver, functions: init_db, save_conversation, load_conversation.
+
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 

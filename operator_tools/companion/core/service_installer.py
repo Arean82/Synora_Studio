@@ -1,3 +1,6 @@
+# operator_tools/companion/core/service_installer.py
+# Module containing classes: ServiceInstallerCore, functions: generate_installer.
+
 import os
 from pathlib import Path
 import logging

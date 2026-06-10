@@ -1,5 +1,6 @@
-# logic/api_manager.py
-# RESTORED TO V6.1 STATE: GUI-compatible API Manager.
+# server/logic/api_manager.py
+# Module containing classes: ApiManager, functions: start_api_server, toggle_api_server, stop_api_server.
+
 from server.logic.api_server import APIServer
 import queue
 

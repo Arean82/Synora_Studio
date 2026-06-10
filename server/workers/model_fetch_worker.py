@@ -1,5 +1,5 @@
-# workers/model_fetch_worker.py
-# This file runs in a background thread to fetch, test, and generate descriptions for NVIDIA NIM models.
+# server/workers/model_fetch_worker.py
+# Module containing classes: ModelFetchWorker, functions: run.
 
 from PySide6.QtCore import QThread, Signal
 from openai import OpenAI

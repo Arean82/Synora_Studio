@@ -1,4 +1,5 @@
-# logic/chat_worker.py
+# server/logic/chat_worker.py
+# Module containing classes: ChatWorker, functions: run, stop.
 
 from PySide6.QtCore import QThread, Signal
 import time
@@ -120,7 +121,7 @@ class ChatWorker(QThread):
                 except Exception as e:
                     print(f"[Worker] Cache pre-flight failed: {e}")
 
-            # 1. True Qdrant Semantic RAG (Phase 4.1.1 & 4.1.2)
+            # 1. True Qdrant Semantic RAG
             if self.large_document_text:
                 try:
                     from server.logic.vector_db import VectorDatabase
@@ -324,7 +325,7 @@ class ChatWorker(QThread):
                             }
                         ]
 
-        # Check if the model supports tools dynamically (Phase 4.1.7 Optimization)
+        # Check if the model supports tools dynamically
         from server.utils.model_config import does_model_support_tools, update_model_capability
         model_supports_tools = does_model_support_tools(self.client.current_model)
 

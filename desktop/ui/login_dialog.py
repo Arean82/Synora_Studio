@@ -1,5 +1,5 @@
-# ui/login_dialog.py
-# Overhauled Multi-Provider Login system
+# desktop/ui/login_dialog.py
+# Module containing classes: LoginDialogClass, functions: load_provider_definitions, setup_connections, on_group_switched.
 
 import sys
 import os

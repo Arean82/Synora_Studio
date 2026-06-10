@@ -1,4 +1,6 @@
-# ui/custom_provider_dialog.py
+# desktop/ui/custom_provider_dialog.py
+# Module containing classes: CustomProviderDialogClass, functions: apply_theme, validate_and_submit, get_provider_payload.
+
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QCheckBox, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtUiTools import QUiLoader

@@ -1,3 +1,6 @@
+# operator_tools/companion/core/local_relocator.py
+# Module containing classes: LocalRelocatorCore, functions: get_current_root, calculate_storage_size, execute_migration.
+
 import os
 import shutil
 import logging

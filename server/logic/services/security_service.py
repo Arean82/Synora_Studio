@@ -1,4 +1,5 @@
-# logic/services/security_service.py
+# server/logic/services/security_service.py
+# Module containing classes: SecurityService, functions: on_initialize, on_shutdown, check_permission.
 
 import logging
 from .base_service import BaseService, ServiceRegistry

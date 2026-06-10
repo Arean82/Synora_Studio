@@ -1,5 +1,5 @@
-# logic/model_io.py
-# Centralized Load/Save module managing multi-provider JSON fragmentation.
+# server/logic/model_io.py
+# Module containing functions: get_models_directory, load_provider_metadata, load_all_models.
 
 import os
 import json
@@ -84,7 +84,7 @@ def _migrate_json_to_db(driver):
 
 def load_all_models() -> list:
     """
-    Retrieves all models directly from the database schema (Phase 8).
+    Retrieves all models directly from the database schema.
     Runs a one-time migration hook if legacy JSON files are detected.
     """
     from server.logic.services.base_service import ServiceRegistry
@@ -96,7 +96,7 @@ def load_all_models() -> list:
 
 def save_all_models(all_models: list):
     """
-    Saves models directly to the database schema instead of flat JSON files (Phase 8).
+    Saves models directly to the database schema instead of flat JSON files.
     """
     from server.logic.services.base_service import ServiceRegistry
     driver = ServiceRegistry.get("storage").get_driver("default_user")

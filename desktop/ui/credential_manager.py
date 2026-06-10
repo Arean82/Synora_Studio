@@ -1,5 +1,5 @@
-# ui/credential_manager.py
-# Isolated Credential and Model Management Hub
+# desktop/ui/credential_manager.py
+# Module containing classes: CredentialManagerDialog, AddProviderDialog, functions: show_settings_hub, closeEvent, setup_connections.
 
 import sys
 import os

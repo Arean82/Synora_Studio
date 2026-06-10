@@ -1,5 +1,5 @@
-# ui/model_edit_dialog.py
-# This dialog is used for both adding new models and editing existing ones. It has fields for model ID, display name, description, and a checkbox for whether the model is free or not. The dialog validates that the ID and name are provided before accepting. It also applies theming based on the current theme (dark or light) for a consistent look with the rest of the application. The get_model_data() method can be called after acceptance to retrieve the entered data as a dictionary.
+# desktop/ui/model_edit_dialog.py
+# Module containing classes: ModelEditDialog, functions: populate_fields, validate_and_accept, get_model_data.
 
 import json
 from PySide6.QtWidgets import (

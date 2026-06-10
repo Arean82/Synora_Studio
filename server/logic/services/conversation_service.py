@@ -1,3 +1,6 @@
+# server/logic/services/conversation_service.py
+# Module containing classes: RateLimitExceeded, TokenBucketRateLimiter, ConversationService, functions: is_allowed, on_initialize, on_shutdown.
+
 import time
 import logging
 import json

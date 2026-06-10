@@ -1,4 +1,6 @@
-# logic/agents/coding_agent.py
+# server/logic/agents/coding_agent.py
+# Module containing classes: CodingAgent, functions: run.
+
 import logging
 from server.logic.agents.base_agent import BaseAgent
 from server.logic.agents.sandbox import ToolExecutionSandbox

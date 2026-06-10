@@ -1,3 +1,6 @@
+# server/logic/services/__init__.py
+# Utility script or configuration module.
+
 from .base_service import BaseService, ServiceRegistry
 from .storage_service import StorageService
 from .auth_service import AuthService

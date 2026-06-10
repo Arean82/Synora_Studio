@@ -1,6 +1,8 @@
-# saas/launcher.py
+# web/core/launcher.py
+# Headless SaaS Launcher
+
 """
-Headless SaaS Launcher (Phase 6)
+Headless SaaS Launcher
 Orchestrates pure non-Qt domain controllers, initializes credentials, 
 and hosts the standalone Flask server with synchronous callback routing.
 """

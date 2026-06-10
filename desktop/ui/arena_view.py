@@ -1,4 +1,6 @@
-# ui/arena_view.py
+# desktop/ui/arena_view.py
+# Module containing classes: ArenaViewWidget, functions: load_layout_settings, save_layout_settings, check_ecosystems.
+
 import time
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QFileDialog
 from PySide6.QtCore import Qt

@@ -1,4 +1,5 @@
-# logic/services/rate_limiter_service.py
+# server/logic/services/rate_limiter_service.py
+# Module containing classes: RateLimiterService, functions: on_initialize, on_shutdown, is_allowed.
 
 import time
 import logging

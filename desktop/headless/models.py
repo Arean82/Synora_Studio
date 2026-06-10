@@ -1,5 +1,6 @@
-# headless/models.py
-# CLI-based model management for headless execution.
+# desktop/headless/models.py
+# Module containing classes: HeadlessModels, functions: list_models, update_models, select_model.
+
 # Allows listing and updating models directly from the terminal.
 
 import json

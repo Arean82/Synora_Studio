@@ -1,5 +1,5 @@
-# utils/security_utils.py
-# Zero-Trust Encryption Vault Utilities for local OS Keyring Api Credentials
+# server/utils/security_utils.py
+# Module containing functions: derive_key, encrypt_data, decrypt_data.
 
 import hashlib
 import base64

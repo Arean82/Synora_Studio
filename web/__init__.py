@@ -1,2 +1,3 @@
-# saas/__init__.py
-# Package marker making the SaaS multi-tenant modules importable.
+# web/__init__.py
+# Utility script or configuration module.
+

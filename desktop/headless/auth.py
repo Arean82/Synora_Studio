@@ -1,5 +1,6 @@
-# headless/auth.py
-# Specialized CLI-based authentication handler for headless execution.
+# desktop/headless/auth.py
+# Module containing classes: HeadlessAuth, functions: run_login_flow.
+
 # Allows configuring API keys directly from the terminal without a GUI.
 
 import keyring

@@ -1,6 +1,8 @@
-# saas/tenant_drivers/postgres_tenant_driver.py
+# web/tenant_drivers/postgres_tenant_driver.py
+# PostgreSQL Tenant Driver
+
 """
-PostgreSQL Tenant Driver (Phase 10.2)
+PostgreSQL Tenant Driver
 Implements BaseTenantDriver using psycopg2 for enterprise MVCC row-level locking.
 """
 
@@ -102,7 +104,7 @@ class PostgresTenantDriver(BaseTenantDriver):
                 )
             """)
 
-            # 5. L2 Chunk Cache (Phase 9)
+            # 5. L2 Chunk Cache
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS chunk_cache (
                     chunk_hash TEXT PRIMARY KEY,
@@ -113,7 +115,7 @@ class PostgresTenantDriver(BaseTenantDriver):
                 )
             """)
 
-            # 6. L3 Semantic Query Cache (Phase 9)
+            # 6. L3 Semantic Query Cache
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS semantic_query_cache (
                     id SERIAL PRIMARY KEY,

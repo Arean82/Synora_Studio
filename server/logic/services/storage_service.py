@@ -1,3 +1,6 @@
+# server/logic/services/storage_service.py
+# Module containing classes: StorageService, functions: on_initialize, on_shutdown, get_driver.
+
 import os
 import logging
 from pathlib import Path

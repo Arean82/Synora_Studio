@@ -1,4 +1,5 @@
-# logic/services/embedding_service.py
+# server/logic/services/embedding_service.py
+# Module containing classes: EmbeddingService, functions: on_initialize, on_shutdown, generate_embedding.
 
 import hashlib
 import logging

@@ -1,4 +1,5 @@
-# logic/services/event_bus.py
+# server/logic/services/event_bus.py
+# Module containing classes: EventBusService, functions: on_initialize, on_shutdown, publish.
 
 import json
 import logging

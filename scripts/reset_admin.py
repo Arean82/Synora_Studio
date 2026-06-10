@@ -1,5 +1,6 @@
 # scripts/reset_admin.py
-# ╔══════════════════════════════════════════════════════════════════╗
+# Utility script or configuration module.
+
 # ║  ⚠️  DEPRECATED — This script has been relocated.               ║
 # ║                                                                  ║
 # ║  The canonical Master Password Reset utility is now located at:  ║

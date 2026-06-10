@@ -1,3 +1,6 @@
+# web/core/agent_manager.py
+# Module containing classes: AgentManager, functions: get_instance, start_agent, stop_agent.
+
 import subprocess
 import os
 import sys

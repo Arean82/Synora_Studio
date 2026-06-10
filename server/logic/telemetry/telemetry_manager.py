@@ -1,3 +1,6 @@
+# server/logic/telemetry/telemetry_manager.py
+# Module containing classes: TelemetryManager, functions: on_initialize, on_shutdown, record_request.
+
 import os
 import json
 import time

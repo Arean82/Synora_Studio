@@ -1,4 +1,6 @@
 # web/build.py
+# Synora Studio - Web Portal Build Script
+
 """
 Synora Studio - Web Portal Build Script
 """

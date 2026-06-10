@@ -1,4 +1,6 @@
-# ui/first_run_dialog.py
+# desktop/ui/first_run_dialog.py
+# Module containing classes: FirstRunDialog, functions: init_ui, create_option_card, on_select_appdata.
+
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
                                QPushButton, QFileDialog, QFrame, QMessageBox, QApplication)
 from PySide6.QtCore import Qt, QSize

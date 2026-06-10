@@ -1,5 +1,5 @@
-# workers/description_generator.py
-# Background worker that uses the active hydrated model to generate rich descriptions for newly fetched models.
+# server/workers/description_generator.py
+# Module containing classes: DescriptionGeneratorWorker, functions: run.
 
 import json
 from PySide6.QtCore import QThread, Signal

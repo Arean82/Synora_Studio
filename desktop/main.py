@@ -1,3 +1,6 @@
+# desktop/main.py
+# Module containing functions: detect_environment, smart_sync, copy_bundled_resources.
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

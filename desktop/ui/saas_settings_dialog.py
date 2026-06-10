@@ -1,4 +1,6 @@
-# ui/saas_settings_dialog.py
+# desktop/ui/saas_settings_dialog.py
+# SaaS Configuration Settings Controller
+
 """
 SaaS Configuration Settings Controller
 Connects visual interface fields directly to config.ini managers.

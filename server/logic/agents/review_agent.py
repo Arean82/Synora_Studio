@@ -1,4 +1,6 @@
-# logic/agents/review_agent.py
+# server/logic/agents/review_agent.py
+# Module containing classes: ReviewAgent, functions: run.
+
 import logging
 from server.logic.agents.base_agent import BaseAgent
 

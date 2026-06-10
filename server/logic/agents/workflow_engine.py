@@ -1,4 +1,6 @@
-# logic/agents/workflow_engine.py
+# server/logic/agents/workflow_engine.py
+# Module containing classes: WorkflowEngine, functions: execute_chain.
+
 import logging
 from typing import Dict, Any, List
 

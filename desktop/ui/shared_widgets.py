@@ -1,4 +1,6 @@
-# ui/shared_widgets.py
+# desktop/ui/shared_widgets.py
+# Module containing classes: MessageData, ChatDisplay, functions: set_app_icon, mousePressEvent.
+
 from PySide6.QtWidgets import QTextEdit, QApplication
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QTextBlockUserData, QIcon

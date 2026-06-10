@@ -1,4 +1,6 @@
-# logic/telemetry/feature_store.py
+# server/logic/telemetry/feature_store.py
+# Module containing classes: FeatureStore, functions: on_initialize, on_shutdown, get_flag.
+
 import logging
 import json
 from typing import Any, Dict

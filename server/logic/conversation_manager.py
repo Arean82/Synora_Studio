@@ -1,4 +1,5 @@
-# logic/conversation_manager.py
+# server/logic/conversation_manager.py
+# Module containing classes: ConversationManager, functions: set_tenant, migrate_json_files, save_conversation.
 
 import os
 import json

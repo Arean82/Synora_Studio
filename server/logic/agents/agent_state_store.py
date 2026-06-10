@@ -1,4 +1,6 @@
-# logic/agents/agent_state_store.py
+# server/logic/agents/agent_state_store.py
+# 5.1.1.c — Redis Agent State Store
+
 """
 5.1.1.c — Redis Agent State Store
 

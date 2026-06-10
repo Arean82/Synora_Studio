@@ -1,4 +1,6 @@
-# logic/migration_bridge.py
+# server/logic/migration_bridge.py
+# Module containing functions: migrate_database, verify_migration_integrity, migrate_saas_tenant_database.
+
 import sys
 import hashlib
 from typing import Callable, Optional

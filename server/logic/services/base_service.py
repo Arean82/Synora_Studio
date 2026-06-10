@@ -1,3 +1,6 @@
+# server/logic/services/base_service.py
+# Module containing classes: BaseService, ServiceRegistry, functions: initialize, shutdown, on_initialize.
+
 import logging
 
 logger = logging.getLogger("QuantumServices")

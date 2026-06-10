@@ -1,4 +1,5 @@
-# logic/services/cognitive_router_service.py
+# server/logic/services/cognitive_router_service.py
+# Module containing classes: CognitiveRouterService, functions: on_initialize, on_shutdown, route_model.
 
 import logging
 import time
