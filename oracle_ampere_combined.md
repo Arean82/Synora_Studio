@@ -9,7 +9,7 @@ To prevent collisions, the server is strictly partitioned into two logical zones
 | Environment | Domain | Source Directory | Web Port | IDE API Port | Execution Method |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Production** | `synorastudio.in` | `/opt/synora/bin/` | `8888` | `5000` | Compiled `systemd` Binaries |
-| **Development** | `dev.synorastudio.in` | `/home/ubuntu/Synora_Studio_Dev/` | `8889` | `5001` | Raw Python Source via Terminal |
+| **Development** | `dev.synorastudio.in` | `~/Downloads/Synora_Studio/` | `8889` | `5001` | Raw Python Source via Terminal |
 
 ---
 
@@ -30,18 +30,18 @@ We will pull the codebase twice into distinct folders.
 git clone https://github.com/Arean82/Synora_Studio.git /home/ubuntu/Synora_Studio
 
 # Clone Development Codebase
-git clone https://github.com/Arean82/Synora_Studio.git /home/ubuntu/Synora_Studio_Dev
+git clone https://github.com/Arean82/Synora_Studio.git ~/Downloads/Synora_Studio
 ```
 
 ### 3. Initialize the Development Zone
 Set up the virtual environment so you can connect your Antigravity IDE natively:
 ```bash
-cd /home/ubuntu/Synora_Studio_Dev
+cd ~/Downloads/Synora_Studio
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-*You can now connect VS Code Remote SSH to `/home/ubuntu/Synora_Studio_Dev` and edit files live.*
+*You can now connect VS Code Remote SSH to `~/Downloads/Synora_Studio` and edit files live.*
 
 ---
 
@@ -115,7 +115,7 @@ To test code changes, launch the uncompiled development servers from the termina
 ### 1. Launch Dev API Server (Port 5001)
 In an IDE terminal:
 ```bash
-cd /home/ubuntu/Synora_Studio_Dev/server
+cd ~/Downloads/Synora_Studio/server
 source ../venv/bin/activate
 python run_server.py --port 5001
 ```
@@ -123,7 +123,7 @@ python run_server.py --port 5001
 ### 2. Launch Dev Web Portal (Port 8889)
 In a second IDE terminal:
 ```bash
-cd /home/ubuntu/Synora_Studio_Dev/web
+cd ~/Downloads/Synora_Studio/web
 source ../venv/bin/activate
 python run_web.py --port 8889
 ```

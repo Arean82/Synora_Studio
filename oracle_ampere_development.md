@@ -14,8 +14,8 @@ sudo apt install -y git python3-pip python3-venv build-essential python3-dev \
                     libsecret-1-0 dbus-x11 gnome-keyring nginx
 
 # Clone specifically to the Dev directory
-git clone https://github.com/Arean82/Synora_Studio.git /home/ubuntu/Synora_Studio_Dev
-cd /home/ubuntu/Synora_Studio_Dev
+git clone https://github.com/Arean82/Synora_Studio.git ~/Downloads/Synora_Studio
+cd ~/Downloads/Synora_Studio
 ```
 
 ### 2. Configure Python Virtual Environment
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 
 ### 3. Connect Antigravity IDE
-At this point, use your local VS Code "Remote - SSH" extension (or your Antigravity client) to connect to the Oracle Ampere server. Open the `/home/ubuntu/Synora_Studio_Dev` folder directly in your IDE. You are now developing live on the server.
+At this point, use your local VS Code "Remote - SSH" extension (or your Antigravity client) to connect to the Oracle Ampere server. Open the `~/Downloads/Synora_Studio` folder directly in your IDE. You are now developing live on the server.
 
 ---
 
@@ -38,7 +38,7 @@ Since we are developing, we do NOT use `systemd` daemon services. We run the ser
 ### 1. Configure the Development Database
 Before starting the servers, you must manually point the development environment to a database.
 ```bash
-nano /home/ubuntu/Synora_Studio_Dev/web/config.ini
+nano ~/Downloads/Synora_Studio/web/config.ini
 ```
 Find the `[TENANT_DB]` section. You can use the default Turso SQLite database or uncomment the PostgreSQL/MySQL sections. 
 
@@ -48,7 +48,7 @@ Find the `[TENANT_DB]` section. You can use the default Turso SQLite database or
 ### 2. Start the API Server (Port 5001)
 In an IDE terminal, activate the virtual environment and start the API:
 ```bash
-cd /home/ubuntu/Synora_Studio_Dev/server
+cd ~/Downloads/Synora_Studio/server
 source ../venv/bin/activate
 python run_server.py --port 5001
 ```
@@ -56,7 +56,7 @@ python run_server.py --port 5001
 ### 2. Start the Web SaaS Portal (Port 8889)
 In a *second* IDE terminal, start the Web Portal:
 ```bash
-cd /home/ubuntu/Synora_Studio_Dev/web
+cd ~/Downloads/Synora_Studio/web
 source ../venv/bin/activate
 python run_web.py --port 8889
 ```
