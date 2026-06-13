@@ -29,7 +29,22 @@ def get_resource_path(relative_path):
         if relative_path.startswith("ui_designer/"):
             full_path = base_path / "desktop" / relative_path
         elif relative_path.startswith("resources/"):
-            full_path = base_path / "server" / relative_path
+            # Strip the 'resources/' prefix to append to the decoupled directory
+            sub_path = relative_path[len("resources/"):]
+            
+            # Dynamically determine the running context to select the right resource folder
+            main_script = sys.argv[0].lower() if sys.argv else ""
+            if "run_web" in main_script:
+                full_path = base_path / "web" / "resources_web" / sub_path
+            elif "main.py" in main_script:
+                full_path = base_path / "desktop" / "resources_desktop" / sub_path
+            elif "companion_operation" in main_script:
+                full_path = base_path / "companion_operation" / "resources_comp" / sub_path
+            elif "admin_reset" in main_script:
+                full_path = base_path / "admin_reset" / "resources_rest" / sub_path
+            else:
+                # Default to server
+                full_path = base_path / "server" / "resources_server" / sub_path
         else:
             full_path = base_path / relative_path
     

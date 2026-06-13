@@ -106,6 +106,47 @@ def organize_workspace():
             except Exception as e:
                 print(f"Could not purge {j_path.name}: {e}")
 
+    # 6. Distribute Resources
+    print("\n--- Distributing Shared Resources ---")
+    if resources_dir.exists():
+        targets = {
+            "web/resources_web": "web",
+            "desktop/resources_desktop": "desktop",
+            "server/resources_server": "server",
+            "companion_operation/resources_comp": "companion",
+            "admin_reset/resources_rest": "reset"
+        }
+        
+        for rel_path, name in targets.items():
+            dest = root_dir / rel_path
+            # Avoid copying into itself if mistakenly run from within resources
+            if not dest.exists():
+                try:
+                    shutil.copytree(str(resources_dir), str(dest))
+                    print(f"Copied resources to {rel_path}")
+                except Exception as e:
+                    print(f"Failed to copy to {rel_path}: {e}")
+            else:
+                print(f"Skipped {rel_path} (already exists)")
+                
+        all_exist = all((root_dir / path).exists() for path in targets.keys())
+        if all_exist:
+            try:
+                shutil.rmtree(str(resources_dir))
+                print("Deleted global monolithic resources folder.")
+            except Exception as e:
+                print(f"Could not delete global resources: {e}")
+                
+    operator_dir = root_dir / "operator_tools"
+    if operator_dir.exists():
+        try:
+            # Only remove if it's empty
+            if not any(operator_dir.iterdir()):
+                shutil.rmtree(str(operator_dir))
+                print("Deleted empty operator_tools directory.")
+        except Exception as e:
+            pass
+
     print("\n✅ Cleanup Complete! The root directory is now strictly modularized.")
     print("Documentation has been moved to /docs and legacy build files to /build_scripts.")
 

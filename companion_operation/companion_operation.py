@@ -924,7 +924,8 @@ def run_gui_migration():
             QMessageBox.information(self, "Settings Saved", "Network configuration updated successfully!\nPlease restart the Web Portal service to apply changes.")
 
     app.setApplicationName("Companion Operation")
-    icon_path = os.path.join(ROOT_DIR, "resources", "app_icon.ico")
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(__file__))
+    icon_path = os.path.join(base_path, "resources_comp", "app_icon.ico")
     if os.path.exists(icon_path):
         app.setWindowIcon(QIcon(icon_path))
     dialog = DashboardDialog()

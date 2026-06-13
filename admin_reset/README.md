@@ -3,9 +3,9 @@
 This tool allows server administrators to securely reset the Master Admin Credentials across all environments.
 
 ## Features
-- **Dual-Mode Execution**:
+- **Intelligent Headless & Dual-Mode Execution**:
+  - **Intelligent Headless CLI Mode**: Bypasses GUI dependencies entirely using `--headless` or `--cli`, making it perfect for remote SSH terminals, automation scripts, and cron jobs.
   - **GUI Mode**: Spawns a high-fidelity PySide6 wizard dialog for local desktop environments.
-  - **CLI/Headless Mode**: Bypasses GUI dependencies entirely using `--headless` or `--cli`, making it perfect for remote SSH terminals, automation scripts, and cron jobs.
 - **Dynamic Password Options**:
   - `--random-password`: Generates a secure, randomized 12-character alphanumeric password.
   - `--custom-password "your_password"`: Sets a specific, custom password string.

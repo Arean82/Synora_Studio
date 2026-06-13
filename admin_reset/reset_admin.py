@@ -166,7 +166,8 @@ def run_gui_reset():
 
     app = QApplication(sys.argv)
     app.setApplicationName("Reset Admin")
-    icon_path = os.path.join(root_dir, "resources", "app_icon.ico")
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(__file__))
+    icon_path = os.path.join(base_path, "resources_rest", "app_icon.ico")
     if os.path.exists(icon_path):
         app.setWindowIcon(QIcon(icon_path))
 

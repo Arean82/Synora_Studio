@@ -9,9 +9,9 @@ The Companion Operation is a dual-mode administrative utility that facilitates p
   - Generates native background daemon configurations.
   - **Windows (NSSM)**: Generates a PowerShell script (`install_<name>.ps1`) that automatically downloads NSSM, configures execution, locks down permissions, and installs the API as a Windows Service.
   - **Linux (systemd)**: Generates a `.service` file and automated bash script (`install_<name>.sh`) that configures systemd, sets up dedicated service users, and configures security hardening (such as `PrivateTmp`, `ProtectHome`, and restricted capabilities).
-- **Dual-Mode Execution**:
-  - **GUI Mode**: PySide6 step-by-step wizard panel.
-  - **CLI Mode**: Interactive terminal wizard or scriptable actions (e.g. `--action=backup`).
+- **Intelligent Headless & Dual-Mode Execution**:
+  - **Intelligent Headless CLI Mode**: Interactive terminal wizard or scriptable actions (e.g. `--action=backup`). Bypasses GUI dependencies entirely.
+  - **GUI Mode**: PySide6 step-by-step wizard panel for local desktop environments.
 
 ## Local Configuration & Packaging Files
 To support decoupled modular compilation, this directory contains its own self-contained packaging files:
