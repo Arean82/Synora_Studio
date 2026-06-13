@@ -15,19 +15,19 @@ The platform is divided into three primary modules. Each module contains its own
 ### 1. 🌐 Web Portal (`/web`)
 A multi-tenant SaaS dashboard and administration portal.
 - **Features:** User registration, usage accounting, BYOK (Bring Your Own Key) management, and OAuth integrations.
-- **Entry Point:** `web/web_script.py`
+- **Entry Point:** `web/run_web.py`
 - **Documentation:** [Web Installation Manual](web/INSTALLATION.md)
 
 ### 2. 🧠 API Server (`/server`)
 The centralized intelligence core.
 - **Features:** Exposes REST gateways, handles LLM orchestration (OpenAI, Google GenAI, local Ollama endpoints), manages RAG ingestion pipelines, and semantic vector routing (Dual-Mode: `sentence-transformers` & Ollama).
-- **Entry Point:** `server/server_script.py`
+- **Entry Point:** `server/run_server.py`
 - **Documentation:** [Server Installation Manual](server/INSTALLATION.md)
 
 ### 3. 🖥️ Desktop Client (`/desktop`)
 A native desktop GUI application for end-users to interact with the LLMs.
 - **Features:** Connects to the local API Server, manages system prompts, chat history, and seamless AI interactions without browser overhead.
-- **Entry Point:** `desktop/desktop_script.py`
+- **Entry Point:** `desktop/main.py`
 - **Documentation:** [Desktop Installation Manual](desktop/INSTALLATION.md)
 
 ---

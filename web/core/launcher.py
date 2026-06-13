@@ -249,7 +249,7 @@ def run_headless_saas():
     port = cfg.get_int("NETWORK", "port", 8888)
     
     print(f"[*] Mobilizing Cloud SaaS Platform Console ({host}:{port})...")
-    from web.app import SaaSServer
+    from web.core.app import SaaSServer
     
     # Initialize headless Qt Application context so QThread works
     from PySide6.QtCore import QCoreApplication

@@ -3,7 +3,7 @@
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 """
 Unified SaaS Multi-Tenant Flask Application Engine
@@ -38,8 +38,8 @@ def create_saas_app():
     from server.utils.logger import AppLogger
     logger = AppLogger.get_instance("web")
     logger.info("Initializing SaaS Web Portal...")
-    template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
-    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
+    template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
+    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
     
     # Explicitly force correct MIME mappings (combats severe Windows Registry corruptions preventing CSS/JS loading)
     import mimetypes
@@ -50,7 +50,7 @@ def create_saas_app():
     
     # Configure localization
     app.config['BABEL_DEFAULT_LOCALE'] = 'en'
-    app.config['BABEL_TRANSLATION_DIRECTORIES'] = os.path.join(os.path.dirname(__file__), 'locales')
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'locales'))
     
     def get_locale():
         return request.accept_languages.best_match(['en', 'es', 'fr', 'de'])

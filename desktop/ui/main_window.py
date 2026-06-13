@@ -17,7 +17,7 @@ from server.workers.connection_worker import ConnectionWorker
 from server.workers.local_model_detector import LocalModelDetector
 from server.utils.path_utils import get_resource_path, get_app_settings
 from desktop.ui.shared_widgets import set_app_icon
-from web.app import SaaSServer
+from web.core.app import SaaSServer
 from web.core.config_manager import SaaSConfigManager
 
 # Import child modules

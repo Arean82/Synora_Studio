@@ -12,10 +12,12 @@ This is the standalone API server component of Synora Studio. It operates entire
    ```bash
    pip install -r ../requirements.txt
    ```
-3. Run the application:
-   ```bash
-   python server_script.py
-   ```
+## Running the Server
+
+To start the API server and headless orchestrator, run:
+```bash
+python run_server.py
+```
 
 ## Configuration
 The API binds to port `5000` by default. It manages the local vector databases and orchestrates all cross-client communications.

@@ -61,7 +61,7 @@ class AgentManager:
             
             # Spawn daemon thread to stream stdout directly via Socket.IO to the tenant's browser
             import threading
-            from web.app import socketio
+            from web.core.app import socketio
             
             def stream_logs(proc, uid):
                 # Read line-by-line as the agent thinks and flush to WebSocket

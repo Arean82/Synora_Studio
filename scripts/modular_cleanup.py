@@ -69,7 +69,23 @@ def organize_workspace():
             os.remove(src)
             print(f"Deleted {f}")
 
-    # 4. Remove Migrated JSON Files
+    # 4. Remove Redundant Wrapper Scripts
+    print("\n--- Removing Redundant Wrapper Scripts ---")
+    wrappers_to_delete = [
+        "web/web_script.py",
+        "server/server_script.py",
+        "desktop/desktop_script.py"
+    ]
+    for w in wrappers_to_delete:
+        src = root_dir / w
+        if src.exists():
+            try:
+                os.remove(src)
+                print(f"Deleted redundant wrapper: {w}")
+            except Exception as e:
+                print(f"Could not delete {w}: {e}")
+
+    # 5. Remove Migrated JSON Files
     import glob
     print("\n--- Removing Migrated JSON Configurations ---")
     json_targets = []

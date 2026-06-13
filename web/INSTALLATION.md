@@ -13,10 +13,13 @@ This is the standalone web component of Synora Studio. It has been fully isolate
    pip install -r ../requirements.txt
    ```
    *(Note: The global requirements file is used for reference, but this module runs autonomously).*
-3. Run the application:
-   ```bash
-   python web_script.py
-   ```
+
+## Running the Web Portal
+
+To start the SaaS dashboard, run:
+```bash
+python run_web.py
+```
 
 ## Configuration
 The web portal binds to port `8888` by default. Environment variables can be injected via `config.ini` in this directory to alter SMTP relay or Turn/STUN server addresses.

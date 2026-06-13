@@ -6,7 +6,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from web.app import create_saas_app
+from web.core.app import create_saas_app
 from server.utils.logger import AppLogger
 from web.core.config_manager import SaaSConfigManager
 
@@ -22,7 +22,7 @@ def main():
     print(f"[+] SaaS Web Portal is live. Listening on http://{host}:{port}...")
     
     try:
-        from web.app import socketio
+        from web.core.app import socketio
         # Run using SocketIO to support real-time WebSocket connections
         socketio.run(app, host=host, port=port, use_reloader=False)
     except KeyboardInterrupt:
