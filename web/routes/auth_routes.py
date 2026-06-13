@@ -9,6 +9,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import request, jsonify
 
+_RESET_TOKENS = {}
+
 def register_auth_routes(app, db, send_alert_email):
 
     @app.route('/api/validate_passport', methods=['POST'])
@@ -87,6 +89,85 @@ def register_auth_routes(app, db, send_alert_email):
             "message": "Multi-tenant account successfully provisioned. You may now log in."
         }), 201
 
+    @app.route('/api/forgot_password', methods=['POST'])
+    @app.route('/v1/forgot_password', methods=['POST'])
+    def forgot_password():
+        data = request.get_json(silent=True) or {}
+        email = data.get("email", "").strip()
+        
+        if not email:
+            return jsonify({"success": False, "error": "Email is required."}), 400
+            
+        with db.get_connection() as conn:
+            row = conn.execute("SELECT id, username FROM users WHERE email = ?", (email,)).fetchone()
+            if not row:
+                # Security: Return success even if email not found to prevent user enumeration
+                return jsonify({"success": True, "message": "If an account exists, a reset code has been sent."})
+                
+        import secrets
+        otp_code = ''.join([str(secrets.randbelow(10)) for _ in range(6)])
+        _RESET_TOKENS[email] = {
+            "code": otp_code,
+            "expires": time.time() + 600 # 10 minutes
+        }
+        
+        # DEMO MODE SIMULATION: Print to console so the admin/user testing it can see the OTP without SMTP
+        print(f"\n==========================================")
+        print(f"[DEMO SIMULATION] Password Reset Triggered")
+        print(f"Target Email: {email}")
+        print(f"6-Digit OTP:  {otp_code}")
+        print(f"==========================================\n")
+        
+        email_html = f"<h3>Synora Studio Password Reset</h3><p>Your password reset code is: <b style='font-size:24px; letter-spacing:2px;'>{otp_code}</b></p><p>This code expires in 10 minutes.</p>"
+        import threading
+        threading.Thread(target=send_alert_email, args=(email, "Password Reset Code", email_html), daemon=True).start()
+        
+        return jsonify({"success": True, "message": "If an account exists, a reset code has been sent."})
+
+    @app.route('/api/reset_password', methods=['POST'])
+    @app.route('/v1/reset_password', methods=['POST'])
+    def reset_password():
+        data = request.get_json(silent=True) or {}
+        email = data.get("email", "").strip()
+        code = data.get("code", "").strip()
+        new_password = data.get("new_password", "").strip()
+        
+        if not all([email, code, new_password]):
+            return jsonify({"success": False, "error": "Email, code, and new password are required."}), 400
+            
+        token_data = _RESET_TOKENS.get(email)
+        if not token_data:
+            return jsonify({"success": False, "error": "Invalid or expired reset code."}), 400
+            
+        if time.time() > token_data["expires"]:
+            del _RESET_TOKENS[email]
+            return jsonify({"success": False, "error": "Reset code has expired. Please request a new one."}), 400
+            
+        if token_data["code"] != code:
+            return jsonify({"success": False, "error": "Incorrect reset code."}), 400
+            
+        with db.get_connection() as conn:
+            row = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
+            if not row:
+                return jsonify({"success": False, "error": "Account not found."}), 404
+            user_id = row[0]
+            
+        success, message = db.update_user_profile(user_id=user_id, password_raw=new_password)
+        if success:
+            del _RESET_TOKENS[email]
+            
+            # SIEM Audit
+            from server.utils.logger import AppLogger
+            AppLogger.get_instance("web").siem_audit(
+                event_type="password_reset",
+                user=email,
+                action="self_service_password_reset",
+                metadata={"email": email}
+            )
+            return jsonify({"success": True, "message": "Password successfully reset. You may now log in."})
+        else:
+            return jsonify({"success": False, "error": message}), 500
+
     @app.route('/api/login', methods=['POST'])
     @app.route('/v1/login', methods=['POST'])
     @app.route('/v2/login', methods=['POST'])
@@ -153,6 +234,14 @@ def register_auth_routes(app, db, send_alert_email):
             user['token'] = jwt_token
         except Exception as e:
             print(f"[JWT Error] Failed to generate token: {e}")
+            
+        from server.utils.logger import AppLogger
+        AppLogger.get_instance("web").siem_audit(
+            event_type="login_success",
+            user=user['username'],
+            action="verify_otp_success",
+            metadata={"email": user['email']}
+        )
             
         return jsonify({
             "success": True,
@@ -298,3 +387,109 @@ def register_auth_routes(app, db, send_alert_email):
                 return jsonify({"success": True, "settings": current_settings})
         except Exception as e:
             return jsonify({"success": False, "error": str(e)}), 500
+
+    @app.route('/api/sso/login', methods=['GET'])
+    @app.route('/v1/sso/login', methods=['GET'])
+    def sso_login():
+        from authlib.integrations.flask_client import OAuth
+        from server.utils.storage_config import StorageManager
+        
+        settings = StorageManager.get_instance().get_active_settings()
+        sso_enabled = str(settings.value("sso/enable", "false")).lower() == "true"
+        if not sso_enabled:
+            return jsonify({"error": "Enterprise SSO is disabled."}), 403
+            
+        client_id = str(settings.value("sso/client_id", ""))
+        client_secret = str(settings.value("sso/client_secret", ""))
+        discovery_url = str(settings.value("sso/discovery_url", ""))
+        
+        if not all([client_id, client_secret, discovery_url]):
+            return jsonify({"error": "SSO configuration is incomplete."}), 500
+
+        oauth = OAuth(app)
+        oauth.register(
+            name='enterprise_sso',
+            client_id=client_id,
+            client_secret=client_secret,
+            server_metadata_url=discovery_url,
+            client_kwargs={'scope': 'openid email profile'}
+        )
+        
+        from flask import url_for
+        redirect_uri = url_for('sso_callback', _external=True)
+        return oauth.enterprise_sso.authorize_redirect(redirect_uri)
+
+    @app.route('/api/sso/callback', methods=['GET'])
+    @app.route('/v1/sso/callback', methods=['GET'])
+    def sso_callback():
+        from authlib.integrations.flask_client import OAuth
+        from server.utils.storage_config import StorageManager
+        
+        settings = StorageManager.get_instance().get_active_settings()
+        client_id = str(settings.value("sso/client_id", ""))
+        client_secret = str(settings.value("sso/client_secret", ""))
+        discovery_url = str(settings.value("sso/discovery_url", ""))
+        
+        oauth = OAuth(app)
+        oauth.register(
+            name='enterprise_sso',
+            client_id=client_id,
+            client_secret=client_secret,
+            server_metadata_url=discovery_url,
+            client_kwargs={'scope': 'openid email profile'}
+        )
+        
+        try:
+            token = oauth.enterprise_sso.authorize_access_token()
+            userinfo = token.get('userinfo')
+        except Exception as e:
+            return jsonify({"error": f"SSO handshake failed: {str(e)}"}), 400
+            
+        if not userinfo:
+            return jsonify({"error": "Failed to retrieve user claims from IdP."}), 400
+            
+        email = userinfo.get('email')
+        username = userinfo.get('name') or userinfo.get('preferred_username') or email.split('@')[0]
+        
+        # Check if user exists in DB
+        with db.get_connection() as conn:
+            row = conn.execute("SELECT id, username, email, api_key, key_type, status FROM users WHERE email = ?", (email,)).fetchone()
+            
+        if row:
+            user = dict(row)
+        else:
+            # Auto-provision BYOK tier
+            import secrets
+            api_key = f"byok_{secrets.token_urlsafe(16)}"
+            password = secrets.token_urlsafe(16)
+            user_id, err = db.register_user(api_key, username, email, password, "byok")
+            if err:
+                return jsonify({"error": f"Auto-provisioning failed: {err}"}), 500
+            with db.get_connection() as conn:
+                row = conn.execute("SELECT id, username, email, api_key, key_type, status FROM users WHERE id = ?", (user_id,)).fetchone()
+                user = dict(row)
+                
+        try:
+            from server.logic.services import ServiceRegistry
+            auth_service = ServiceRegistry.get("auth")
+            jwt_token = auth_service.generate_token(user)
+            user['passport_token'] = jwt_token
+            user['token'] = jwt_token
+        except Exception as e:
+            import logging
+            logging.error(f"Failed to generate JWT: {e}")
+            user['token'] = user.get('api_key')
+            
+        from server.utils.logger import AppLogger
+        AppLogger.get_instance("web").siem_audit(
+            event_type="sso_login",
+            user=user['username'],
+            action="enterprise_sso_authentication_success",
+            metadata={"email": email, "idp": discovery_url}
+        )
+            
+        return jsonify({
+            "success": True,
+            "user": user,
+            "message": f"SSO Authentication successful. Welcome, {user['username']}."
+        })

@@ -36,6 +36,12 @@
             <button id="tab-btn-nc-local-api" class="settings-tab admin-only-tab hidden">
                 <i class="fa-solid fa-plug-circle-bolt"></i> {{ _('Local API Control') }}
             </button>
+            <button id="tab-btn-nc-sso" class="settings-tab admin-only-tab hidden">
+                <i class="fa-solid fa-id-card-clip"></i> {{ _('Enterprise SSO') }}
+            </button>
+            <button id="tab-btn-nc-siem" class="settings-tab admin-only-tab hidden">
+                <i class="fa-solid fa-file-shield"></i> {{ _('Audit & SIEM') }}
+            </button>
             <button id="tab-btn-nc-extensions" class="settings-tab">
                 <i class="fa-solid fa-plug"></i> {{ _('IDE Plugins') }}
             </button>
@@ -383,6 +389,117 @@
                     });
                 }
             </script>') }}
+        </div>
+
+        <!-- Tab 8: Enterprise SSO (Admin Only) -->
+        <div id="tab-content-nc-sso" class="settings-content">
+            <div class="section-title"><i class="fa-solid fa-id-card-clip"></i> {{ _('Enterprise Single Sign-On (OIDC)') }}</div>
+            <div class="glass-panel" style="padding: 1rem; border: 1px solid var(--accent); margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: bold;">
+                    <input type="checkbox" id="nc-sso-enable"> {{ _('Enable Enterprise SSO') }}
+                </div>
+                <div class="input-row" style="margin-bottom: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>{{ _('Client ID') }}</label>
+                        <input type="text" id="nc-sso-client-id" placeholder="Your IdP Client ID" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+                <div class="input-row" style="margin-bottom: 10px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>{{ _('Client Secret') }}</label>
+                        <input type="password" id="nc-sso-client-secret" placeholder="••••••••" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group" style="flex: 1;">
+                        <label>{{ _('OIDC Discovery URL') }}</label>
+                        <input type="text" id="nc-sso-discovery" placeholder="https://login.microsoftonline.com/.../.well-known/openid-configuration" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="button" id="btn-nc-sso-save" class="btn-primary btn-glow-effect" onclick="saveSSOConfig()">{{ _('Save SSO Settings') }}</button>
+            </div>
+            <script>
+                document.getElementById('tab-btn-nc-sso').addEventListener('click', function() {
+                    fetch('/api/admin/enterprise_sso', {
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}` }
+                    }).then(res => res.json()).then(data => {
+                        if(data.success) {
+                            document.getElementById('nc-sso-enable').checked = data.data.sso_enabled;
+                            document.getElementById('nc-sso-client-id').value = data.data.client_id;
+                            document.getElementById('nc-sso-client-secret').value = data.data.client_secret;
+                            document.getElementById('nc-sso-discovery').value = data.data.discovery_url;
+                        }
+                    });
+                });
+                function saveSSOConfig() {
+                    const payload = {
+                        sso_enabled: document.getElementById('nc-sso-enable').checked,
+                        client_id: document.getElementById('nc-sso-client-id').value,
+                        client_secret: document.getElementById('nc-sso-client-secret').value,
+                        discovery_url: document.getElementById('nc-sso-discovery').value
+                    };
+                    fetch('/api/admin/enterprise_sso', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }).then(res => res.json()).then(data => {
+                        if(data.success) showNotification('SSO Config Saved', 'success');
+                        else showNotification(data.error, 'error');
+                    });
+                }
+            </script>
+        </div>
+
+        <!-- Tab 9: Audit & SIEM (Admin Only) -->
+        <div id="tab-content-nc-siem" class="settings-content">
+            <div class="section-title"><i class="fa-solid fa-file-shield"></i> {{ _('Audit Logging (SIEM)') }}</div>
+            <div class="glass-panel" style="padding: 1rem; border: 1px solid var(--accent); margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: bold;">
+                    <input type="checkbox" id="nc-siem-enable"> {{ _('Enable Enterprise SIEM Audit Trail') }}
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <input type="checkbox" id="nc-siem-file-log"> {{ _('Log locally to JSONL (/logs/siem/audit.jsonl)') }}
+                </div>
+                <div class="input-row">
+                    <div class="input-group" style="flex: 1;">
+                        <label>{{ _('HTTP Webhook URL (e.g. Datadog / Splunk HEC)') }}</label>
+                        <input type="text" id="nc-siem-webhook" placeholder="https://api.datadoghq.com/v1/input/..." style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glow); color: var(--text-bright); padding: 8px; border-radius: 4px;">
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="button" id="btn-nc-siem-save" class="btn-primary btn-glow-effect" onclick="saveSIEMConfig()">{{ _('Save SIEM Settings') }}</button>
+            </div>
+            <script>
+                document.getElementById('tab-btn-nc-siem').addEventListener('click', function() {
+                    fetch('/api/admin/siem', {
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}` }
+                    }).then(res => res.json()).then(data => {
+                        if(data.success) {
+                            document.getElementById('nc-siem-enable').checked = data.data.siem_enabled;
+                            document.getElementById('nc-siem-file-log').checked = data.data.file_logging;
+                            document.getElementById('nc-siem-webhook').value = data.data.webhook_url;
+                        }
+                    });
+                });
+                function saveSIEMConfig() {
+                    const payload = {
+                        siem_enabled: document.getElementById('nc-siem-enable').checked,
+                        file_logging: document.getElementById('nc-siem-file-log').checked,
+                        webhook_url: document.getElementById('nc-siem-webhook').value
+                    };
+                    fetch('/api/admin/siem', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }).then(res => res.json()).then(data => {
+                        if(data.success) showNotification('SIEM Config Saved', 'success');
+                        else showNotification(data.error, 'error');
+                    });
+                }
+            </script>
         </div>
 
         <!-- Tab 8: IDE Plugins -->

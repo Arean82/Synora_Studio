@@ -121,6 +121,10 @@
 
                 <div id="login-feedback" class="status-box hidden"></div>
 
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <a href="#" id="link-forgot-password" style="font-size: 0.85rem; color: var(--accent-cyan); text-decoration: none;">{{ _('Forgot Password?') }}</a>
+                </div>
+
                 <button type="submit" class="btn-primary btn-glow-effect" id="btn-run-login">
                     <span class="idle-text"><i class="fa-solid fa-unlock-keyhole"></i> <span
                             data-i18n="auth.btn_login_idle">{{ _('Authorize Entry') }}</span></span>
@@ -132,6 +136,59 @@
             <div class="auth-switch">
                 <span data-i18n="auth.switch_register">{{ _('Need to provision a new space?') }}</span> <a href="#"
                     id="link-switch-register" data-i18n="auth.link_register">{{ _('Create Workspace') }}</a>
+            </div>
+        </section>
+
+        <!-- Step 3: Forgot Password (Request OTP) -->
+        <section id="forgot-password-step" class="auth-step hidden animate-slide-up">
+            <div class="step-indicator"><i class="fa-solid fa-envelope-open-text"></i> {{ _('Password Recovery') }}</div>
+            <p class="instruction">{{ _('Enter your email address to receive a secure 6-digit reset code.') }}</p>
+
+            <form id="form-forgot-password" class="cyber-form">
+                <div class="input-group">
+                    <label for="forgot-email"><i class="fa-solid fa-envelope"></i> {{ _('Registered Email') }}</label>
+                    <input type="email" id="forgot-email" placeholder="pilot@grid.net" required>
+                </div>
+                
+                <div id="forgot-feedback" class="status-box hidden"></div>
+
+                <button type="submit" class="btn-primary btn-glow-effect" id="btn-run-forgot">
+                    <span class="idle-text"><i class="fa-solid fa-paper-plane"></i> {{ _('Send Reset Code') }}</span>
+                    <span class="loading-text hidden"><i class="fa-solid fa-spinner fa-spin"></i> {{ _('Sending...') }}</span>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <a href="#" class="link-back-login"><i class="fa-solid fa-arrow-left"></i> {{ _('Back to Login') }}</a>
+            </div>
+        </section>
+
+        <!-- Step 4: Reset Password (Submit OTP) -->
+        <section id="reset-password-step" class="auth-step hidden animate-slide-up">
+            <div class="step-indicator success"><i class="fa-solid fa-shield-halved"></i> {{ _('Secure Reset') }}</div>
+            <p class="instruction">{{ _('Enter the 6-digit code sent to your email and your new master password.') }}</p>
+
+            <form id="form-reset-password" class="cyber-form">
+                <div class="input-group">
+                    <label for="reset-code"><i class="fa-solid fa-hashtag"></i> {{ _('6-Digit Code') }}</label>
+                    <input type="text" id="reset-code" placeholder="123456" required maxlength="6" style="text-align: center; letter-spacing: 5px; font-size: 1.2rem;">
+                </div>
+                
+                <div class="input-group">
+                    <label for="reset-new-password"><i class="fa-solid fa-lock"></i> {{ _('New Master Password') }}</label>
+                    <input type="password" id="reset-new-password" placeholder="Minimum 8 characters" required minlength="8" autocomplete="new-password">
+                </div>
+
+                <div id="reset-feedback" class="status-box hidden"></div>
+
+                <button type="submit" class="btn-success btn-glow-effect" id="btn-run-reset">
+                    <span class="idle-text"><i class="fa-solid fa-check"></i> {{ _('Update Password') }}</span>
+                    <span class="loading-text hidden"><i class="fa-solid fa-spinner fa-spin"></i> {{ _('Updating...') }}</span>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <a href="#" class="link-back-login"><i class="fa-solid fa-arrow-left"></i> {{ _('Back to Login') }}</a>
             </div>
         </section>
     </div>

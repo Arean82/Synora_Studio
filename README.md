@@ -39,8 +39,12 @@ A native desktop GUI application for end-users that wraps the core engine for na
 - **Compiled Binary:** `./Synora_Studio.exe`
 - **Documentation:** `desktop/docs/USER_MANUAL_DESKTOP.md`
 
-
-
+### 4. 🛠️ Companion Operation Toolkit (`/companion_operation`)
+The primary administration toolkit for system administrators and DevOps engineers.
+- **Features:** Automated SaaS database migrations, **Global SSH Tunnel Piggybacking** (via Desktop App), background service installation, automated backups, **Demo User Injection**, and highly restricted **Web Platform Resets (Danger Zone)**.
+- **Direct Source:** `python companion_operation/companion_operation.py`
+- **Compiled Binary:** `./companion_operation.exe`
+- **Documentation:** `companion_operation/README.md` and native Linux `man` pages located in `companion_operation/docs/man/`.
 ---
 
 ## 🔒 Security Posture

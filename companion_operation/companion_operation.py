@@ -22,6 +22,7 @@ from core.controller_create_tenant import CreateTenantController
 from core.controller_network_config import NetworkConfigController
 from core.controller_backup import BackupController
 from core.service_installer import ServiceInstallerController
+from core.controller_danger_zone import DangerZoneController
 
 def check_admin_access() -> bool:
     saas_dir = os.path.join(ROOT_DIR, "saas")
@@ -58,6 +59,8 @@ def run_headless_migration(args=None):
             return CreateTenantController.run_cli_action(args)
         elif args.action == "web-config":
             return NetworkConfigController.run_cli_action(getattr(args, 'host', None), getattr(args, 'port', None))
+        elif args.action == "danger-zone":
+            return DangerZoneController.run_cli_action()
         else:
             print(f"Unknown action: {args.action}")
             return 1
@@ -69,10 +72,11 @@ def run_headless_migration(args=None):
         print("  3. ⚙️ Background Service Installation")
         print("  4. 💾 Backup Local SaaS Database")
         print("  5. 🌐 Network/Web Config")
-        print("  6. Exit")
-        choice = input("\nSelect operation (1-6) [6]: ").strip() or "6"
+        print("  6. ⚠️  Danger Zone (Reset Platform)")
+        print("  7. Exit")
+        choice = input("\nSelect operation (1-7) [7]: ").strip() or "7"
         
-        if choice == "6":
+        if choice == "7":
             print("\nExiting. Goodbye.")
             return 0
             
@@ -86,6 +90,8 @@ def run_headless_migration(args=None):
             BackupController.run_cli_action()
         elif choice == "5":
             NetworkConfigController.run_cli_interactive()
+        elif choice == "6":
+            DangerZoneController.run_cli_action()
         else:
             print("Invalid choice.")
 
@@ -94,7 +100,8 @@ def run_headless_migration(args=None):
 # ═══════════════════════════════════════════════════════════════════
 
 def run_gui_migration():
-    from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QTabWidget, QMessageBox, QPushButton
+    from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QTabWidget, QMessageBox, QPushButton, QLineEdit
+    from PySide6.QtCore import QSettings
     from PySide6.QtUiTools import QUiLoader
     
     app = QApplication(sys.argv)
@@ -136,7 +143,21 @@ def run_gui_migration():
             layout.setContentsMargins(0,0,0,0)
             layout.addWidget(self.ui)
             
+            self.input_desktop_path = self.ui.findChild(QLineEdit, "input_desktop_path")
+            self.btn_browse_desktop = self.ui.findChild(QPushButton, "btn_browse_desktop")
             self.mainTabs = self.ui.findChild(QTabWidget, "mainTabs")
+            
+            if self.btn_browse_desktop:
+                self.btn_browse_desktop.clicked.connect(self._browse_desktop_path)
+            
+            # Hydrate last path
+            self.comp_settings = QSettings(QSettings.IniFormat, QSettings.UserScope, "Synora_Companion", "Companion_Config")
+            last_path = self.comp_settings.value("desktop_config_path", "")
+            if self.input_desktop_path and last_path:
+                self.input_desktop_path.setText(last_path)
+            
+            if self.input_desktop_path:
+                self.input_desktop_path.textChanged.connect(self._save_desktop_path)
             
             # Load and wire each UI Tab to its isolated controller
             self.saas_tab = loader.load(os.path.join(UI_ASSETS_DIR, "saas_db.ui"), self)
@@ -158,6 +179,19 @@ def run_gui_migration():
             self.web_tab = loader.load(os.path.join(UI_ASSETS_DIR, "web_settings.ui"), self)
             self.mainTabs.addTab(self.web_tab, "🌐 Network Config")
             self.network_controller = NetworkConfigController(self.web_tab)
+            
+            self.danger_tab = loader.load(os.path.join(UI_ASSETS_DIR, "danger_zone.ui"), self)
+            self.mainTabs.addTab(self.danger_tab, "⚠️ Danger Zone")
+            self.danger_controller = DangerZoneController(self.danger_tab)
+
+        def _browse_desktop_path(self):
+            from PySide6.QtWidgets import QFileDialog
+            path = QFileDialog.getExistingDirectory(self, "Select Desktop App Storage Root (containing config.ini)")
+            if path and self.input_desktop_path:
+                self.input_desktop_path.setText(path)
+                
+        def _save_desktop_path(self, text):
+            self.comp_settings.setValue("desktop_config_path", text.strip())
 
     window = DashboardDialog()
     window.show()
@@ -166,16 +200,24 @@ def run_gui_migration():
 def main():
     parser = argparse.ArgumentParser(description="Companion Operation / Admin Dashboard")
     parser.add_argument("--headless", "--cli", action="store_true", dest="headless", help="Run in headless/CLI mode")
-    parser.add_argument("--action", type=str, choices=["backup", "create-user", "web-config"], help="Automated scriptable action to perform")
+    parser.add_argument("--action", type=str, choices=["backup", "create-user", "web-config", "danger-zone"], help="Automated scriptable action to perform")
     parser.add_argument("--target-dir", type=str, help="Target directory for backup")
     parser.add_argument("--username", type=str, help="Username for create-user action")
     parser.add_argument("--email", type=str, help="Email for create-user action")
     parser.add_argument("--password", type=str, help="Password for create-user action")
     parser.add_argument("--bypass-otp", action="store_true", help="Bypass OTP for create-user action")
+    parser.add_argument("--demo-user", action="store_true", help="Inject Demo User")
+    parser.add_argument("--delete-demo-user", action="store_true", help="Delete Demo User")
     parser.add_argument("--host", type=str, help="Host for network configuration")
     parser.add_argument("--port", type=str, help="Port for network configuration")
+    parser.add_argument("--desktop-config-path", type=str, help="Path to Desktop App storage root containing config.ini for SSH piggybacking")
     args = parser.parse_args()
     
+    if args.desktop_config_path:
+        from PySide6.QtCore import QSettings
+        comp_settings = QSettings(QSettings.IniFormat, QSettings.UserScope, "Synora_Companion", "Companion_Config")
+        comp_settings.setValue("desktop_config_path", args.desktop_config_path.strip())
+        
     if args.headless:
         sys.exit(run_headless_migration(args))
     else:

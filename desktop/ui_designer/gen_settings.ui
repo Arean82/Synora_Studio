@@ -499,6 +499,114 @@ Note: Changes made in this tab take effect instantly. The 'Save &amp; Close' but
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_ssh">
+      <attribute name="title">
+       <string>🛡️ Remote Server Security</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_ssh">
+       <item>
+        <widget class="QGroupBox" name="ssh_group">
+         <property name="title">
+          <string>🛡️ Global SSH Tunnel Configuration</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_ssh">
+          <property name="verticalSpacing">
+           <number>10</number>
+          </property>
+          <item row="0" column="0" colspan="2">
+           <widget class="QCheckBox" name="ssh_enable_cb">
+            <property name="text">
+             <string>Enable SSH Tunneling for Remote Database Operations</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_ssh_host">
+            <property name="text">
+             <string>SSH Host (IP / Domain):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="ssh_host_input">
+            <property name="placeholderText">
+             <string>e.g. 192.168.1.50</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_ssh_port">
+            <property name="text">
+             <string>SSH Port:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="ssh_port_input">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>65535</number>
+            </property>
+            <property name="value">
+             <number>22</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_ssh_user">
+            <property name="text">
+             <string>SSH Username:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="ssh_user_input">
+            <property name="placeholderText">
+             <string>e.g. ubuntu, ec2-user</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_ssh_key">
+            <property name="text">
+             <string>Private Key Path (.pem):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_ssh_key">
+            <item>
+             <widget class="QLineEdit" name="ssh_key_input"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btn_browse_key">
+              <property name="text">
+               <string>Browse...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_ssh">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>

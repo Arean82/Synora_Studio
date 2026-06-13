@@ -137,6 +137,66 @@ def register_admin_routes(app, db):
         except Exception as e:
             return jsonify({"success": False, "error": str(e)}), 500
 
+    @app.route('/api/admin/enterprise_sso', methods=['GET', 'POST'])
+    @app.route('/v1/admin/enterprise_sso', methods=['GET', 'POST'])
+    @app.route('/v2/admin/enterprise_sso', methods=['GET', 'POST'])
+    @admin_required(audit_message="Admin Enterprise SSO access")
+    def admin_enterprise_sso():
+        try:
+            from server.utils.storage_config import StorageManager
+            settings = StorageManager.get_instance().get_active_settings()
+            
+            if request.method == 'GET':
+                data = {
+                    "sso_enabled": str(settings.value("sso/enable", "false")).lower() == "true",
+                    "client_id": str(settings.value("sso/client_id", "")),
+                    "client_secret": str(settings.value("sso/client_secret", "")),
+                    "discovery_url": str(settings.value("sso/discovery_url", ""))
+                }
+                return jsonify({"success": True, "data": data})
+                
+            if request.method == 'POST':
+                payload = request.get_json(silent=True) or {}
+                if "sso_enabled" in payload: settings.setValue("sso/enable", "true" if payload["sso_enabled"] else "false")
+                if "client_id" in payload: settings.setValue("sso/client_id", payload["client_id"])
+                if "client_secret" in payload: settings.setValue("sso/client_secret", payload["client_secret"])
+                if "discovery_url" in payload: settings.setValue("sso/discovery_url", payload["discovery_url"])
+                return jsonify({"success": True, "message": "Enterprise SSO Config Synced"})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+    @app.route('/api/admin/siem', methods=['GET', 'POST'])
+    @app.route('/v1/admin/siem', methods=['GET', 'POST'])
+    @app.route('/v2/admin/siem', methods=['GET', 'POST'])
+    @admin_required(audit_message="Admin SIEM config access")
+    def admin_siem_config():
+        try:
+            from server.utils.storage_config import StorageManager
+            settings = StorageManager.get_instance().get_active_settings()
+            
+            if request.method == 'GET':
+                data = {
+                    "siem_enabled": str(settings.value("siem/enable", "false")).lower() == "true",
+                    "file_logging": str(settings.value("siem/file_logging", "true")).lower() == "true",
+                    "webhook_url": str(settings.value("siem/webhook_url", ""))
+                }
+                return jsonify({"success": True, "data": data})
+                
+            if request.method == 'POST':
+                payload = request.get_json(silent=True) or {}
+                if "siem_enabled" in payload: settings.setValue("siem/enable", "true" if payload["siem_enabled"] else "false")
+                if "file_logging" in payload: settings.setValue("siem/file_logging", "true" if payload["file_logging"] else "false")
+                if "webhook_url" in payload: settings.setValue("siem/webhook_url", payload["webhook_url"])
+                
+                # Force logger reconfigure
+                from server.utils.logger import AppLogger
+                if AppLogger._instance:
+                    AppLogger._instance.reconfigure()
+                    
+                return jsonify({"success": True, "message": "SIEM Logging Config Synced"})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
     @app.route('/api/admin/models', methods=['POST'])
     @app.route('/v1/admin/models', methods=['POST'])
     @app.route('/v2/admin/models', methods=['POST'])

@@ -25,3 +25,21 @@ export async function validatePassport(provider, apiKey) {
   });
   return resp.json();
 }
+
+export async function forgotPassword(email) {
+  const resp = await fetch('/api/forgot_password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  return resp.json();
+}
+
+export async function resetPassword(email, code, newPassword) {
+  const resp = await fetch('/api/reset_password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, code, new_password: newPassword })
+  });
+  return resp.json();
+}

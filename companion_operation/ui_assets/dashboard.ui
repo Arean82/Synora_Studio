@@ -15,6 +15,39 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QGroupBox" name="globalConfigGroup">
+     <property name="title">
+      <string>🌐 Global Connection Strategy (Piggyback)</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_config">
+      <item>
+       <widget class="QLabel" name="label_desktop_path">
+        <property name="text">
+         <string>Desktop Storage Path (config.ini):</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="input_desktop_path">
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Locate the Desktop App's config.ini folder...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_browse_desktop">
+        <property name="text">
+         <string>Browse...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QTabWidget" name="mainTabs">
      <property name="currentIndex">
       <number>0</number>

@@ -1,0 +1,49 @@
+.TH SYNORA-COMPANION 1 "June 2026" "Synora Studio 1.0" "Synora Administration Commands"
+.SH NAME
+synora-companion \- Synora Studio Headless Administration Toolkit
+.SH SYNOPSIS
+.B companion_operation.py
+[\-\-headless] [\-\-action \fIACTION\fR] [\fIOPTIONS\fR...]
+.SH DESCRIPTION
+.B synora-companion
+is the core administration toolkit for Synora Studio. It provides utilities for SaaS database migration, tenant provisioning, network configuration, and destructive platform maintenance. When run without the \fB\-\-headless\fR flag, it launches an interactive PySide6 graphical interface. 
+.SH OPTIONS
+.TP
+.B \-\-headless, \-\-cli
+Execute the toolkit in headless mode. Useful for automated remote deployments and SSH administration.
+.TP
+.B \-\-action \fIACTION\fR
+Specifies an automated action to execute.
+Available actions: \fBbackup\fR, \fBcreate-user\fR, \fBweb-config\fR, \fBdanger-zone\fR.
+.TP
+.B \-\-demo-user
+Injects a pre-verified 'demo@grid.net' demonstration account into the live SaaS database.
+Used natively with \fB\-\-action create-user\fR.
+.TP
+.B \-\-delete-demo-user
+Removes the 'demo@grid.net' demonstration account.
+Used natively with \fB\-\-action create-user\fR.
+.TP
+.B \-\-username \fIUSER\fR
+Username for tenant creation. Defaults to demo_user.
+.TP
+.B \-\-password \fIPASS\fR
+Password for tenant creation.
+.TP
+.B \-\-bypass-otp
+Injects the OTP bypass flag into the tenant's security blob, skipping the email verification requirement.
+.TP
+.B \-\-target-dir \fIDIR\fR
+Target directory for SaaS local SQLite database backups.
+.SH EXAMPLES
+.TP
+Launch interactive CLI menu:
+.B python companion_operation.py --headless
+.TP
+Inject demo user headlessly:
+.B python companion_operation.py --headless --action create-user --demo-user
+.TP
+Wipe all platform tenants (Danger Zone):
+.B python companion_operation.py --headless --action danger-zone
+.SH AUTHOR
+Synora Studio Framework

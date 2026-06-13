@@ -6,6 +6,7 @@ import pyotp
 import secrets
 from PySide6.QtWidgets import QLineEdit, QCheckBox, QPushButton, QTextEdit, QMessageBox
 from web.core.tenant_db import TenantDatabaseManager
+from .admin_demo_manager import AdminDemoManager
 
 class CreateTenantController:
     def __init__(self, ui_tab=None):
@@ -21,8 +22,44 @@ class CreateTenantController:
         self.btn_create_tenant = self.ui_tab.findChild(QPushButton, "btn_create")
         self.tenant_log = self.ui_tab.findChild(QTextEdit, "log_output")
         
+        self.checkEnableDemo = self.ui_tab.findChild(QCheckBox, "checkEnableDemo")
+        self.btnDeleteDemo = self.ui_tab.findChild(QPushButton, "btnDeleteDemo")
+        
         if self.btn_create_tenant:
             self.btn_create_tenant.clicked.connect(self._run_gui_tenant)
+            
+        if self.checkEnableDemo and self.btnDeleteDemo:
+            self.checkEnableDemo.stateChanged.connect(self._toggle_demo_user)
+            self.btnDeleteDemo.clicked.connect(self._delete_demo_user)
+            self._update_demo_ui_state()
+
+    def _update_demo_ui_state(self):
+        is_enabled = AdminDemoManager.is_demo_enabled()
+        self.checkEnableDemo.blockSignals(True)
+        self.checkEnableDemo.setChecked(is_enabled)
+        self.checkEnableDemo.setEnabled(not is_enabled)
+        self.checkEnableDemo.blockSignals(False)
+        self.btnDeleteDemo.setVisible(is_enabled)
+        
+    def _toggle_demo_user(self, state):
+        if state:
+            success, msg = AdminDemoManager.inject_demo_user()
+            if success:
+                self.tenant_log.append("\n✅ " + msg)
+                QMessageBox.information(self.ui_tab, "Demo User", msg)
+            else:
+                self.tenant_log.append("\n❌ Demo User Failed: " + msg)
+                QMessageBox.critical(self.ui_tab, "Demo User Error", msg)
+            self._update_demo_ui_state()
+            
+    def _delete_demo_user(self):
+        success, msg = AdminDemoManager.remove_demo_user()
+        if success:
+            self.tenant_log.append("\n🗑️ " + msg)
+        else:
+            self.tenant_log.append("\n❌ Delete Demo User Failed: " + msg)
+            QMessageBox.critical(self.ui_tab, "Demo User Error", msg)
+        self._update_demo_ui_state()
 
     def _run_gui_tenant(self):
         if not self.tenantUser or not self.tenantEmail or not self.tenantPass: return
@@ -66,6 +103,15 @@ class CreateTenantController:
 
     @staticmethod
     def run_cli_action(args):
+        if getattr(args, 'demo_user', False):
+            success, msg = AdminDemoManager.inject_demo_user()
+            print(msg)
+            return 0 if success else 1
+        if getattr(args, 'delete_demo_user', False):
+            success, msg = AdminDemoManager.remove_demo_user()
+            print(msg)
+            return 0 if success else 1
+            
         user = getattr(args, 'username', None) or "demo_user"
         email = getattr(args, 'email', None) or "example@example.com"
         pwd = getattr(args, 'password', None) or "password123"
