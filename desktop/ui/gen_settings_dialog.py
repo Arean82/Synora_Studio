@@ -166,7 +166,60 @@ class GenSettingsDialog(QDialog):
         self.setup_rerank_ui(is_dark)
         self.setup_api_credentials_ui()
         self.setup_redis_ui(is_dark)
+        self.setup_ssh_ui(is_dark)
         self.load_current_settings()
+        
+    def setup_ssh_ui(self, is_dark: bool):
+        from PySide6.QtWidgets import QGroupBox, QCheckBox, QLineEdit, QSpinBox, QPushButton, QFileDialog
+        
+        self.ssh_group = self.findChild(QGroupBox, "ssh_group")
+        self.ssh_enable_cb = self.findChild(QCheckBox, "ssh_enable_cb")
+        self.ssh_host_input = self.findChild(QLineEdit, "ssh_host_input")
+        self.ssh_port_input = self.findChild(QSpinBox, "ssh_port_input")
+        self.ssh_user_input = self.findChild(QLineEdit, "ssh_user_input")
+        self.ssh_key_input = self.findChild(QLineEdit, "ssh_key_input")
+        self.btn_browse_key = self.findChild(QPushButton, "btn_browse_key")
+        
+        if not self.ssh_enable_cb:
+            return
+            
+        if is_dark:
+            if self.ssh_group:
+                self.ssh_group.setStyleSheet("""
+                    QGroupBox { font-weight: bold; color: #ffffff; border: 1px solid #3c3c3c; border-radius: 6px; margin-top: 15px; padding-top: 20px; }
+                    QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; left: 10px; padding: 0 5px; }
+                    QCheckBox { color: #ffffff; font-weight: normal; }
+                    QLineEdit, QSpinBox { background-color: #2d2d2d; color: #ffffff; border: 1px solid #3c3c3c; border-radius: 5px; padding: 5px; }
+                    QLineEdit:disabled, QSpinBox:disabled { background-color: #1e1e1e; color: #777777; border: 1px solid #252526; }
+                    QPushButton { background-color: #3c3c3c; color: white; border: none; padding: 6px; border-radius: 4px; }
+                    QPushButton:hover { background-color: #4c4c4c; }
+                """)
+        else:
+            if self.ssh_group:
+                self.ssh_group.setStyleSheet("""
+                    QGroupBox { font-weight: bold; color: #333333; border: 1px solid #cccccc; border-radius: 6px; margin-top: 15px; padding-top: 20px; }
+                    QGroupBox::title { subcontrol-origin: margin; subcontrol-position: top left; left: 10px; padding: 0 5px; }
+                    QCheckBox { color: #333333; font-weight: normal; }
+                    QLineEdit, QSpinBox { background-color: #f5f5f5; border: 1px solid #cccccc; border-radius: 5px; padding: 5px; }
+                    QLineEdit:disabled, QSpinBox:disabled { background-color: #e1e1e1; color: #aaaaaa; border: 1px solid #cccccc; }
+                    QPushButton { background-color: #e1e1e1; border: 1px solid #cccccc; padding: 6px; border-radius: 4px; }
+                """)
+                
+        self.ssh_enable_cb.toggled.connect(self.on_ssh_enabled_toggled)
+        self.btn_browse_key.clicked.connect(self.on_browse_ssh_key)
+        
+    def on_ssh_enabled_toggled(self, checked: bool):
+        if hasattr(self, "ssh_host_input"): self.ssh_host_input.setEnabled(checked)
+        if hasattr(self, "ssh_port_input"): self.ssh_port_input.setEnabled(checked)
+        if hasattr(self, "ssh_user_input"): self.ssh_user_input.setEnabled(checked)
+        if hasattr(self, "ssh_key_input"): self.ssh_key_input.setEnabled(checked)
+        if hasattr(self, "btn_browse_key"): self.btn_browse_key.setEnabled(checked)
+        
+    def on_browse_ssh_key(self):
+        from PySide6.QtWidgets import QFileDialog
+        path, _ = QFileDialog.getOpenFileName(self, "Select SSH Private Key", "", "Key Files (*.pem *.ppk);;All Files (*)")
+        if path:
+            self.ssh_key_input.setText(path)
         
     def setup_api_credentials_ui(self):
         from PySide6.QtWidgets import QTextEdit, QPushButton
@@ -507,6 +560,22 @@ class GenSettingsDialog(QDialog):
             debug_enabled = str(settings.value("logging/enable_debug", "false")).lower() == "true"
             self.log_enable_cb.setChecked(log_enabled)
             self.debug_enable_cb.setChecked(debug_enabled)
+            
+        # Hydrate SSH config
+        if hasattr(self, "ssh_enable_cb") and self.ssh_enable_cb:
+            ssh_enabled = str(settings.value("ssh_enabled", "false")).lower() == "true"
+            ssh_host = str(settings.value("ssh_host", ""))
+            ssh_port = int(settings.value("ssh_port", 22))
+            ssh_user = str(settings.value("ssh_user", ""))
+            ssh_key = str(settings.value("ssh_key", ""))
+            
+            self.ssh_enable_cb.setChecked(ssh_enabled)
+            self.ssh_host_input.setText(ssh_host)
+            self.ssh_port_input.setValue(ssh_port)
+            self.ssh_user_input.setText(ssh_user)
+            self.ssh_key_input.setText(ssh_key)
+            
+            self.on_ssh_enabled_toggled(ssh_enabled)
         
         if use_defaults:
             if self.preset_combo:
@@ -652,5 +721,13 @@ class GenSettingsDialog(QDialog):
             except Exception as e:
                 import logging
                 logging.getLogger("QuantumRedisUI").error(f"Failed to dynamically apply new Redis configuration: {str(e)}")
+                
+        # Commit SSH changes
+        if hasattr(self, "ssh_enable_cb") and self.ssh_enable_cb:
+            settings.setValue("ssh_enabled", "true" if self.ssh_enable_cb.isChecked() else "false")
+            settings.setValue("ssh_host", self.ssh_host_input.text().strip())
+            settings.setValue("ssh_port", self.ssh_port_input.value())
+            settings.setValue("ssh_user", self.ssh_user_input.text().strip())
+            settings.setValue("ssh_key", self.ssh_key_input.text().strip())
             
         self.accept()

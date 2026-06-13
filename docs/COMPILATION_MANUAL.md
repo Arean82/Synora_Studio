@@ -21,16 +21,28 @@ pip install pyinstaller
 ---
 
 ## Step 2: Compile the Code
-We have provided a file named `synora_studio.spec`. This file contains the exact blueprint telling PyInstaller how to bundle the app.
+The application is now modular, meaning you can compile each component individually. Each directory contains its own `.spec` file.
 
-Run this command to start the compiler:
+To compile the Desktop GUI:
 ```bash
-pyinstaller synora_studio.spec
+cd desktop
+pyinstaller desktop.spec
 ```
 
-*What happens now?*
+To compile the Headless Server:
+```bash
+cd server
+pyinstaller server.spec
+```
+
+To compile the Web Portal:
+```bash
+cd web
+pyinstaller web.spec
+```
+
 Your screen will output a lot of text for a few minutes. PyInstaller is hunting down every single Python library your app uses and packing them together. 
-When it finishes, you will see a new folder named `dist/`. Inside `dist/Synora_Studio/`, you will find your compiled, standalone application!
+When it finishes, you will see a new folder named `dist/`. Inside `dist/`, you will find your compiled executable!
 
 ---
 

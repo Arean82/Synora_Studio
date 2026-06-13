@@ -1,4 +1,4 @@
-# Central Headless Core Engine (Backend Server) (v9.0)
+# Central Headless Core Engine (Backend Server)
 
 This directory houses the core backend logic, AI runtime orchestration, vector database interfaces, and background tasks. It is strictly **UI-agnostic** and contains no desktop UI or web-route definitions.
 
@@ -13,7 +13,7 @@ This directory houses the core backend logic, AI runtime orchestration, vector d
 To support decoupled modular compilation, this directory contains its own self-contained packaging files:
 - **`server.spec`**: PyInstaller spec file specific to packaging the API server.
 - **`build.py`**: Local Python build script executing PyInstaller commands targeting `server.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version (v9.0.0.0), copyrights, and descriptions.
+- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
 - **`installer_script.iss`**: Local Inno Setup configuration to package the compiled server application.
 
 ## Features

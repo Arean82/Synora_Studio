@@ -1,6 +1,6 @@
 // main.js - Application Bootstrap and Event Routing
 import { App, saveSession, loadSession, clearSession } from './state.js';
-import { login, register, validatePassport } from './auth.js';
+import { login, register, validatePassport, forgotPassword, resetPassword } from './auth.js';
 import { updateProfile } from './api.js';
 import { 
     fillPrompt, toggleArenaMode, startNewOrbit, loadModels,
@@ -68,7 +68,21 @@ function setupEventListeners() {
     document.getElementById('form-validate-passport').addEventListener('submit', handlePassportValidation);
     document.getElementById('form-register').addEventListener('submit', handleRegistration);
     document.getElementById('form-login').addEventListener('submit', handleLogin);
+    document.getElementById('form-forgot-password').addEventListener('submit', handleForgotPassword);
+    document.getElementById('form-reset-password').addEventListener('submit', handleResetPassword);
     document.getElementById('form-update-settings').addEventListener('submit', handleSettingsUpdate);
+    
+    document.getElementById('link-forgot-password').addEventListener('click', (e) => {
+        e.preventDefault();
+        switchStep('forgot-password-step');
+    });
+
+    document.querySelectorAll('.link-back-login').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchStep('login-portal-step');
+        });
+    });
     
     document.getElementById('btn-signout').addEventListener('click', clearSessionState);
     document.getElementById('btn-new-chat').addEventListener('click', startNewOrbit);
@@ -255,6 +269,78 @@ async function handleLogin(e) {
     } catch (err) {
         feedback.textContent = "Link failure.";
         feedback.className = "status-box error";
+    } finally {
+        idleText.classList.remove('hidden');
+        loadText.classList.add('hidden');
+    }
+}
+
+async function handleForgotPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+    const feedback = document.getElementById('forgot-feedback');
+    
+    const btn = document.getElementById('btn-run-forgot');
+    const idleText = btn.querySelector('.idle-text');
+    const loadText = btn.querySelector('.loading-text');
+    
+    feedback.classList.add('hidden');
+    idleText.classList.add('hidden');
+    loadText.classList.remove('hidden');
+    
+    try {
+        const data = await forgotPassword(email);
+        if (data.success) {
+            feedback.textContent = data.message;
+            feedback.className = "status-box success";
+            feedback.classList.remove('hidden');
+            setTimeout(() => switchStep('reset-password-step'), 2000);
+        } else {
+            feedback.textContent = data.error || "Failed to send reset code.";
+            feedback.className = "status-box error";
+            feedback.classList.remove('hidden');
+        }
+    } catch (err) {
+        feedback.textContent = "Network error communicating with server.";
+        feedback.className = "status-box error";
+        feedback.classList.remove('hidden');
+    } finally {
+        idleText.classList.remove('hidden');
+        loadText.classList.add('hidden');
+    }
+}
+
+async function handleResetPassword(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim();
+    const code = document.getElementById('reset-code').value.trim();
+    const newPassword = document.getElementById('reset-new-password').value.trim();
+    const feedback = document.getElementById('reset-feedback');
+    
+    const btn = document.getElementById('btn-run-reset');
+    const idleText = btn.querySelector('.idle-text');
+    const loadText = btn.querySelector('.loading-text');
+    
+    feedback.classList.add('hidden');
+    idleText.classList.add('hidden');
+    loadText.classList.remove('hidden');
+    
+    try {
+        const data = await resetPassword(email, code, newPassword);
+        if (data.success) {
+            feedback.textContent = data.message;
+            feedback.className = "status-box success";
+            feedback.classList.remove('hidden');
+            setTimeout(() => switchStep('login-portal-step'), 2500);
+        } else {
+            feedback.textContent = data.error || "Failed to reset password.";
+            feedback.className = "status-box error";
+            feedback.classList.remove('hidden');
+        }
+    } catch (err) {
+        feedback.textContent = "Network error communicating with server.";
+        feedback.className = "status-box error";
+        feedback.classList.remove('hidden');
     } finally {
         idleText.classList.remove('hidden');
         loadText.classList.add('hidden');

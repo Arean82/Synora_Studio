@@ -1,4 +1,4 @@
-# Local Admin GUI & Desktop Client (v9.0)
+# Local Admin GUI & Desktop Client
 
 This directory houses the PySide6 standalone graphical user interface, functioning as the local administrator's "Mission Control" panel.
 
@@ -12,12 +12,12 @@ This directory houses the PySide6 standalone graphical user interface, functioni
 To support decoupled modular compilation, this directory contains its own self-contained packaging files:
 - **`desktop.spec`**: PyInstaller spec file specific to packaging the Desktop client.
 - **`build.py`**: Local Python build script executing PyInstaller commands targeting `desktop.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version (v9.0.0.0), copyrights, and descriptions.
+- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
 - **`installer_script.iss`**: Local Inno Setup configuration to package the compiled desktop application.
 
 ## Key Features
 - **Bypass Control**: Directly configures active storage setups, databases, and LLM providers locally without relying on the public API gateway.
-- **SSH Tunnel Manager**: Instantly establishes encrypted SSH/VPN forwarding connections to remote cloud clusters (Redis, Postgres, Godmode API).
+- **Global SSH Configuration Hub**: Captures and securely stores SSH tunnel profiles (Keys, Ports, Hosts). These settings act as the central routing truth for both the Desktop App itself and the **Companion Operation Toolkit** (which piggybacks off this config).
 - **Zero SaaS Packaging Bloat**: Compiles cleanly using PyInstaller by strictly ignoring `web/` routing assets.
 
 ## Executable Compilation

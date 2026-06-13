@@ -1,4 +1,4 @@
-# Web SaaS Portal & Multi-Tenant Gateway (v9.0)
+# Web SaaS Portal & Multi-Tenant Gateway
 
 This directory hosts the web application portal, database routing switchboard, dynamic tenant sandboxing engines, and SaaS client management interfaces.
 
@@ -14,7 +14,7 @@ This directory hosts the web application portal, database routing switchboard, d
 To support decoupled modular compilation, this directory contains its own self-contained packaging files:
 - **`web.spec`**: PyInstaller spec file specific to packaging the SaaS web portal.
 - **`build.py`**: Local Python build script executing PyInstaller commands targeting `web.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version (v9.0.0.0), copyrights, and descriptions.
+- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
 - **`installer_script.iss`**: Local Inno Setup configuration to package the compiled SaaS web application.
 
 ## Key Architecture Notes

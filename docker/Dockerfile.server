@@ -1,0 +1,37 @@
+# Use an official Python runtime as a parent image
+FROM python:3.12-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=production
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libsecret-1-0 \
+    dbus-x11 \
+    gnome-keyring \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# We need authlib for SSO but server might not strictly need it, installing anyway via reqs
+# Copy the server module and common configs
+COPY server/ /app/server/
+
+# Create necessary directories for storage/logs
+RUN mkdir -p /app/storage/logs /app/storage/db /app/qdrant_storage
+VOLUME ["/app/storage", "/app/qdrant_storage"]
+
+# Expose the API Port
+EXPOSE 5000
+
+# Set the entrypoint
+CMD ["python", "-m", "server.run_server"]

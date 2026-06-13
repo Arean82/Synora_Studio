@@ -1,3 +1,6 @@
+# scripts/modular_cleanup.py
+# Module containing functions: organize_workspace.
+
 import os
 import shutil
 from pathlib import Path
@@ -8,32 +11,30 @@ def organize_workspace():
     
     print("Starting Synora Studio Modularization Cleanup...")
 
-    # 1. Organize Documentation
+    # 1. Decentralize Documentation
     docs_dir = root_dir / "docs"
-    docs_dir.mkdir(exist_ok=True)
     
-    docs_to_move = [
-        "API_SERVER.md",
-        "COMPILATION_MANUAL.md",
-        "Enhancements_Planned.md",
-        "HEADLESS_GUIDE.md",
-        "IDE_INTEGRATION.md",
-        "oracle_ampere_combined.md",
-        "oracle_ampere_deployment.md",
-        "oracle_ampere_development.md",
-        "PROJECT_AUDIT_REPORT-old - ignore.md",
-        "SAAS_STORAGE_ARCHITECTURE_PLAN.md",
-        "SECURITY.md",
-        "USER_MANUAL_DESKTOP.md",
-        "USER_MANUAL_SAAS.md"
-    ]
+    doc_moves = {
+        "API_SERVER.md": root_dir / "server" / "docs",
+        "HEADLESS_GUIDE.md": root_dir / "server" / "docs",
+        "USER_MANUAL_SAAS.md": root_dir / "web" / "docs",
+        "SAAS_STORAGE_ARCHITECTURE_PLAN.md": root_dir / "web" / "docs",
+        "USER_MANUAL_DESKTOP.md": root_dir / "desktop" / "docs",
+        "IDE_INTEGRATION.md": root_dir / "extensions" / "docs",
+    }
     
-    print("\n--- Moving Documentation ---")
-    for doc in docs_to_move:
-        src = root_dir / doc
+    print("\n--- Decentralizing Documentation ---")
+    for doc_name, target_folder in doc_moves.items():
+        src = docs_dir / doc_name
         if src.exists():
-            shutil.move(str(src), str(docs_dir / doc))
-            print(f"Moved {doc} -> docs/")
+            target_folder.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), str(target_folder / doc_name))
+            print(f"Moved {doc_name} -> {target_folder.relative_to(root_dir)}/")
+        elif (root_dir / doc_name).exists():
+            # Fallback if they are still in root
+            target_folder.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(root_dir / doc_name), str(target_folder / doc_name))
+            print(f"Moved {doc_name} -> {target_folder.relative_to(root_dir)}/")
 
     # 2. Organize Build Scripts
     build_dir = root_dir / "build_scripts"
@@ -57,9 +58,10 @@ def organize_workspace():
 
     # 3. Remove Deprecated Monolithic Files
     files_to_delete = [
-        "master.py",
         "synora_studio.spec",
-        "modular_cleanup.py" # Add the incorrectly placed script to the cleanup list
+        "modular_cleanup.py", # Add the incorrectly placed script to the cleanup list
+        "scratch_recover.py", # Remove scratch files to obey single py file rule
+        "run.py"              # Remove run.py as requested by user to perfectly clean the root
     ]
     
     print("\n--- Removing Deprecated Monolithic Files ---")
@@ -69,12 +71,14 @@ def organize_workspace():
             os.remove(src)
             print(f"Deleted {f}")
 
-    # 4. Remove Redundant Wrapper Scripts
-    print("\n--- Removing Redundant Wrapper Scripts ---")
+    # 4. Remove Redundant Wrapper Scripts & Obsolete Modules
+    print("\n--- Removing Redundant/Obsolete Files ---")
     wrappers_to_delete = [
         "web/web_script.py",
         "server/server_script.py",
-        "desktop/desktop_script.py"
+        "desktop/desktop_script.py",
+        "companion_operation/core/local_relocator.py",
+        "companion_operation/ui_assets/local_relocator.ui"
     ]
     for w in wrappers_to_delete:
         src = root_dir / w
@@ -105,6 +109,45 @@ def organize_workspace():
                 print(f"Purged migrated JSON: {j_path.name}")
             except Exception as e:
                 print(f"Could not purge {j_path.name}: {e}")
+
+    # 6. Distribute Resources
+    print("\n--- Distributing Shared Resources ---")
+    if resources_dir.exists():
+        targets = {
+            "web/resources_web": "web",
+            "desktop/resources_desktop": "desktop",
+            "server/resources_server": "server",
+            "companion_operation/resources_comp": "companion",
+            "admin_reset/resources_rest": "reset"
+        }
+        
+        for rel_path, name in targets.items():
+            dest = root_dir / rel_path
+            # Avoid copying into itself if mistakenly run from within resources
+            if not dest.exists():
+                try:
+                    shutil.copytree(str(resources_dir), str(dest))
+                    print(f"Copied resources to {rel_path}")
+                except Exception as e:
+                    print(f"Failed to copy to {rel_path}: {e}")
+            else:
+                print(f"Skipped {rel_path} (already exists)")
+                
+        all_exist = all((root_dir / path).exists() for path in targets.keys())
+        if all_exist:
+            try:
+                shutil.rmtree(str(resources_dir))
+                print("Deleted global monolithic resources folder.")
+            except Exception as e:
+                print(f"Could not delete global resources: {e}")
+                
+    operator_dir = root_dir / "operator_tools"
+    if operator_dir.exists():
+        try:
+            shutil.rmtree(str(operator_dir))
+            print("Deleted operator_tools directory as requested.")
+        except Exception as e:
+            print(f"Could not delete operator_tools: {e}")
 
     print("\n✅ Cleanup Complete! The root directory is now strictly modularized.")
     print("Documentation has been moved to /docs and legacy build files to /build_scripts.")
