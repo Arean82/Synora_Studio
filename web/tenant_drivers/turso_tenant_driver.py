@@ -48,6 +48,7 @@ class TursoTenantDriver(BaseTenantDriver):
                     password_hash TEXT NOT NULL,
                     api_key TEXT UNIQUE NOT NULL,
                     key_type TEXT NOT NULL CHECK (key_type IN ('byok', 'admin_funded')),
+                    otp_secret TEXT,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     status TEXT DEFAULT 'active'
                 )
@@ -66,9 +67,13 @@ class TursoTenantDriver(BaseTenantDriver):
                 )
             """)
 
-            # 2.5 Migration: Add settings_blob if missing
+            # 2.5 Migration: Add settings_blob and otp_secret if missing
             try:
                 conn.execute("ALTER TABLE users ADD COLUMN settings_blob TEXT DEFAULT '{}'")
+            except sqlite3.OperationalError:
+                pass
+            try:
+                conn.execute("ALTER TABLE users ADD COLUMN otp_secret TEXT")
             except sqlite3.OperationalError:
                 pass
 
@@ -189,15 +194,17 @@ class TursoTenantDriver(BaseTenantDriver):
 
     def register_user(self, api_key: str, username: str, email: str, password: str, key_type: str = "byok"):
         pw_hash = self.hash_password(password)
+        import pyotp
+        otp_secret = pyotp.random_base32()
         with self.get_connection() as conn:
             try:
                 cursor = conn.cursor()
                 cursor.execute("""
-                    INSERT INTO users (username, email, password_hash, api_key, key_type)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (username, email, pw_hash, api_key.strip(), key_type))
+                    INSERT INTO users (username, email, password_hash, api_key, key_type, otp_secret)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (username, email, pw_hash, api_key.strip(), key_type, otp_secret))
                 conn.commit()
-                return cursor.lastrowid, None
+                return cursor.lastrowid, None, otp_secret
             except sqlite3.IntegrityError as e:
                 err_msg = str(e).lower()
                 if "username" in err_msg:
@@ -221,7 +228,7 @@ class TursoTenantDriver(BaseTenantDriver):
     def authenticate_by_login(self, username_or_email: str, password_raw: str):
         with self.get_connection() as conn:
             row = conn.execute("""
-                SELECT id, username, email, api_key, key_type, status, password_hash FROM users 
+                SELECT id, username, email, api_key, key_type, status, password_hash, otp_secret FROM users 
                 WHERE (username = ? OR email = ?) AND status = 'active'
             """, (username_or_email, username_or_email)).fetchone()
             if row and self.verify_password(password_raw, row['password_hash']):
@@ -230,6 +237,11 @@ class TursoTenantDriver(BaseTenantDriver):
                 res['passport_token'] = res.get('api_key', '')
                 return res
             return None
+
+    def get_user_otp_secret(self, user_id: int):
+        with self.get_connection() as conn:
+            row = conn.execute("SELECT otp_secret FROM users WHERE id = ?", (user_id,)).fetchone()
+            return row['otp_secret'] if row else None
 
     def update_user_profile(self, user_id: int, username: str = None, password_raw: str = None, api_key: str = None):
         updates = []

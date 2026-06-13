@@ -33,16 +33,24 @@ class BaseTenantDriver(ABC):
 
     @staticmethod
     def hash_password(password: str) -> str:
-        """Secure bcrypt password hashing routine."""
-        import bcrypt
-        # Hash a password for the first time, with a randomly-generated salt
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        return hashed.decode('utf-8')
+        """Secure Argon2id password hashing routine."""
+        from argon2 import PasswordHasher
+        ph = PasswordHasher()
+        return ph.hash(password)
 
     @staticmethod
     def verify_password(password_raw: str, hashed_password: str) -> bool:
-        """Seamlessly verifies both bcrypt and legacy SHA-256 passwords."""
-        if hashed_password.startswith("$2b$"):
+        """Seamlessly verifies Argon2id, bcrypt, and legacy SHA-256 passwords."""
+        if hashed_password.startswith("$argon2"):
+            from argon2 import PasswordHasher
+            from argon2.exceptions import VerifyMismatchError
+            ph = PasswordHasher()
+            try:
+                ph.verify(hashed_password, password_raw)
+                return True
+            except VerifyMismatchError:
+                return False
+        elif hashed_password.startswith("$2b$"):
             import bcrypt
             return bcrypt.checkpw(password_raw.encode('utf-8'), hashed_password.encode('utf-8'))
         else:

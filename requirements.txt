@@ -70,3 +70,7 @@ mysql-connector-python>=8.0.0
 Flask-Babel>=4.0.0
 deep-translator>=1.11.4
 polib>=1.2.0
+
+# Security
+pyotp>=2.9.0
+argon2-cffi>=23.1.0

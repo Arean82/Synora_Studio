@@ -511,7 +511,7 @@ def create_saas_app():
     @app.route('/v1/login', methods=['POST'])
     @app.route('/v2/login', methods=['POST'])
     def login_user():
-        """Validates standard login credentials for web workstation entry."""
+        """Validates standard login credentials and triggers Email OTP."""
         data = request.get_json(silent=True) or {}
         user_input = data.get("username_or_email", "").strip()
         password = data.get("password", "").strip()
@@ -519,6 +519,57 @@ def create_saas_app():
         user = db.authenticate_by_login(user_input, password)
         if not user:
             return jsonify({"success": False, "error": "Invalid login credentials."}), 401
+            
+        import pyotp
+        import threading
+        
+        otp_secret = db.get_user_otp_secret(user['id'])
+        if not otp_secret:
+            return jsonify({"success": False, "error": "Account lacks OTP configuration."}), 500
+            
+        totp = pyotp.TOTP(otp_secret)
+        otp_code = totp.now()
+        
+        email_html = f"<h3>Your Synora Studio Login Code</h3><p>Your one-time passcode is: <b>{otp_code}</b></p><p>This code expires in 30 seconds.</p>"
+        threading.Thread(
+            target=send_alert_email,
+            args=(user['email'], "Synora Studio Login OTP", email_html),
+            daemon=True
+        ).start()
+            
+        return jsonify({
+            "success": True,
+            "require_otp": True,
+            "user_id": user['id'],
+            "message": f"OTP sent to {user['email']}. Please verify to complete login."
+        })
+
+    @app.route('/api/verify_otp', methods=['POST'])
+    @app.route('/v1/verify_otp', methods=['POST'])
+    def verify_otp():
+        data = request.get_json(silent=True) or {}
+        user_id = data.get("user_id")
+        otp_code = data.get("otp_code", "").strip()
+        
+        if not user_id or not otp_code:
+            return jsonify({"success": False, "error": "Missing user ID or OTP code."}), 400
+            
+        otp_secret = db.get_user_otp_secret(user_id)
+        if not otp_secret:
+            return jsonify({"success": False, "error": "Account lacks OTP configuration."}), 500
+            
+        import pyotp
+        totp = pyotp.TOTP(otp_secret)
+        if not totp.verify(otp_code, valid_window=2): # Allow 1 min drift
+            return jsonify({"success": False, "error": "Invalid or expired OTP."}), 401
+            
+        # Re-fetch user to generate token
+        with db.get_connection() as conn:
+            row = conn.execute("SELECT id, username, email, api_key, key_type, status FROM users WHERE id = ?", (user_id,)).fetchone()
+            if not row:
+                return jsonify({"success": False, "error": "User not found."}), 404
+            user = dict(row)
+            user['passport_token'] = user.get('api_key', '')
             
         try:
             from server.logic.services import ServiceRegistry
@@ -620,12 +671,13 @@ def create_saas_app():
             try:
                 from server.logic.services import ServiceRegistry
                 telemetry_service = ServiceRegistry.get("telemetry")
-                telemetry_service.record_request(
-                    tenant_id=str(tenant_id),
-                    latency=latency,
-                    tokens=tokens,
-                    error=error
-                )
+                import threading
+                threading.Thread(target=telemetry_service.record_request, kwargs={
+                    "tenant_id": str(tenant_id),
+                    "latency": latency,
+                    "tokens": tokens,
+                    "error": error
+                }, daemon=True).start()
             except:
                 pass
                 
