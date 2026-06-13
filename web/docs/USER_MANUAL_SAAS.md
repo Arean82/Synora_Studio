@@ -11,8 +11,19 @@ The SaaS platform operates on a dual-tier trust model:
 1. **Admin Vault:** Administrators log in using a central "master" key. All inference costs are subsidized by the central admin's budget.
 2. **BYOK Tier (Bring Your Own Key):** Guest users or developers can connect and log in by providing their own personal API Keys, entirely offloading cost to the tenant.
 
+### Launching the Portal
+To start the SaaS web server, execute the following from your terminal:
+
+```bash
+# Direct Source
+python web/run_web.py
+
+# Compiled Binary
+./synora_web.exe
+```
+
 ### Accessing the Portal
-1. Navigate to your organization's SaaS portal URL (default: `http://localhost:8000`).
+1. Navigate to your organization's SaaS portal URL (default: `http://localhost:8080`).
 2. **Key-Passport Validation:** 
    - Select your Inference Provider.
    - Enter your secure API Key.

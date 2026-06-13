@@ -20,7 +20,11 @@ The Headless Engine supports two primary manual execution workflows from the ter
 To launch the background server on Port 5000:
 
 ```bash
-python main.py --headless
+# Direct Source
+python server/run_server.py
+
+# Compiled Binary
+./synora_server.exe
 ```
 
 ### B. Interactive Terminal Chat (Direct CLI Mode)
@@ -28,7 +32,7 @@ python main.py --headless
 To launch a direct chat loop inside your command line:
 
 ```bash
-python main.py --cli
+python server/run_server.py --cli
 ```
 
 ### Dynamic CLI Authentication Gate
@@ -65,8 +69,6 @@ If running headless modes for the first time or after a manual logout, the engin
 ---
 
 ## 2. CLI Command Reference
-
-The `main.py` entry point accepts several flags to control the Headless and API environments directly:
 
 | Command             | Description                                                     |
 | :------------------ | :-------------------------------------------------------------- |
@@ -111,7 +113,7 @@ The headless engine includes a modular model manager for terminal-based control.
 To see which models are currently cached in your local manifest:
 
 ```bash
-python main.py --list-models
+python server/run_server.py --list-models
 ```
 
 *Note: Models are grouped dynamically by their capability categories (`chat`, `embedding`, `reranking`, `audio`) and display their specialized capability markers and auto-generated descriptions.*
@@ -121,7 +123,7 @@ python main.py --list-models
 To fetch the latest models from your active provider and write them straight to your local manifest shards:
 
 ```bash
-python main.py --update-models
+python server/run_server.py --update-models
 ```
 
 ---
@@ -133,7 +135,7 @@ You can configure the standalone Universal API Server (Port 5000) directly from 
 To view the current API status, regenerate your key, or forcefully enable/disable the server:
 
 ```bash
-python main.py --api-manager
+python server/run_server.py --api-manager
 ```
 
 This launches an interactive menu:
@@ -150,7 +152,7 @@ This launches an interactive menu:
 
 The Headless Engine acts as the primary API provider for our IDE extensions.
 
-1. **Start the Engine**: Run `python main.py --headless`.
+1. **Start the Engine**: Run `python server/run_server.py` or `./synora_server.exe`.
 2. **Endpoint**: The engine listens on `http://localhost:5000` (default).
 3. **Connectivity**: Once the engine is live, your VS Code or JetBrains extension will automatically connect to it to provide inline chat and code completions.
 
@@ -217,7 +219,7 @@ Then, link the application to the container using the environment variable:
 
 ```bash
 export QDRANT_URL="http://localhost:6333"
-python main.py --headless
+python server/run_server.py
 ```
 
 ---
@@ -227,8 +229,8 @@ python main.py --headless
 | Issue                      | Solution                                                                                         |
 | :------------------------- | :----------------------------------------------------------------------------------------------- |
 | **Port 5000 busy**   | Ensure no other instances of the app or Flask servers are running.                               |
-| **Auth Prompt Loop** | Run `python main.py --cli` once, select your ecosystem, enter your key, and verify completion. |
-| **No models shown**  | Run `python main.py --update-models` to refresh the local sharded manifests.                   |
+| **Auth Prompt Loop** | Run `python server/run_server.py --cli` once, select your ecosystem, enter your key, and verify completion. |
+| **No models shown**  | Run `python server/run_server.py --update-models` to refresh the local sharded manifests.                   |
 
 ---
 

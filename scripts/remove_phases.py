@@ -1,3 +1,6 @@
+# scripts/remove_phases.py
+# Module containing functions: main.
+
 import os
 import glob
 import re

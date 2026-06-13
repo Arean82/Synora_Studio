@@ -1,3 +1,3 @@
-# operator_tools/companion/core/__init__.py
+# companion_operation/core/__init__.py
 # Utility script or configuration module.
 

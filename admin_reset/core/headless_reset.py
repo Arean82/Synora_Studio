@@ -1,4 +1,4 @@
-# operator_tools/admin_reset/core/headless_reset.py
+# admin_reset/core/headless_reset.py
 # Module containing functions: run_headless_reset.
 
 import sys

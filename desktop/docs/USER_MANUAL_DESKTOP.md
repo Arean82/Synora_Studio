@@ -8,10 +8,14 @@ Welcome to the **Synora Studio Desktop Client**, a sleek, high-performance works
 
 ### Launching the Application
 To launch the desktop client, run the following command in your terminal:
+
 ```bash
-python main.py
+# Direct Source
+python desktop/main.py
+
+# Compiled Binary
+./Synora_Studio.exe
 ```
-*(You can also use the packaged desktop shortcut if provided by your administrator).*
 
 ### 🔑 The Secure Admin Login Gate
 Upon launching the client, you will be greeted by the **Synora Admin Login Gateway**:
@@ -88,15 +92,19 @@ Safely migrate your SaaS tenant database from Turso/libSQL to PostgreSQL or MySQ
 - **From the Desktop App**: Navigate to **Settings → Database Relocator (Companion Operation)**. This will auto-save your chat, close the main app to release database locks, and launch the companion utility.
 - **CLI/Headless Mode**: For remote servers, run:
   ```bash
-  python operator_tools/companion/companion_operation.py --headless
+  # Direct Source
+  python companion_operation/companion_operation.py --headless
+  
+  # Compiled Binary
+  ./Companion_Operation.exe --headless
   ```
-- **Production EXE**: Use `Companion_Operation.exe` (or `Companion_Operation.exe --headless` for terminal mode).
 
 ### 🔐 Master Password Reset
 If you lose your Super Admin password, reset it to `admin` using:
 ```bash
-python operator_tools/admin_reset/reset_admin.py
-```
-Or in production: `Admin_Reset.exe`
+# Direct Source
+python admin_reset/reset_admin.py
 
-> **Note**: The legacy `scripts/reset_admin.py` is deprecated and automatically redirects to the canonical `operator_tools/admin_reset/reset_admin.py`.
+# Compiled Binary
+./Admin_Reset.exe
+```

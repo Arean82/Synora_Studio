@@ -1,4 +1,4 @@
-# operator_tools/companion/build.py
+# companion_operation/build.py
 # Synora Studio - Companion Operation Build Script
 
 """
