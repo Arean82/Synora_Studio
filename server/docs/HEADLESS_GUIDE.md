@@ -18,7 +18,7 @@ After=network.target
 User=synora_user
 WorkingDirectory=/path/to/Synora_Studio/server
 Environment="PATH=/path/to/Synora_Studio/venv/bin"
-ExecStart=/path/to/Synora_Studio/venv/bin/python run_server.py
+ExecStart=/path/to/Synora_Studio/venv/bin/python server.py
 Restart=always
 RestartSec=5
 
@@ -44,8 +44,8 @@ To run the server silently on Windows without a Command Prompt window appearing,
 
 1. Press `Win + R` and type `shell:startup`.
 2. Create a new shortcut in this folder.
-3. Set the target to your virtual environment's `pythonw.exe`, passing the `run_server.py` script as an argument.
+3. Set the target to your virtual environment's `pythonw.exe`, passing the `server.py` script as an argument.
 ```
-C:\path\to\Synora_Studio\venv\Scripts\pythonw.exe C:\path\to\Synora_Studio\server\run_server.py
+C:\path\to\Synora_Studio\venv\Scripts\pythonw.exe C:\path\to\Synora_Studio\server\server.py
 ```
 This ensures the server API is instantly available to your Desktop GUI or Web Portal as soon as you log into Windows.

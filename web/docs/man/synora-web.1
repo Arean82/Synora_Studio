@@ -2,7 +2,7 @@
 .SH NAME
 synora-web \- Synora Studio Headless Web SaaS Portal
 .SH SYNOPSIS
-.B python main.py
+.B python web.py
 [\-\-host \fIHOST\fR] [\-\-port \fIPORT\fR] [\-\-db-driver \fIDRIVER\fR]
 .SH DESCRIPTION
 .B synora-web
@@ -13,13 +13,13 @@ is the front-facing SaaS web portal for Synora Studio. It handles user authentic
 Bind the web application to the specified host. (Default: 0.0.0.0)
 .TP
 .B \-\-port \fIPORT\fR
-Bind the web application to the specified port. (Default: 5000)
+Bind the web application to the specified port. (Default: 8888)
 .TP
 .B \-\-db-driver \fIDRIVER\fR
 Override the tenant database driver. Options: \fBturso\fR, \fBpostgres\fR, \fBmysql\fR.
 .SH EXAMPLES
 .TP
 Start the web portal on port 80:
-.B python main.py --port 80
+.B python web.py --port 80
 .SH AUTHOR
 Synora Studio Framework

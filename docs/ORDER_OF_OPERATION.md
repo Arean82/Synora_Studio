@@ -9,7 +9,7 @@ The Server module is the central nervous system. It holds the LLM connections, p
 ```bash
 # Terminal 1
 cd server
-python run_server.py
+python server.py
 ```
 *Wait until you see `[+] Backend Engine is live. Listening for API requests on Port 5000...` before proceeding to Step 2.*
 
@@ -37,7 +37,7 @@ python main.py
 ```bash
 # Terminal 2
 cd headless
-python run_cli.py
+python headless.py
 ```
 *The text-based chat interface will connect to the server on port 5000.*
 

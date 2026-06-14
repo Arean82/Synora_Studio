@@ -11,6 +11,6 @@ This directory implements the interactive command-line interface (CLI) chat loop
 ## Usage
 Run the following from the root directory to enter the CLI console:
 ```bash
-python desktop/main.py --cli
+python headless/headless.py --cli
 ```
 Note: This module is strictly excluded from remote server deployment environments to keep production hosting packages minimal.

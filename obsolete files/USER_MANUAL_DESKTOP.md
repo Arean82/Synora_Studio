@@ -95,8 +95,8 @@ Safely migrate your SaaS tenant database from Turso/libSQL to PostgreSQL or MySQ
 ### 🔐 Master Password Reset
 If you lose your Super Admin password, reset it to `admin` using:
 ```bash
-python operator_tools/admin_reset/reset_admin.py
+python operator_tools/admin_reset/admin_reset.py
 ```
 Or in production: `Admin_Reset.exe`
 
-> **Note**: The legacy `scripts/reset_admin.py` is deprecated and automatically redirects to the canonical `operator_tools/admin_reset/reset_admin.py`.
+> **Note**: The legacy `scripts/admin_reset.py` is deprecated and automatically redirects to the canonical `operator_tools/admin_reset/admin_reset.py`.

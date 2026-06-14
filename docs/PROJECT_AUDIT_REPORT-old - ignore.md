@@ -64,7 +64,7 @@
 | 055 | **Architecture**   | `ui/saas_settings...`     | 🔴 High |   ✅**Resolved**   | Fragmented Desktop SaaS Control Panels bypassing Qt Designer & null-type crashes.                  |
 | 056 | **Stability**      | `main.py` / `shared_widgets.py` |  🟠 Med  |   ✅**Resolved**   | PySide6 Taskbar / Process Icon Grouping Regression (Windows Stabilization).                        |
 | 057 | **Architecture**   | `saas/app.py` / `saas/templates/index.html` | 🔴 High |   ✅**Resolved**   | SaaS Web Portal Telemetry & Observability Porting.                                                 |
-| 058 | **Headless / Admin** | `scripts/reset_admin.py` | 🔴 High |   ✅**Resolved**   | Admin reset utility failed to parse due to broken indentation.                                      |
+| 058 | **Headless / Admin** | `scripts/admin_reset.py` | 🔴 High |   ✅**Resolved**   | Admin reset utility failed to parse due to broken indentation.                                      |
 | 059 | **Reliability**    | `circuit_breaker.py`      | 🔴 High |   ✅**Resolved**   | SaaS BYOK failover missed provider-key names stored by tenant credential APIs.                      |
 | 060 | **Architecture**   | `README.md`               |  🟡 Low  |   ✅**Resolved**   | Architecture diagram was stale against current service-layer workflow.                              |
 | 061 | **Security**       | `Embedding Cache`         | 🔴 High |   ✅**Resolved**   | Chunk cache keys are now cryptographically scoped to the tenant_id.                                  |
@@ -599,9 +599,9 @@ Below is the full technical breakdown of every stabilization applied to the envi
 
 * **Severity:** 🔴 High
 * **Status:** ✅ **Resolved**
-* **Location:** `scripts/reset_admin.py`
+* **Location:** `scripts/admin_reset.py`
 * **Details:** The admin reset recovery utility failed Python parsing because the credential-printing block and exception handler were over-indented. This made the script unusable during a SaaS account recovery scenario.
-* **Remediation:** Rebuilt `scripts/reset_admin.py` with normalized indentation and clean terminal output. Repository-wide AST parsing now passes.
+* **Remediation:** Rebuilt `scripts/admin_reset.py` with normalized indentation and clean terminal output. Repository-wide AST parsing now passes.
 
 #### 59. Audit ID 059: SaaS BYOK Failover Credential Key Mismatch
 
@@ -647,7 +647,7 @@ Below is the full technical breakdown of every stabilization applied to the envi
 
 * **Severity:** 🔴 High
 * **Status:** ⏳ **Open**
-* **Location:** `saas/tenant_db.py`, `scripts/reset_admin.py`
+* **Location:** `saas/tenant_db.py`, `scripts/admin_reset.py`
 * **Details:** First-run SaaS initialization and the reset utility provision the default admin as `admin/admin` with `admin_master_passport`. These are acceptable only as local bootstrap/recovery defaults; they remain unsafe if exposed without rotation.
 * **Recommended Remediation:** Force admin credential rotation on first SaaS login, block privileged SaaS operations until rotation completes, and preserve the reset script strictly as a local recovery tool.
 

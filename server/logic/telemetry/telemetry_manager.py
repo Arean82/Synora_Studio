@@ -44,7 +44,7 @@ class TelemetryManager(BaseService):
         
         # Setup telemetry directory and files
         from server.utils.storage_config import StorageManager
-        self.telemetry_log_path = StorageManager.get_instance().get_storage_root() / "data" / "telemetry_logs.jsonl"
+        self.telemetry_log_path = StorageManager.get_instance().get_storage_root() / "telemetry_logs.jsonl"
         self.telemetry_log_path.parent.mkdir(parents=True, exist_ok=True)
         
         self.tracer = None

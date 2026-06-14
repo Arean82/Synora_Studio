@@ -41,7 +41,7 @@ class JobQueueEngine:
         
         # Dead Letter Queue storage path
         from server.utils.storage_config import StorageManager
-        self.dlq_path = StorageManager.get_instance().get_storage_root() / "data" / "dlq.json"
+        self.dlq_path = StorageManager.get_instance().get_storage_root() / "dlq.json"
         self.dlq_path.parent.mkdir(parents=True, exist_ok=True)
         
         # Initialize DLQ file if not exists

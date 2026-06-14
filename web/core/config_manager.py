@@ -20,18 +20,12 @@ class SaaSConfigManager:
     
     def __init__(self):
         # Determine physical path of the configuration target
-        # For portability & headless ease, we store it directly inside /saas/ if writable, 
-        # otherwise fallback gracefully to Storage Root.
-        proj_root = StorageManager.get_instance().get_exe_dir()
-        self.config_path = proj_root / "saas" / "config.ini"
+        # For strict modularity, we persist this inside the standard 'data' storage root,
+        # preventing the creation of unapproved top-level directories.
+        self.config_path = StorageManager.get_instance().get_storage_root() / "saas_config.ini"
         
-        # Fallback check if /saas/ is read-only (e.g. frozen in Program Files)
-        if getattr(os, 'access', None) and os.path.exists(self.config_path.parent):
-            if not os.access(str(self.config_path.parent), os.W_OK):
-                self.config_path = StorageManager.get_instance().get_storage_root() / "saas_config.ini"
-        else:
-            # Ensure saas directory exists physically
-            self.config_path.parent.mkdir(parents=True, exist_ok=True)
+        # Ensure data directory exists physically
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
             
         self.parser = configparser.ConfigParser(allow_no_value=True)
         self.load_or_create_default()

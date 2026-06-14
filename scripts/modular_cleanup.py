@@ -78,7 +78,12 @@ def organize_workspace():
         "server/server_script.py",
         "desktop/desktop_script.py",
         "companion_operation/core/local_relocator.py",
-        "companion_operation/ui_assets/local_relocator.ui"
+        "companion_operation/ui_assets/local_relocator.ui",
+        "server/run_server.py",
+        "web/run_web.py",
+        "headless/run_cli.py",
+        "desktop/main.py",
+        "admin_reset/reset_admin.py"
     ]
     for w in wrappers_to_delete:
         src = root_dir / w

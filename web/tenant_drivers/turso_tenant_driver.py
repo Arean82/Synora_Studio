@@ -24,7 +24,7 @@ class TursoTenantDriver(BaseTenantDriver):
 
     def __init__(self, db_name="saas_tenants.db"):
         storage_root = StorageManager.get_instance().get_storage_root()
-        self.db_path = storage_root / "data" / db_name
+        self.db_path = storage_root / db_name
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.init_db()
 

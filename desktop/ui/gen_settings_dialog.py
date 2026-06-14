@@ -177,7 +177,9 @@ class GenSettingsDialog(QDialog):
         self.ssh_host_input = self.findChild(QLineEdit, "ssh_host_input")
         self.ssh_port_input = self.findChild(QSpinBox, "ssh_port_input")
         self.ssh_user_input = self.findChild(QLineEdit, "ssh_user_input")
+        self.ssh_pass_input = self.findChild(QLineEdit, "ssh_pass_input")
         self.ssh_key_input = self.findChild(QLineEdit, "ssh_key_input")
+        self.ssh_key_pass_input = self.findChild(QLineEdit, "ssh_key_pass_input")
         self.btn_browse_key = self.findChild(QPushButton, "btn_browse_key")
         
         if not self.ssh_enable_cb:
@@ -212,7 +214,9 @@ class GenSettingsDialog(QDialog):
         if hasattr(self, "ssh_host_input"): self.ssh_host_input.setEnabled(checked)
         if hasattr(self, "ssh_port_input"): self.ssh_port_input.setEnabled(checked)
         if hasattr(self, "ssh_user_input"): self.ssh_user_input.setEnabled(checked)
+        if hasattr(self, "ssh_pass_input") and self.ssh_pass_input: self.ssh_pass_input.setEnabled(checked)
         if hasattr(self, "ssh_key_input"): self.ssh_key_input.setEnabled(checked)
+        if hasattr(self, "ssh_key_pass_input") and self.ssh_key_pass_input: self.ssh_key_pass_input.setEnabled(checked)
         if hasattr(self, "btn_browse_key"): self.btn_browse_key.setEnabled(checked)
         
     def on_browse_ssh_key(self):
@@ -222,91 +226,21 @@ class GenSettingsDialog(QDialog):
             self.ssh_key_input.setText(path)
         
     def setup_api_credentials_ui(self):
-        from PySide6.QtWidgets import QTextEdit, QPushButton
-        self.api_key_display = self.findChild(QTextEdit, "api_key_display")
-        self.toggle_api_btn = self.findChild(QPushButton, "toggle_api_btn")
-        self.regen_key_btn = self.findChild(QPushButton, "regen_key_btn")
+        from PySide6.QtWidgets import QLineEdit
+        self.saas_host_input = self.findChild(QLineEdit, "saas_host_input")
+        self.saas_token_input = self.findChild(QLineEdit, "saas_token_input")
         
-        if not (self.api_key_display and self.toggle_api_btn and self.regen_key_btn):
+        if not (self.saas_host_input and self.saas_token_input):
             return
             
         settings = get_app_settings()
         
         # Load state
-        self.api_enabled = str(settings.value("api_enabled", "true")).lower() == "true"
-        current_key = settings.value("local_api_auth_key", "")
-        if not current_key:
-            current_key = f"llm-local-auth-{uuid.uuid4().hex[:10]}"
-            settings.setValue("local_api_auth_key", current_key)
-            settings.sync()
+        host = settings.value("saas_host_url", "")
+        token = settings.value("saas_access_token", "")
             
-        self.api_key_display.setText(current_key)
-        self.update_api_buttons_ui()
-        
-        # Connect signals
-        self.toggle_api_btn.clicked.connect(self.on_toggle_api)
-        self.regen_key_btn.clicked.connect(self.on_regen_key)
-
-    def update_api_buttons_ui(self):
-        if self.api_enabled:
-            self.toggle_api_btn.setText("Disable API")
-            self.toggle_api_btn.setStyleSheet("background-color: #d9534f; color: white; font-weight: bold; border-radius: 4px; padding: 6px;")
-            self.regen_key_btn.setEnabled(True)
-            self.regen_key_btn.setStyleSheet("background-color: #0078d4; color: white; font-weight: bold; border-radius: 4px; padding: 6px;")
-        else:
-            self.toggle_api_btn.setText("Enable API")
-            self.toggle_api_btn.setStyleSheet("background-color: #5cb85c; color: white; font-weight: bold; border-radius: 4px; padding: 6px;")
-            self.regen_key_btn.setEnabled(False)
-            self.regen_key_btn.setStyleSheet("background-color: #555555; color: #aaaaaa; font-weight: bold; border-radius: 4px; padding: 6px;")
-
-    def on_toggle_api(self):
-        from PySide6.QtWidgets import QMessageBox
-        action_text = "Disable" if self.api_enabled else "Enable"
-        confirm = QMessageBox.warning(
-            self,
-            f"{action_text} API",
-            f"Are you sure you want to {action_text.lower()} the local API? This takes effect immediately.",
-            QMessageBox.Yes | QMessageBox.No
-        )
-        if confirm == QMessageBox.No:
-            return
-            
-        self.api_enabled = not self.api_enabled
-        self.update_api_buttons_ui()
-        
-        settings = get_app_settings()
-        settings.setValue("api_enabled", "true" if self.api_enabled else "false")
-        
-        if self.parent() and hasattr(self.parent(), "api_manager"):
-            if not self.api_enabled:
-                self.parent().api_manager.stop_api_server()
-                self.parent().chat_view.add_system_message("🔴 Local API Server has been forcefully disabled.")
-            else:
-                self.parent().api_manager.stop_api_server()
-                self.parent().api_manager.start_api_server()
-                self.parent().chat_view.add_system_message("🌐 Local API Server started with active key.")
-
-    def on_regen_key(self):
-        from PySide6.QtWidgets import QMessageBox
-        confirm = QMessageBox.warning(
-            self,
-            "Regenerate Key",
-            "Are you sure you want to regenerate your API Key? This will instantly destroy your old key, drop all active connections, and restart the server.",
-            QMessageBox.Yes | QMessageBox.No
-        )
-        if confirm == QMessageBox.No:
-            return
-            
-        new_key = f"llm-local-auth-{uuid.uuid4().hex[:10]}"
-        self.api_key_display.setText(new_key)
-        
-        settings = get_app_settings()
-        settings.setValue("local_api_auth_key", new_key)
-        
-        if self.parent() and hasattr(self.parent(), "api_manager"):
-            self.parent().api_manager.stop_api_server()
-            self.parent().api_manager.start_api_server()
-            self.parent().chat_view.add_system_message("🌐 Local API Server restarted to apply new key.")
+        self.saas_host_input.setText(str(host))
+        self.saas_token_input.setText(str(token))
 
     def setup_rerank_ui(self, is_dark: bool):
         """Resolves references to Advanced Retrieval Reranking elements loaded from the UI file, and applies dynamic styling."""
@@ -567,13 +501,46 @@ class GenSettingsDialog(QDialog):
             ssh_host = str(settings.value("ssh_host", ""))
             ssh_port = int(settings.value("ssh_port", 22))
             ssh_user = str(settings.value("ssh_user", ""))
+            
+            ssh_pass_raw = str(settings.value("ssh_pass", ""))
+            ssh_pass = ""
+            try:
+                import keyring
+                if ssh_pass_raw == "KEYRING_STORED":
+                    ssh_pass = keyring.get_password("SynoraStudio", "ssh_pass") or ""
+                elif ssh_pass_raw:
+                    import base64
+                    ssh_pass = base64.b64decode(ssh_pass_raw.encode()).decode()
+            except ImportError:
+                if ssh_pass_raw and ssh_pass_raw != "KEYRING_STORED":
+                    import base64
+                    ssh_pass = base64.b64decode(ssh_pass_raw.encode()).decode()
+
             ssh_key = str(settings.value("ssh_key", ""))
+            
+            ssh_key_pass_raw = str(settings.value("ssh_key_pass", ""))
+            ssh_key_pass = ""
+            try:
+                import keyring
+                if ssh_key_pass_raw == "KEYRING_STORED":
+                    ssh_key_pass = keyring.get_password("SynoraStudio", "ssh_key_pass") or ""
+                elif ssh_key_pass_raw:
+                    import base64
+                    ssh_key_pass = base64.b64decode(ssh_key_pass_raw.encode()).decode()
+            except ImportError:
+                if ssh_key_pass_raw and ssh_key_pass_raw != "KEYRING_STORED":
+                    import base64
+                    ssh_key_pass = base64.b64decode(ssh_key_pass_raw.encode()).decode()
             
             self.ssh_enable_cb.setChecked(ssh_enabled)
             self.ssh_host_input.setText(ssh_host)
             self.ssh_port_input.setValue(ssh_port)
             self.ssh_user_input.setText(ssh_user)
+            if hasattr(self, "ssh_pass_input") and self.ssh_pass_input:
+                self.ssh_pass_input.setText(ssh_pass)
             self.ssh_key_input.setText(ssh_key)
+            if hasattr(self, "ssh_key_pass_input") and self.ssh_key_pass_input:
+                self.ssh_key_pass_input.setText(ssh_key_pass)
             
             self.on_ssh_enabled_toggled(ssh_enabled)
         
@@ -728,6 +695,40 @@ class GenSettingsDialog(QDialog):
             settings.setValue("ssh_host", self.ssh_host_input.text().strip())
             settings.setValue("ssh_port", self.ssh_port_input.value())
             settings.setValue("ssh_user", self.ssh_user_input.text().strip())
+            
+            if hasattr(self, "ssh_pass_input") and self.ssh_pass_input:
+                raw_pass = self.ssh_pass_input.text().strip()
+                if raw_pass:
+                    try:
+                        import keyring
+                        keyring.set_password("SynoraStudio", "ssh_pass", raw_pass)
+                        settings.setValue("ssh_pass", "KEYRING_STORED")
+                    except ImportError:
+                        import base64
+                        settings.setValue("ssh_pass", base64.b64encode(raw_pass.encode()).decode())
+                else:
+                    settings.setValue("ssh_pass", "")
+                    
             settings.setValue("ssh_key", self.ssh_key_input.text().strip())
             
+            if hasattr(self, "ssh_key_pass_input") and self.ssh_key_pass_input:
+                raw_key_pass = self.ssh_key_pass_input.text().strip()
+                if raw_key_pass:
+                    try:
+                        import keyring
+                        keyring.set_password("SynoraStudio", "ssh_key_pass", raw_key_pass)
+                        settings.setValue("ssh_key_pass", "KEYRING_STORED")
+                    except ImportError:
+                        import base64
+                        settings.setValue("ssh_key_pass", base64.b64encode(raw_key_pass.encode()).decode())
+                else:
+                    settings.setValue("ssh_key_pass", "")
+            
+        # Commit SaaS Connection
+        if hasattr(self, "saas_host_input") and self.saas_host_input:
+            settings.setValue("saas_host_url", self.saas_host_input.text().strip())
+        if hasattr(self, "saas_token_input") and self.saas_token_input:
+            settings.setValue("saas_access_token", self.saas_token_input.text().strip())
+            
         self.accept()
+

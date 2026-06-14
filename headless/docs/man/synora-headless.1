@@ -1,0 +1,25 @@
+.TH SYNORA-HEADLESS 1 "June 2026" "Synora Studio 1.0" "Synora Headless Commands"
+.SH NAME
+synora-headless \- Synora Studio Headless Terminal Client
+.SH SYNOPSIS
+.B python headless.py
+[\-\-cli] [\-\-update-models] [\-\-execute-automation-script]
+.SH DESCRIPTION
+.B synora-headless
+is a lightweight, terminal-based interaction suite designed for pure speed and server administration without Graphical UI overhead. It connects to the core API Server to route messages natively through the terminal.
+.SH OPTIONS
+.TP
+.B \-\-cli
+Launch the interactive terminal chat mode.
+.TP
+.B \-\-update-models
+Force a synchronization check to pull offline AI models to the local machine.
+.TP
+.B \-\-execute-automation-script
+Run the headless client as an automated bot, bypassing interactive TTY prompts.
+.SH EXAMPLES
+.TP
+Start an interactive terminal chat:
+.B python headless.py --cli
+.SH AUTHOR
+Synora Studio Framework

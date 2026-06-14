@@ -3,6 +3,7 @@
 
 import sys
 import os
+import logging
 from pathlib import Path
 from server.utils.config_loader import INISettings
 
@@ -46,13 +47,13 @@ class StorageManager:
         """Determines path based on environment indicators."""
         if not getattr(sys, 'frozen', False):
             self.is_portable = True 
-            self.base_data_path = self.get_exe_dir()
+            self.base_data_path = self.get_exe_dir() / "data"
             return self.base_data_path
 
         exe_dir = self.get_exe_dir()
         if (exe_dir / "portable.txt").exists():
             self.is_portable = True
-            self.base_data_path = exe_dir
+            self.base_data_path = exe_dir / "data"
             return self.base_data_path
             
         if not self.check_dir_writable(exe_dir):
@@ -77,7 +78,7 @@ class StorageManager:
         exe_dir = self.get_exe_dir()
         if selected_mode == "PORTABLE":
             (exe_dir / "portable.txt").touch()
-            self.base_data_path = exe_dir
+            self.base_data_path = exe_dir / "data"
             self.is_portable = True
         elif selected_mode == "APPDATA":
             path = self.get_default_app_data_path()

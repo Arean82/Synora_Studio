@@ -26,7 +26,7 @@ pyinstaller --name "Synora_Server" --onedir --console \
   --hidden-import=google.generativeai \
   --hidden-import=openai \
   --hidden-import=anthropic \
-  run_server.py
+  server.py
 ```
 
 **Step 3:** Your compiled backend will be located in `/server/dist/Synora_Server/`.

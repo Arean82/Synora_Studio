@@ -8,37 +8,48 @@ There is no monolithic entry point. You must run, scale, and distribute each com
 
 ---
 
+### System Requirements (Cloud Deployments)
+If you are deploying Synora Studio on a headless Ubuntu Linux server (VPS) and wish to render the Desktop or Companion GUI natively via X11 Forwarding, install the following packages:
+```bash
+sudo apt update
+sudo apt install xauth x11-apps libgl1-mesa-glx libegl1-mesa libxkbcommon-x11-0
+```
+
 ## 🚀 Getting Started (Quick Boot)
 
-Since the architecture is strictly modular, you must start the **API Server** first so that the other modules have a backend to connect to. 
+Since the architecture is strictly modular, there is no monolithic entry point. You must boot the core backend first, and then launch your desired frontend client.
 
-### Prerequisites
-1. Ensure you have **Python 3.10+** installed.
-2. Install all global dependencies from the root directory:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Copy the `.env.example` file to `.env` in the root directory and configure your environment variables.
-
-### Boot Sequence
-
-**1. Start the API Server (Backend Core)**
+### 1. Start the API Server (Backend Core)
+The API server must be running on Port 5000 before any client can function.
 ```bash
-python server/run_server.py
+python server/server.py
 ```
-*(Note: When you run this for the first time, you will encounter the `CLI AUTHENTICATION GATE` prompt in your terminal. Please read the `/server/INSTALLATION.md` for a complete walkthrough of how to satisfy this prompt.)*
+*(Note: Upon first launch, you will encounter the `CLI AUTHENTICATION GATE`. Read `server/INSTALLATION.md` for details).*
 
-**2. Start the Web Portal (SaaS Frontend)**
+### 2. Start your Frontend Client
+Once the backend is active, launch one (or more) of the following interfaces:
+
+**Desktop Client (Native GUI)**
 ```bash
-python web/run_web.py
+python desktop/desktop.py
 ```
 
-**3. Start the Desktop Client (Local Native App)**
+**Headless Client (Terminal CLI)**
 ```bash
-python desktop/main.py
+python headless/headless.py --cli
 ```
 
-*(Note: The Companion Operation toolkit and the Universal Admin Credentials Resetter are on-demand utilities and do not need to be left running.)*
+**Web Portal (SaaS Dashboard)**
+*(Listens on Port 8888 by default)*
+```bash
+python web/web.py
+```
+
+### 3. Administrator Operations
+For DevOps tasks (DB Migrations, Password Resets), use the Companion App:
+```bash
+python companion_app/companion_app.py
+```
 
 ---
 
@@ -48,7 +59,7 @@ The platform is divided into primary modules. **Each module contains its own ded
 
 ### 1. 🧠 API Server (`/server`)
 The foundational centralized intelligence core.
-- **Features:** Exposes REST gateways, handles LLM orchestration (OpenAI, Google GenAI, local Ollama endpoints), manages RAG ingestion pipelines, and semantic vector routing.
+- **Features:** Exposes REST gateways, handles LLM orchestration (OpenAI, Google GenAI, local Ollama endpoints), manages RAG ingestion pipelines, and semantic vector routing. Contains the API Manager (`--api-manager`) CLI tool.
 - **Setup Guide:** [server/INSTALLATION.md](server/INSTALLATION.md)
 
 ### 2. 🌐 Web Portal (`/web`)
@@ -58,13 +69,18 @@ A multi-tenant SaaS dashboard and administration portal that consumes the server
 
 ### 3. 🖥️ Desktop Client (`/desktop`)
 A native desktop GUI application for end-users that wraps the core engine for native usage.
-- **Features:** Connects to the local API Server, manages system prompts, chat history, and seamless AI interactions without browser overhead.
+- **Features:** Pure PySide6 Graphical Interface. Connects to the local API Server, manages system prompts, chat history, and seamless AI interactions without browser overhead.
 - **Setup Guide:** [desktop/INSTALLATION.md](desktop/INSTALLATION.md)
 
-### 4. 🛠️ Companion Operation Toolkit (`/companion_operation`)
+### 4. 🖧 Headless CLI Client (`/headless`)
+A lightweight terminal-based interaction suite.
+- **Features:** Fast interactive terminal chat (`--cli`), offline AI model synchronization (`--update-models`), and secure OS keychain credential entry.
+- **Setup Guide:** [headless/INSTALLATION.md](headless/INSTALLATION.md)
+
+### 5. 🛠️ Companion App Toolkit (`/companion_app`)
 The primary administration toolkit for system administrators and DevOps engineers.
-- **Features:** Automated SaaS database migrations, background service installation, automated backups, and restricted Web Platform Resets.
-- **Setup Guide:** [companion_operation/INSTALLATION.md](companion_operation/INSTALLATION.md)
+- **Features:** Unified Database Relocation (Chat DBs & SaaS Tenant DBs) via `--action migrate`, background service installation, automated backups, and Universal Admin Credentials Recovery (`--action reset-admin`).
+- **Setup Guide:** [companion_app/INSTALLATION.md](companion_app/INSTALLATION.md)
 
 ---
 

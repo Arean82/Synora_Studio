@@ -1,39 +1,106 @@
 # Headless CLI Client Installation Guide
+![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)
+![OS Compatibility](https://img.shields.io/badge/os-Windows%20%7C%20Linux-green)
+![Framework](https://img.shields.io/badge/Interface-Terminal-black)
 
 This guide will walk you through setting up the **Synora Headless CLI Client**. 
-This module provides a lightweight, text-based interface for interacting with the backend. 
+This is a lightweight, terminal-based interaction suite designed for pure speed and server administration without Graphical UI overhead.
 
-Because Synora is strictly decoupled, **you must ensure the API Server is already running on port 5000** before the CLI can send requests to it.
+Because Synora is modular, the headless app **requires the API Server to be running** first. Please ensure you have completed `server/INSTALLATION.md` before proceeding.
 
 ---
 
-## 🐧 Linux / Ubuntu & 🪟 Windows Setup
+## 💻 1. Developer Deployment (Source Code)
 
-Since this is a lightweight terminal client, the setup process is identical across operating systems.
+This is the standard approach for active development, script automation, and daily use.
 
-**Step 1: Open Terminal or PowerShell**
-Navigate to the root directory of the repository.
+### Step 1: Clone the Repository
+Open your Terminal or PowerShell and clone the codebase to a generic directory like `~/Downloads` or `~/projects`.
+```bash
+cd ~/Downloads
+git clone https://github.com/Synora/Synora_Studio.git
+cd Synora_Studio
+```
 
-**Step 2: Activate your Virtual Environment**
-Ensure you activate the main environment you created for the server:
-- **Linux:** `source venv/bin/activate`
-- **Windows:** `.\venv\Scripts\activate`
+### Step 2: Create a Virtual Environment
+```bash
+# Windows
+python -m venv venv
+.\venv\Scripts\activate
 
-**Step 3: Run the CLI Client**
-Navigate to the headless directory and launch the client:
+# Linux
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Run the Application
+Navigate to the headless directory and run the main entry point:
 ```bash
 cd headless
-python run_cli.py
+python headless.py --cli
 ```
 
 ---
 
-## 🛑 The Authentication Gate
+## 🚀 2. Production Deployment (Systemd Integration)
 
-When you run `run_cli.py` for the first time, you will encounter the **CLI Authentication Gate**. 
+Typically, the Headless client is run interactively on-demand by users (`python headless.py --cli`). However, if you are wrapping the headless client into an automated pipeline or persistent shell loop, you can run it via Systemd.
 
-This allows you to securely inject your AI Provider API Keys (like OpenAI or Google Gemini) into the local OS keychain without needing the Desktop GUI.
+1. Create a service file:
+```bash
+sudo nano /etc/systemd/system/synora-headless-bot.service
+```
 
-1. **Select Platform:** Choose your preferred SDK from the numbered list.
-2. **Enter API Key:** Paste your secret token when prompted.
-3. **Success:** The CLI will save the key to your system's secure vault and establish a connection to the running API Server on port 5000.
+2. Add the following configuration (replace `/path/to/Synora_Studio` with your actual path):
+```ini
+[Unit]
+Description=Synora Studio Headless Bot
+After=network.target synora-server.service
+
+[Service]
+User=your_username
+WorkingDirectory=/path/to/Synora_Studio
+# Run an automated script utilizing the headless pipeline
+ExecStart=/path/to/Synora_Studio/venv/bin/python headless/headless.py --execute-automation-script
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+3. Enable and start the service:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable synora-headless-bot
+sudo systemctl start synora-headless-bot
+```
+
+---
+
+## 📦 3. Production Compilation (PyInstaller)
+
+If you wish to distribute the lightweight CLI client to users without requiring Python installations, you can freeze it into a single binary.
+
+### Step 1: Install PyInstaller
+Ensure your virtual environment is activated, then install the compiler:
+```bash
+pip install pyinstaller
+```
+
+### Step 2: Compile the Binary
+Run the following command from the root directory.
+```bash
+pyinstaller --noconfirm --onedir --name "Synora_CLI" headless/headless.py
+```
+
+### Step 3: Distribute
+Once the build completes, the standalone compiled application will be located in the `dist/Synora_CLI/` directory. You can distribute this lightweight folder to end users.
+They can run it directly:
+```bash
+./dist/Synora_CLI/Synora_CLI --cli
+```

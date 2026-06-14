@@ -217,7 +217,7 @@ QPushButton:pressed {
       <string notr="true">color: #6c757d; font-size: 10px; margin-top: 5px;</string>
      </property>
      <property name="text">
-      <string>Forgot password? Use 'scripts/reset_admin.py' to restore default master settings.</string>
+      <string>Forgot password? Use 'scripts/admin_reset.py' to restore default master settings.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignCenter</set>

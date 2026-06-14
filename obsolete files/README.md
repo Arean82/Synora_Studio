@@ -190,7 +190,7 @@ synora_studio/
 │   └── ui_designer/                # 🎨 Qt Designer UI layouts
 │
 ├── server/                         # ⚙️ Core Application Engine & Local Server
-│   ├── run_server.py               # 🚀 Standalone server entry point
+│   ├── server.py               # 🚀 Standalone server entry point
 │   ├── server.spec                 # PyInstaller spec - Server only
 │   ├── logic/                      # ⚙️ Core processing and RAG pipeline
 │   │   ├── storage_drivers/        # 🗃️ Pluggable DB Driver Architecture
@@ -208,7 +208,7 @@ synora_studio/
 │
 ├── web/                            # 🌐 Synora Studio SaaS Web Portal
 │   ├── app.py                      # 🛡️ Secure SaaS Gateway & Flask Server
-│   ├── run_web.py                  # 🚀 Standalone web entry point
+│   ├── web.py                  # 🚀 Standalone web entry point
 │   ├── web.spec                    # PyInstaller spec - Web only
 │   ├── config.ini                  # ⚙️ SaaS configuration
 │   ├── core/                       # ⚙️ Web Core & Config Management
@@ -222,7 +222,7 @@ synora_studio/
 │
 ├── operator_tools/                 # 🔧 Isolated Operator Admin Portfolio
 │   ├── admin_reset/                # 🔐 Universal Master Password Reset
-│   │   └── reset_admin.py          # MVC Controller entrypoint
+│   │   └── admin_reset.py          # MVC Controller entrypoint
 │   └── companion/                  # 🔄 Standalone DB Relocator
 │       └── companion_operation.py  # GUI + CLI/Headless Controller entrypoint
 │
