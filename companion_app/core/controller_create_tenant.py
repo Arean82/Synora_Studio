@@ -1,4 +1,4 @@
-# companion_operation/core/controller_create_tenant.py
+# companion_app/core/controller_create_tenant.py
 # Module containing classes: CreateTenantController, functions: run_cli_action, run_cli_interactive, execute_creation.
 
 import json

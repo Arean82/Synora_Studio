@@ -1,5 +1,5 @@
-# companion_operation/core/ssh_tunnel.py
-# Piggybacks off Desktop App QSettings to establish an SSH tunnel for remote database administration.
+# companion_app/core/ssh_tunnel.py
+# Module containing classes: SSHTunnelManager, functions: get_desktop_config_path, start_tunnel_if_configured, setup_environment.
 
 import os
 from PySide6.QtCore import QSettings

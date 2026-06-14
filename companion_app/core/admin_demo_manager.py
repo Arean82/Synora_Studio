@@ -1,5 +1,5 @@
-# companion_operation/core/admin_demo_manager.py
-# Backend script for managing the isolated demo user.
+# companion_app/core/admin_demo_manager.py
+# Module containing classes: AdminDemoManager, functions: is_demo_enabled, inject_demo_user, remove_demo_user.
 
 from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
 from .ssh_tunnel import SSHTunnelManager

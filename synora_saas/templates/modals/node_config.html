@@ -287,9 +287,9 @@
                     <i class="fa-solid fa-triangle-exclamation"></i> {{ _('Security Note') }}
                 </div>
                 <div style="font-size: 0.9rem; opacity: 0.85;">
-                    {{ _('Disabling the API will instantly shut down the local Desktop app's server and close port 5000.
+                    {{ _("Disabling the API will instantly shut down the local Desktop app's server and close port 5000.
                     Regenerating the key will destroy the old key and forcefully restart the server to sever active
-                    connections.') }}
+                    connections.") }}
                     <br><br><b>{{ _('Changes made here take effect instantly.') }}</b> {{ _('This does not affect the SaaS multi-tenant
                     gateway on port 8000.') }}
                 </div>
@@ -314,7 +314,7 @@
                 </button>
             </div>
 
-            {{ _('<script>
+            <script>
                 // Load Local API status when the tab is shown
                 document.getElementById('tab-btn-nc-local-api').addEventListener('click', function () {
                     fetch('/api/admin/local_api', {
@@ -388,7 +388,7 @@
                         }
                     });
                 }
-            </script>') }}
+            </script>
         </div>
 
         <!-- Tab 8: Enterprise SSO (Admin Only) -->

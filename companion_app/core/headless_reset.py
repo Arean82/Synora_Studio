@@ -1,4 +1,4 @@
-# admin_reset/core/headless_reset.py
+# companion_app/core/headless_reset.py
 # Module containing functions: run_headless_reset.
 
 import sys

@@ -1,5 +1,5 @@
-# companion_operation/core/controller_saas_migrator.py
-# Module containing classes: SaasMigrationWorker, SaasMigratorController, functions: save_config, run, run_cli_interactive.
+# companion_app/core/controller_saas_migrator.py
+# Module containing classes: SaasMigrationWorker, SaasMigratorController, functions: save_config, run, toggle_password.
 
 import os
 import sys

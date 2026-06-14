@@ -1,3 +1,6 @@
+# headless/headless.py
+# Utility script or configuration module.
+
 import sys
 import os
 

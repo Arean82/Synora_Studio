@@ -111,13 +111,19 @@ def create_saas_app():
             print(f"[API Warning]: URL provider lookup failed: {e}")
         return default_urls.get(provider_id, "https://integrate.api.nvidia.com/v1")
 
+    @app.route('/app_icon.ico')
+    @app.route('/favicon.ico')
+    def serve_favicon():
+        resources_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'synora_server', 'resources'))
+        return send_from_directory(resources_dir, 'app_icon.ico')
+
     @app.before_request
     def record_start_time():
         request.start_time = time.perf_counter()
 
     @app.after_request
     def log_telemetry_metrics(response):
-        exempt_starts = ['/static', '/health', '/app_icon.ico']
+        exempt_starts = ['/static', '/health', '/app_icon.ico', '/favicon.ico']
         if any(request.path.startswith(prefix) for prefix in exempt_starts):
             return response
             
@@ -156,7 +162,7 @@ def create_saas_app():
 
     @app.before_request
     def enforce_tenant_authorization():
-        exempt_starts = ['/static', '/health', '/api/validate_passport', '/api/register', '/api/login', '/app_icon.ico']
+        exempt_starts = ['/static', '/health', '/api/validate_passport', '/api/register', '/api/login', '/app_icon.ico', '/favicon.ico']
         exempt_starts += ['/v1/health', '/v2/health', '/v1/validate_passport', '/v2/validate_passport', 
                          '/v1/register', '/v2/register', '/v1/login', '/v2/login']
                          

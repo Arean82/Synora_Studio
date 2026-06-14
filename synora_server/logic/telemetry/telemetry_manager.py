@@ -55,11 +55,11 @@ class TelemetryManager(BaseService):
         if OTEL_AVAILABLE:
             try:
                 provider = TracerProvider()
-                processor = SimpleSpanProcessor(ConsoleSpanExporter())
-                provider.add_span_processor(processor)
+                # processor = SimpleSpanProcessor(ConsoleSpanExporter())
+                # provider.add_span_processor(processor)
                 trace.set_tracer_provider(provider)
                 self.tracer = trace.get_tracer(__name__)
-                logger.info("OpenTelemetry configured successfully.")
+                logger.info("OpenTelemetry configured successfully. (Console Exporter Disabled)")
             except Exception as e:
                 logger.warning(f"Failed to initialize OpenTelemetry: {e}")
 

@@ -1,4 +1,4 @@
-# companion_operation/core/controller_backup.py
+# companion_app/core/controller_backup.py
 # Module containing classes: BackupController, functions: run_gui_backup, run_cli_action.
 
 import os

@@ -1,3 +1,6 @@
+# scripts/rename_web_to_saas.py
+# Module containing functions: rename_web_to_saas.
+
 import os
 import shutil
 from pathlib import Path

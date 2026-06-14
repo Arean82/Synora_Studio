@@ -1,4 +1,4 @@
-# desktop/headless/models.py
+# headless/cli/models.py
 # Module containing classes: HeadlessModels, functions: list_models, update_models, select_model.
 
 # Allows listing and updating models directly from the terminal.

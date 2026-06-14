@@ -1,4 +1,4 @@
-# desktop/headless/engine.py
+# headless/cli/engine.py
 # Module containing classes: HeadlessEngine, functions: ensure_initialized, request_handler.
 
 # Decoupled from GUI via Callback Patterns.

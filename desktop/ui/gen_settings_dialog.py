@@ -1,5 +1,5 @@
 # desktop/ui/gen_settings_dialog.py
-# Module containing classes: GenSettingsDialog, functions: setup_api_credentials_ui, update_api_buttons_ui, on_toggle_api.
+# Module containing classes: GenSettingsDialog, functions: setup_ssh_ui, on_ssh_enabled_toggled, on_browse_ssh_key.
 
 import os
 import uuid

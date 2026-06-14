@@ -1,4 +1,4 @@
-# synora_saas/core/tenant_db.py
+# synora_server/logic/tenant/tenant_db.py
 # SaaS Multi-Tenant Database Factory Manager
 
 """

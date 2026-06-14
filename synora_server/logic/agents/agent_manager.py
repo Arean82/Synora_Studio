@@ -1,4 +1,4 @@
-# synora_saas/core/agent_manager.py
+# synora_server/logic/agents/agent_manager.py
 # Module containing classes: AgentManager, functions: get_instance, start_agent, stop_agent.
 
 import subprocess

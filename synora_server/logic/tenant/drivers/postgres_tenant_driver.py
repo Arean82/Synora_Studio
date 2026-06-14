@@ -1,4 +1,4 @@
-# synora_saas/tenant_drivers/postgres_tenant_driver.py
+# synora_server/logic/tenant/drivers/postgres_tenant_driver.py
 # PostgreSQL Tenant Driver
 
 """
@@ -394,10 +394,9 @@ class PostgresTenantDriver(BaseTenantDriver):
                 """, (admin_hash, new_api_key))
             conn.commit()
             print(f"[SECURITY] Admin account reset successfully.")
-            if not new_password:
-                print(f"New Password: {password}")
+            print(f"New Password: {password}")
             print(f"New API Key: {new_api_key}")
-            return True
+            return password, new_api_key
         finally:
             conn.close()
 

@@ -1,3 +1,6 @@
+# scripts/rebrand_synora.py
+# Module containing functions: rebrand_synora.
+
 import os
 import shutil
 from pathlib import Path

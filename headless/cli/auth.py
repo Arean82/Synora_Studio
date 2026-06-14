@@ -1,4 +1,4 @@
-# desktop/headless/auth.py
+# headless/cli/auth.py
 # Module containing classes: HeadlessAuth, functions: run_login_flow.
 
 # Allows configuring API keys directly from the terminal without a GUI.

@@ -1,4 +1,4 @@
-# companion_operation/core/controller_network_config.py
+# companion_app/core/controller_network_config.py
 # Module containing classes: NetworkConfigController, functions: run_cli_interactive, run_cli_action.
 
 import os

@@ -1,5 +1,5 @@
-# companion_operation/core/admin_platform_reset.py
-# Backend script for executing a highly restricted platform reset.
+# companion_app/core/admin_platform_reset.py
+# Module containing classes: AdminPlatformReset, functions: execute_full_reset.
 
 from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
 from .ssh_tunnel import SSHTunnelManager

@@ -1,4 +1,4 @@
-# admin_reset/reset_controller.py
+# companion_app/core/reset_controller.py
 # Module containing classes: ResetAdminController, functions: on_reset.
 
 import sys
@@ -123,10 +123,10 @@ class ResetAdminController:
             self.log_output.append("\n▶ Initiating universal master reset sequence...")
             try:
                 db = TenantDatabaseManager()
-                db.reset_admin_account(new_password)
+                actual_password, new_api_key = db.reset_admin_account(new_password)
                 self.log_output.append("✅ Successfully synchronized Master Credentials!")
-                self.log_output.append(f"  Username: admin\n  Password: {new_password}\n  API Key: admin_master_passport")
-                QMessageBox.information(self.ui_tab, "Success", "Master admin account reset to specified password.")
+                self.log_output.append(f"  Username: admin\n  Password: {actual_password}\n  API Key: {new_api_key}")
+                QMessageBox.information(self.ui_tab, "Success", f"Master admin account reset.\n\nPassword: {actual_password}\nAPI Key: {new_api_key}")
             except Exception as e:
                 self.log_output.append(f"❌ Failed: {str(e)}")
                 QMessageBox.critical(self.ui_tab, "Error", f"Reset failed:\n{e}")

@@ -1,4 +1,4 @@
-# companion_operation/core/service_installer.py
+# companion_app/core/service_installer.py
 # Module containing classes: ServiceInstallerController, functions: run_cli_interactive, generate_installer, validate_text.
 
 import os

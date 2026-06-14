@@ -1,3 +1,6 @@
+# scripts/cleanup_root_data.py
+# Module containing functions: cleanup_root.
+
 import os
 import shutil
 from pathlib import Path

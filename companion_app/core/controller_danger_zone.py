@@ -1,5 +1,5 @@
-# companion_operation/core/controller_danger_zone.py
-# Controller for the highly restricted Danger Zone operations.
+# companion_app/core/controller_danger_zone.py
+# Module containing classes: DangerZoneController, functions: run_cli_action.
 
 from PySide6.QtWidgets import QPushButton, QTextEdit, QMessageBox
 from .admin_platform_reset import AdminPlatformReset

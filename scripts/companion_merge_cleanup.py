@@ -1,3 +1,6 @@
+# scripts/companion_merge_cleanup.py
+# Module containing functions: main.
+
 import os
 import shutil
 import sys

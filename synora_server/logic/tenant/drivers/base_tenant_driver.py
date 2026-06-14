@@ -1,4 +1,4 @@
-# synora_saas/tenant_drivers/base_tenant_driver.py
+# synora_server/logic/tenant/drivers/base_tenant_driver.py
 # Abstract Base Class (ABC) for all Tenant Database Drivers.
 
 """

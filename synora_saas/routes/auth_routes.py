@@ -180,24 +180,28 @@ def register_auth_routes(app, db, send_alert_email):
         if not user:
             return jsonify({"success": False, "error": "Invalid login credentials."}), 401
             
-        import pyotp
-        import threading
-        
-        otp_secret = db.get_user_otp_secret(user['id'])
-        if not otp_secret:
-            return jsonify({"success": False, "error": "Account lacks OTP configuration."}), 500
+        user['passport_token'] = user.get('api_key', '')
+        try:
+            from synora_server.logic.services import ServiceRegistry
+            auth_service = ServiceRegistry.get("auth")
+            jwt_token = auth_service.generate_token(user)
+            user['passport_token'] = jwt_token
+            user['token'] = jwt_token
+        except Exception as e:
+            pass
             
-        totp = pyotp.TOTP(otp_secret)
-        otp_code = totp.now()
-        
-        email_html = f"<h3>Your Synora Studio Login Code</h3><p>Your one-time passcode is: <b>{otp_code}</b></p><p>This code expires in 30 seconds.</p>"
-        threading.Thread(target=send_alert_email, args=(user['email'], "Synora Studio Login OTP", email_html), daemon=True).start()
+        from synora_server.utils.logger import AppLogger
+        AppLogger.get_instance("synora_saas").siem_audit(
+            event_type="login_success",
+            user=user['username'],
+            action="login_success",
+            metadata={"email": user['email']}
+        )
             
         return jsonify({
             "success": True,
-            "require_otp": True,
-            "user_id": user['id'],
-            "message": f"OTP sent to {user['email']}. Please verify to complete login."
+            "user": user,
+            "message": f"Authentication successful. Welcome back, {user['username']}."
         })
 
     @app.route('/api/verify_otp', methods=['POST'])

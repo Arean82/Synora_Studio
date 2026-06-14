@@ -1,4 +1,4 @@
-# synora_saas/core/config_manager.py
+# synora_server/logic/tenant/config_manager.py
 # SaaS Configuration Manager
 
 """

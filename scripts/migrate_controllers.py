@@ -1,3 +1,6 @@
+# scripts/migrate_controllers.py
+# Utility script or configuration module.
+
 import os
 import shutil
 

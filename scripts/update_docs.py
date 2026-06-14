@@ -1,3 +1,6 @@
+# scripts/update_docs.py
+# Utility script or configuration module.
+
 import os
 import re
 

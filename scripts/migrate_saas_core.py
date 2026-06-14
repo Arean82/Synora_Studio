@@ -1,3 +1,6 @@
+# scripts/migrate_saas_core.py
+# Module containing functions: migrate_saas_core.
+
 import os
 import shutil
 from pathlib import Path

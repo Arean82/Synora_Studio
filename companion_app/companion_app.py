@@ -1,5 +1,5 @@
-# companion_operation/companion_operation.py
-# Module containing classes: DashboardDialog, functions: check_admin_access, run_headless_migration, run_gui_migration.
+# companion_app/companion_app.py
+# Module containing classes: DashboardDialog, DummyArgs, functions: check_admin_access, run_headless_migration, run_gui_migration.
 
 # Dual-Mode: Multi-Tab GUI Wizard + Headless CLI Terminal
 

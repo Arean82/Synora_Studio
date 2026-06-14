@@ -1,4 +1,4 @@
-# synora_saas/tenant_drivers/turso_tenant_driver.py
+# synora_server/logic/tenant/drivers/turso_tenant_driver.py
 # Turso/libSQL Tenant Driver
 
 """
@@ -362,10 +362,9 @@ class TursoTenantDriver(BaseTenantDriver):
                 """, (admin_hash, new_api_key))
             conn.commit()
             print(f"[SECURITY] Admin account reset successfully.")
-            if not new_password:
-                print(f"New Password: {password}")
+            print(f"New Password: {password}")
             print(f"New API Key: {new_api_key}")
-            return True
+            return password, new_api_key
 
     def get_all_tenants(self):
         with self.get_connection() as conn:

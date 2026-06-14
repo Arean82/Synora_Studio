@@ -1,4 +1,4 @@
-# desktop/headless/worker.py
+# headless/cli/worker.py
 # Module containing classes: HeadlessWorker, functions: stop, run.
 
 import threading

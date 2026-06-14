@@ -1,4 +1,4 @@
-# synora_synora_server/synora_server.py
+# synora_server/synora_server.py
 # Module containing functions: run_headless_server.
 
 import sys
