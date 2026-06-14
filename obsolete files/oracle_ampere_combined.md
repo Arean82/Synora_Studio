@@ -117,7 +117,7 @@ In an IDE terminal:
 ```bash
 cd ~/Downloads/Synora_Studio/server
 source ../venv/bin/activate
-python run_server.py --port 5001
+python server.py --port 5001
 ```
 
 ### 2. Launch Dev Web Portal (Port 8889)
@@ -125,7 +125,7 @@ In a second IDE terminal:
 ```bash
 cd ~/Downloads/Synora_Studio/web
 source ../venv/bin/activate
-python run_web.py --port 8889
+python web.py --port 8889
 ```
 
 ---

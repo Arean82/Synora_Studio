@@ -1,27 +1,18 @@
-# Local Admin GUI & Desktop Client
+# Synora Desktop Client (`/desktop`)
 
-This directory houses the PySide6 standalone graphical user interface, functioning as the local administrator's "Mission Control" panel.
+The Desktop Client is the native Graphical User Interface (GUI) for the Synora Studio ecosystem. Built with PyQt6, it offers a seamless, high-performance window into the AI capabilities powered by the isolated API Server.
 
-## Directory Structure
-- **`main.py`**: Entry point orchestrating native application startup parameters, CLI handlers, and window bounds loading.
-- **`ui/`**: PySide6 window view controllers, thread loops, custom widget bindings, and event handlers.
-- **`ui_designer/`**: Pure XML `.ui` description schemas generated from Qt Designer.
-- **`headless/`**: Local CLI chat prompts and background terminal loops.
+## 🚀 Quick Setup
+Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step instructions on how to install and boot the desktop app for local use.
 
-## Local Configuration & Packaging Files
-To support decoupled modular compilation, this directory contains its own self-contained packaging files:
-- **`desktop.spec`**: PyInstaller spec file specific to packaging the Desktop client.
-- **`build.py`**: Local Python build script executing PyInstaller commands targeting `desktop.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
-- **`installer_script.iss`**: Local Inno Setup configuration to package the compiled desktop application.
+## 🏗️ Core Responsibilities
 
-## Key Features
-- **Bypass Control**: Directly configures active storage setups, databases, and LLM providers locally without relying on the public API gateway.
-- **Global SSH Configuration Hub**: Captures and securely stores SSH tunnel profiles (Keys, Ports, Hosts). These settings act as the central routing truth for both the Desktop App itself and the **Companion Operation Toolkit** (which piggybacks off this config).
-- **Zero SaaS Packaging Bloat**: Compiles cleanly using PyInstaller by strictly ignoring `web/` routing assets.
+1. **Native OS Integration:** Interfaces directly with the OS to provide system tray integration, native notifications, and secure keychain access (`keyring`).
+2. **Local AI Interaction:** Provides the UI for chatting with local Ollama endpoints or cloud providers via the `Socket.IO` streams provided by the API Server.
+3. **Decoupled Connectivity:** The Desktop app does absolutely zero heavy lifting. It does not parse models, generate embeddings, or run RAG algorithms. It simply forwards UI interactions to the API server running on port `5000`.
+4. **Configuration Management:** Handles the `.ini` / registry configuration files for user preferences (themes, font sizes, UI behaviors).
 
-## Executable Compilation
-To compile the standalone binary `Synora_Studio.exe` using PyInstaller:
-```bash
-pyinstaller desktop.spec
-```
+## 📚 Advanced Documentation
+
+- [USER_MANUAL_DESKTOP.md](docs/USER_MANUAL_DESKTOP.md) - A comprehensive guide for end-users on how to navigate the desktop interface.
+- [HEADLESS_INTEGRATION.md](headless/README.md) - Documentation on how the Desktop module allows the API server to temporarily hook into its security vault logic when booting headlessly.

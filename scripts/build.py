@@ -28,8 +28,8 @@ def build_pyinstaller_executables():
     # Check specs directory
     specs = [
         os.path.join(ROOT_DIR, "desktop", "desktop.spec"),
-        os.path.join(ROOT_DIR, "server", "server.spec"),
-        os.path.join(ROOT_DIR, "web", "web.spec"),
+        os.path.join(ROOT_DIR, "synora_server", "synora_server.spec"),
+        os.path.join(ROOT_DIR, "synora_saas", "synora_saas.spec"),
         os.path.join(ROOT_DIR, "operator_tools", "admin_reset", "reset_admin.spec"),
         os.path.join(ROOT_DIR, "operator_tools", "companion", "companion_operation.spec")
     ]

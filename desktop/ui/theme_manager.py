@@ -3,7 +3,7 @@
 
 from PySide6.QtCore import QSettings, Qt
 from PySide6.QtWidgets import QSystemTrayIcon, QMessageBox, QApplication
-from server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
 
 class ThemeManager:
     """

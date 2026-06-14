@@ -336,18 +336,16 @@
      </widget>
      <widget class="QWidget" name="tab_api_credentials">
       <attribute name="title">
-       <string>🔑 API Credentials</string>
+       <string>🔑 SaaS Connection Settings</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_api">
        <item>
         <widget class="QLabel" name="security_notice">
          <property name="styleSheet">
-          <string notr="true">color: #d9534f; font-weight: bold;</string>
+          <string notr="true">color: #0078d4; font-weight: bold;</string>
          </property>
          <property name="text">
-          <string>Security Note: Disabling the API will instantly shut down the server and close port 5000. Regenerating the key will destroy the old key and forcefully restart the server to sever active connections.
-
-Note: Changes made in this tab take effect instantly. The 'Save &amp; Close' button does not apply to this section.</string>
+          <string>Connection Settings: Provide the Host URL and Bearer Access Token to connect this Thin Client to the remote Synora SaaS Cloud Portal. Leave blank to run locally.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -355,43 +353,46 @@ Note: Changes made in this tab take effect instantly. The 'Save &amp; Close' but
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_api_key">
-         <property name="styleSheet">
-          <string notr="true">font-weight: bold; margin-top: 10px;</string>
+        <widget class="QGroupBox" name="saas_connection_group">
+         <property name="title">
+          <string>SaaS Cloud Connection</string>
          </property>
-         <property name="text">
-          <string>Local Universal API Key:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QTextEdit" name="api_key_display">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>55</height>
-          </size>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-         <property name="placeholderText">
-          <string>Loading...</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="toggle_api_btn">
-         <property name="text">
-          <string>Disable API</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="regen_key_btn">
-         <property name="text">
-          <string>Regenerate Key</string>
-         </property>
+         <layout class="QFormLayout" name="formLayout_saas">
+          <property name="verticalSpacing">
+           <number>15</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_saas_host">
+            <property name="text">
+             <string>Remote SaaS Host URL:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="saas_host_input">
+            <property name="placeholderText">
+             <string>e.g. http://api.synorastudio.in:8888</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_saas_token">
+            <property name="text">
+             <string>SaaS Access Token:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="saas_token_input">
+            <property name="echoMode">
+             <enum>QLineEdit::EchoMode::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Enter your Bearer Access Token</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
@@ -569,13 +570,30 @@ Note: Changes made in this tab take effect instantly. The 'Save &amp; Close' but
            </widget>
           </item>
           <item row="4" column="0">
+           <widget class="QLabel" name="label_ssh_pass">
+            <property name="text">
+             <string>SSH Password:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="ssh_pass_input">
+            <property name="echoMode">
+             <enum>QLineEdit::EchoMode::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>(Optional) Leave blank if using a key file</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
            <widget class="QLabel" name="label_ssh_key">
             <property name="text">
              <string>Private Key Path (.pem):</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_ssh_key">
             <item>
              <widget class="QLineEdit" name="ssh_key_input"/>
@@ -588,6 +606,23 @@ Note: Changes made in this tab take effect instantly. The 'Save &amp; Close' but
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_ssh_key_pass">
+            <property name="text">
+             <string>Key Passphrase:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="ssh_key_pass_input">
+            <property name="echoMode">
+             <enum>QLineEdit::EchoMode::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>(Optional) If key is encrypted</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

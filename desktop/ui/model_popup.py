@@ -9,8 +9,8 @@ from PySide6.QtWidgets import QDialog, QCheckBox, QHBoxLayout, QTableWidgetItem,
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QColor
 
-from server.utils.path_utils import get_resource_path, get_app_settings
-from server.utils.helpers import strip_markdown
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.helpers import strip_markdown
 from desktop.ui.shared_widgets import set_app_icon
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -90,7 +90,7 @@ class ModelPopupClass(QDialog):
         table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
 
     def populate_models(self):
-        from server.logic.model_io import load_all_models, load_provider_metadata
+        from synora_server.logic.model_io import load_all_models, load_provider_metadata
         import keyring
         import json
         try:
@@ -152,7 +152,7 @@ class ModelPopupClass(QDialog):
                         if not has_vision and not has_audio and not has_video:
                             filtered_by_cap.append(m)
                     elif filter_idx == 2: # Supports Tools
-                        from server.utils.model_config import does_model_support_tools
+                        from synora_server.utils.model_config import does_model_support_tools
                         if does_model_support_tools(m_id):
                             filtered_by_cap.append(m)
                     elif filter_idx == 3: # Multimodal / Vision
@@ -205,7 +205,7 @@ class ModelPopupClass(QDialog):
             table.setItem(row, 2, dev_item)
                         
             # Col 3: Model Name
-            from server.utils.model_config import does_model_support_tools
+            from synora_server.utils.model_config import does_model_support_tools
             supports_tools = does_model_support_tools(model.get('id'))
             name_suffix = " 🛠️" if supports_tools else ""
             name_item = QTableWidgetItem(model.get('name', 'Unnamed') + name_suffix)

@@ -1,0 +1,21 @@
+.TH SYNORA-DESKTOP 1 "June 2026" "Synora Studio 1.0" "Synora Desktop Commands"
+.SH NAME
+synora-desktop \- Synora Studio Native Desktop Client
+.SH SYNOPSIS
+.B python desktop.py
+.SH DESCRIPTION
+.B synora-desktop
+is the native PySide6 graphical user interface for Synora Studio. It connects to the local API Server to manage system prompts, chat history, and provide a seamless AI interaction experience without browser overhead.
+
+.PP
+\fBGRACEFUL DEGRADATION\fR
+.br
+If the graphical interface fails to initialize (e.g. executing on a remote server without \fBssh -X\fR X11 Forwarding enabled), the application will catch the fatal X11 error and gracefully route the user directly into the interactive Headless Engine mode, allowing the platform to still start in the background.
+.SH OPTIONS
+This application does not accept command-line arguments. All configuration is managed via the UI settings vault.
+.SH EXAMPLES
+.TP
+Launch the desktop client:
+.B python desktop.py
+.SH AUTHOR
+Synora Studio Framework

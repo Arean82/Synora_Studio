@@ -13,9 +13,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtUiTools import QUiLoader
 
-from server.utils.path_utils import get_resource_path, get_app_settings
-from server.utils.helpers import strip_markdown
-from server.logic.model_io import load_all_models, save_all_models
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.helpers import strip_markdown
+from synora_server.logic.model_io import load_all_models, save_all_models
 from desktop.ui.shared_widgets import set_app_icon
 
 class CredentialManagerDialog(QDialog):
@@ -23,7 +23,7 @@ class CredentialManagerDialog(QDialog):
         super().__init__(parent)
         set_app_icon(self)
         self.theme_manager = theme_manager
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         self.theme = get_app_settings().value("theme", "dark")
         
         # Load UI
@@ -73,7 +73,7 @@ class CredentialManagerDialog(QDialog):
         table.setRowCount(0)
         
         # Base list of SDKs loaded dynamically from the unified registry
-        from server.logic.model_io import load_provider_metadata
+        from synora_server.logic.model_io import load_provider_metadata
         metadata = load_provider_metadata()
         raw_providers = metadata.get("providers", [])
         
@@ -198,7 +198,7 @@ class CredentialManagerDialog(QDialog):
     def populate_ecosystem_filter(self):
         """Populates the filter with 'All' + any ecosystem that has a key."""
         import keyring
-        from server.logic.model_io import load_provider_metadata
+        from synora_server.logic.model_io import load_provider_metadata
         self.ui.modelEcosystemFilter.blockSignals(True)
         self.ui.modelEcosystemFilter.clear()
         self.ui.modelEcosystemFilter.addItem("🌐 All Ecosystems")
@@ -230,7 +230,7 @@ class CredentialManagerDialog(QDialog):
 
     def load_models(self):
         """Load models based on the selected filter with unified normalization and security gating."""
-        from server.logic.model_io import load_all_models, load_provider_metadata
+        from synora_server.logic.model_io import load_all_models, load_provider_metadata
         import keyring
         import json
         
@@ -394,7 +394,7 @@ class CredentialManagerDialog(QDialog):
         
         import keyring
         import json
-        from server.logic.model_io import load_provider_metadata
+        from synora_server.logic.model_io import load_provider_metadata
         
         metadata = load_provider_metadata()
         base_providers = metadata.get("providers", [])
@@ -453,7 +453,7 @@ class CredentialManagerDialog(QDialog):
             return
             
         target = self.fetch_queue.pop(0)
-        from server.workers.model_fetch_worker import ModelFetchWorker
+        from synora_server.workers.model_fetch_worker import ModelFetchWorker
         
         self.worker = ModelFetchWorker(target['key'], target['url'], target['name'], parent=self)
         # Add provider metadata to the models during fetch
@@ -480,7 +480,7 @@ class CredentialManagerDialog(QDialog):
         self.process_next_fetch()
 
     def finalize_fetch(self):
-        from server.logic.model_io import save_all_models
+        from synora_server.logic.model_io import save_all_models
         if self.all_fetched_models:
             save_all_models(self.all_fetched_models)
             QMessageBox.information(self, "Success", f"Catalog updated! Saved {len(self.all_fetched_models)} models.")

@@ -50,7 +50,7 @@ In an IDE terminal, activate the virtual environment and start the API:
 ```bash
 cd ~/Downloads/Synora_Studio/server
 source ../venv/bin/activate
-python run_server.py --port 5001
+python server.py --port 5001
 ```
 
 ### 2. Start the Web SaaS Portal (Port 8889)
@@ -58,7 +58,7 @@ In a *second* IDE terminal, start the Web Portal:
 ```bash
 cd ~/Downloads/Synora_Studio/web
 source ../venv/bin/activate
-python run_web.py --port 8889
+python web.py --port 8889
 ```
 
 ---
