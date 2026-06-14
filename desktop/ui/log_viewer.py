@@ -4,8 +4,8 @@
 from PySide6.QtWidgets import QDialog, QMessageBox
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
-from server.utils.path_utils import get_resource_path
-from server.workers.update_logger import get_logger
+from synora_server.utils.path_utils import get_resource_path
+from synora_server.workers.update_logger import get_logger
 from desktop.ui.shared_widgets import set_app_icon
 
 class LogViewerDialog(QDialog):
@@ -49,14 +49,14 @@ class LogViewerDialog(QDialog):
         self.logger.new_log.connect(self.on_new_log)
         
         # Restore Geometry
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         geom = settings.value("geometry_log_viewer")
         if geom:
             self.restoreGeometry(geom)
 
     def closeEvent(self, event):
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         settings.setValue("geometry_log_viewer", self.saveGeometry())
         super().closeEvent(event)

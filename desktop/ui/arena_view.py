@@ -6,8 +6,8 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QFileDialog
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 
-from server.logic.chat_worker import ChatWorker
-from server.utils.path_utils import get_resource_path
+from synora_server.logic.chat_worker import ChatWorker
+from synora_server.utils.path_utils import get_resource_path
 from desktop.ui.shared_widgets import ChatDisplay # shared widget type
 
 class ArenaViewWidget(QWidget):
@@ -81,7 +81,7 @@ class ArenaViewWidget(QWidget):
 
     def load_layout_settings(self):
         """Restores the visual proportions of the arena splitters."""
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         state = settings.value("arena_splitter_state")
         if state and hasattr(self.ui, 'arena_splitter'):
@@ -90,7 +90,7 @@ class ArenaViewWidget(QWidget):
     def save_layout_settings(self):
         """Persists the current visual proportions of the arena splitters."""
         if hasattr(self.ui, 'arena_splitter'):
-            from server.utils.path_utils import get_app_settings
+            from synora_server.utils.path_utils import get_app_settings
             settings = get_app_settings()
             settings.setValue("arena_splitter_state", self.ui.arena_splitter.saveState())
             settings.sync()
@@ -99,7 +99,7 @@ class ArenaViewWidget(QWidget):
         """Checks if multiple ecosystems are configured; shows warning if not."""
         import keyring
         connected_count = 0
-        from server.logic.model_io import load_provider_metadata
+        from synora_server.logic.model_io import load_provider_metadata
         metadata = load_provider_metadata()
         
         # Check base ecosystems dynamically
@@ -112,7 +112,7 @@ class ArenaViewWidget(QWidget):
                 
         # If still 0 or 1, check the new Hub's custom providers
         if connected_count < 2:
-             from server.utils.path_utils import get_app_settings
+             from synora_server.utils.path_utils import get_app_settings
              import json
              custom = json.loads(get_app_settings().value("custom_providers", "[]"))
              for p in custom:
@@ -207,7 +207,7 @@ class ArenaViewWidget(QWidget):
         self.response_b = ""
         
         # Load dynamic generation override settings consistent with standard chat behavior
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         use_defaults = settings.value("gen_use_defaults", "false") == "true"
         
@@ -219,7 +219,7 @@ class ArenaViewWidget(QWidget):
             a_tokens = int(settings.value("gen_max_tokens", 4096))
             
         # Construct standard payload leveraging unified system instructions if active
-        from server.utils.helpers import get_active_system_instructions
+        from synora_server.utils.helpers import get_active_system_instructions
         payload = []
         sys_instr = get_active_system_instructions()
         if sys_instr:
@@ -248,8 +248,8 @@ class ArenaViewWidget(QWidget):
 
     def clone_client(self, mid):
         """Helper to manufacture independent client instances tailored to the specific targeted model provider."""
-        from server.logic.llm_client import LLMClient
-        from server.utils.path_utils import get_app_settings
+        from synora_server.logic.llm_client import LLMClient
+        from synora_server.utils.path_utils import get_app_settings
         import keyring
         import json
         
@@ -288,7 +288,7 @@ class ArenaViewWidget(QWidget):
              if not target_url:
                  target_url = settings.value(f"url_{provider}")
                  if not target_url:
-                     from server.logic.model_io import load_provider_metadata
+                     from synora_server.logic.model_io import load_provider_metadata
                      metadata = load_provider_metadata()
                      for p in metadata.get("providers", []):
                          if normalize(p.get("id")) == p_norm or normalize(p.get("display_name", "")) == p_norm:

@@ -10,8 +10,8 @@ import os
 from PySide6.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QInputDialog
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Qt
-from server.utils.path_utils import get_resource_path
-from web.core.config_manager import SaaSConfigManager
+from synora_server.utils.path_utils import get_resource_path
+from synora_server.logic.tenant.config_manager import SaaSConfigManager
 from desktop.ui.shared_widgets import set_app_icon
 
 class SaaSSettingsDialogClass(QDialog):
@@ -63,7 +63,7 @@ class SaaSSettingsDialogClass(QDialog):
         self.setup_extensions_tab()
             
         # Restore Geometry
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         geom = settings.value("geometry_saas_settings")
         if geom:
@@ -89,7 +89,7 @@ class SaaSSettingsDialogClass(QDialog):
             self.ai_desc_worker.terminate()
             self.ai_desc_worker.wait() # wait for clean thread exit
             
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         settings = get_app_settings()
         settings.setValue("geometry_saas_settings", self.saveGeometry())
         super().closeEvent(event)
@@ -199,7 +199,7 @@ class SaaSSettingsDialogClass(QDialog):
         
         if reply == QMessageBox.Yes:
             try:
-                from web.core.tenant_db import TenantDatabaseManager
+                from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
                 db = TenantDatabaseManager()
                 db.reset_admin_account()
                 
@@ -277,7 +277,7 @@ class SaaSSettingsDialogClass(QDialog):
                 self.extensions_cache[row]["name"] = self.txt_ext_title.text().strip()
                 self.extensions_cache[row]["description"] = self.txt_ext_desc.toPlainText().strip()
 
-            from server.utils.path_utils import get_resource_path
+            from synora_server.utils.path_utils import get_resource_path
             import json, os
             config_path = get_resource_path(os.path.join("extension", "extensions_config.json"))
             
@@ -301,7 +301,7 @@ class SaaSSettingsDialogClass(QDialog):
         self.accept()
         
     def refresh_telemetry(self):
-        from web.core.tenant_db import TenantDatabaseManager
+        from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
         db = TenantDatabaseManager()
         usage = db.get_global_usage().get("aggregate", {})
         prompt = usage.get("total_prompt") or 0
@@ -310,7 +310,7 @@ class SaaSSettingsDialogClass(QDialog):
         self.ui.lbl_global_completion.setText(f"Total Completion Tokens: {comp:,}")
         
     def refresh_tenants(self):
-        from web.core.tenant_db import TenantDatabaseManager
+        from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
         db = TenantDatabaseManager()
         tenants = db.get_all_tenants()
         self.ui.table_tenants.setRowCount(len(tenants))
@@ -339,7 +339,7 @@ class SaaSSettingsDialogClass(QDialog):
             return
             
         new_status = "active" if current_status == "banned" else "banned"
-        from web.core.tenant_db import TenantDatabaseManager
+        from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
         db = TenantDatabaseManager()
         db.update_user_status(user_id, new_status)
         self.refresh_tenants()
@@ -352,7 +352,7 @@ class SaaSSettingsDialogClass(QDialog):
         
         new_pass, ok = QInputDialog.getText(self, "Reset Password", f"Enter new password for {username}:")
         if ok and new_pass.strip():
-            from web.core.tenant_db import TenantDatabaseManager
+            from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
             db = TenantDatabaseManager()
             success, msg = db.update_user_profile(user_id, password_raw=new_pass.strip())
             if success:
@@ -391,7 +391,7 @@ class SaaSSettingsDialogClass(QDialog):
     def load_extensions_data(self):
         """Crawls local extensions and populates the table."""
         from PySide6.QtWidgets import QTableWidgetItem
-        from server.utils.path_utils import get_resource_path
+        from synora_server.utils.path_utils import get_resource_path
         import json, os, time, re
 
         self.ext_table.setRowCount(0)
@@ -475,7 +475,7 @@ class SaaSSettingsDialogClass(QDialog):
         self.btn_ext_ai.setEnabled(False)
 
         # Quick worker QThread connection to query LLM Client natively
-        from server.logic.llm_client import LLMClient
+        from synora_server.logic.llm_client import LLMClient
         from PySide6.QtCore import QThread, Signal
 
         class DynamicDescWorker(QThread):
@@ -493,8 +493,8 @@ class SaaSSettingsDialogClass(QDialog):
                 try:
                     llm_client = LLMClient()
                     # Hook active provider configurations
-                    from server.utils.path_utils import get_app_settings
-                    from server.utils.security_utils import decrypt_data, SESSION_MASTER_PASSWORD
+                    from synora_server.utils.path_utils import get_app_settings
+                    from synora_server.utils.security_utils import decrypt_data, SESSION_MASTER_PASSWORD
                     import keyring
                     
                     active_p = get_app_settings().value("active_provider_id", "nvidia")
@@ -526,7 +526,7 @@ class SaaSSettingsDialogClass(QDialog):
                     # Enforce live selected model from parent/chat directly with zero hardcoded fallbacks
                     model_id = self.model_id
                     if not model_id:
-                        from server.utils.path_utils import get_app_settings
+                        from synora_server.utils.path_utils import get_app_settings
                         model_id = get_app_settings().value("current_model_id")
                     
                     print(f"[DynamicDescWorker] Resolved model ID for generation: {model_id}")

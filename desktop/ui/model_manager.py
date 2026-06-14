@@ -15,10 +15,10 @@ from PySide6.QtGui import QColor
 from PySide6.QtUiTools import QUiLoader
 
 from desktop.ui.model_edit_dialog import ModelEditDialog
-from server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
 from desktop.ui.shared_widgets import set_app_icon
-from server.utils.constants import OPENAI_BASE_URL
-from server.utils.helpers import strip_markdown
+from synora_server.utils.constants import OPENAI_BASE_URL
+from synora_server.utils.helpers import strip_markdown
 
 class ModelManagerDialog(QDialog):
     """Main dialog for viewing and managing models."""
@@ -33,7 +33,7 @@ class ModelManagerDialog(QDialog):
         if parent and hasattr(parent, 'llm_client'):
             self.llm_client = parent.llm_client
         else:
-            from server.logic.llm_client import LLMClient
+            from synora_server.logic.llm_client import LLMClient
             self.llm_client = LLMClient()
 
         set_app_icon(self) 
@@ -103,7 +103,7 @@ class ModelManagerDialog(QDialog):
 
         filtered_models = []
         if filter_idx > 0:
-            from server.utils.model_config import does_model_support_tools
+            from synora_server.utils.model_config import does_model_support_tools
             for model in self.models:
                 m_id = model.get("id", "")
                 m_desc = model.get("description", "").lower()
@@ -182,7 +182,7 @@ class ModelManagerDialog(QDialog):
             table.setRowCount(len(models))
             for row, model in enumerate(models):
                 # Column 0: Display Name
-                from server.utils.model_config import does_model_support_tools
+                from synora_server.utils.model_config import does_model_support_tools
                 supports_tools = does_model_support_tools(model.get('id'))
                 name_suffix = " 🛠️" if supports_tools else ""
                 table.setItem(row, 0, QTableWidgetItem(model.get("name", "") + name_suffix))
@@ -496,12 +496,12 @@ class ModelManagerDialog(QDialog):
             """)
   
     def get_models_file_path(self):
-        from server.utils.path_utils import get_models_path
+        from synora_server.utils.path_utils import get_models_path
         return get_models_path()
 
     def load_models(self):
         """Strict isolation: Only load models belonging to the active provider."""
-        from server.logic.model_io import load_all_models
+        from synora_server.logic.model_io import load_all_models
         active_p = get_app_settings().value("active_provider_id", "nvidia")
         
         # Load all but immediately filter to the active ecosystem only
@@ -514,7 +514,7 @@ class ModelManagerDialog(QDialog):
 
     def save_models(self):
         """Saves current state. Only touches the active provider's segments."""
-        from server.logic.model_io import load_all_models, save_all_models
+        from synora_server.logic.model_io import load_all_models, save_all_models
         active_p = get_app_settings().value("active_provider_id", "nvidia")
         
         # To avoid wiping other ecosystems, we load everything else first
@@ -608,8 +608,8 @@ class ModelManagerDialog(QDialog):
             QMessageBox.warning(self, "Fetch Already Running", "Model fetch is already in progress.")
             return
 
-        from server.logic.llm_client import LLMClient
-        from server.workers.model_fetch_worker import ModelFetchWorker
+        from synora_server.logic.llm_client import LLMClient
+        from synora_server.workers.model_fetch_worker import ModelFetchWorker
 
         settings = get_app_settings()
         active_p = settings.value("active_provider_id", "nvidia")
@@ -641,7 +641,7 @@ class ModelManagerDialog(QDialog):
         self._started_fetch = True
 
         # Get logger instance
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         logger = get_logger()
         logger.add_log("Starting model fetch from NVIDIA API", "INFO")
 
@@ -660,14 +660,14 @@ class ModelManagerDialog(QDialog):
 
     def _on_fetch_progress(self, current, total, model_name, status):
         """Update progress - log to console and logger"""
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         logger = get_logger()
         logger.add_log(f"[{current}/{total}] {model_name}: {status}", "INFO")
         print(f"[{current}/{total}] {model_name}: {status}")
     
     def _on_fetch_finished(self, working_models):
         """Save results and refresh"""
-        from server.logic.model_io import save_all_models
+        from synora_server.logic.model_io import save_all_models
         active_p = get_app_settings().value("active_provider_id", "nvidia")
         for m in working_models:
             m['provider'] = active_p
@@ -691,7 +691,7 @@ class ModelManagerDialog(QDialog):
 
     def _on_fetch_error(self, error_msg):
         """Handle fetch error with user-friendly messages"""
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         logger = get_logger()
         logger.add_log(f"Fetch error: {error_msg}", "ERROR")
         
@@ -767,8 +767,8 @@ class ModelManagerDialog(QDialog):
     
     def fetch_paid_models_from_nvidia(self):
         """Fetch paid models and MERGE with existing free models"""
-        from server.logic.llm_client import LLMClient
-        from server.workers.update_logger import get_logger
+        from synora_server.logic.llm_client import LLMClient
+        from synora_server.workers.update_logger import get_logger
         
         settings = get_app_settings()
         active_p = settings.value("active_provider_id", "nvidia")
@@ -799,7 +799,7 @@ class ModelManagerDialog(QDialog):
         logger.add_log("Starting paid models fetch...", "INFO")
         
         # Create and start worker for paid models
-        from server.workers.paid_model_fetch_worker import PaidModelFetchWorker
+        from synora_server.workers.paid_model_fetch_worker import PaidModelFetchWorker
         # Re-using the system client for auth consistency
         self.paid_fetch_worker = PaidModelFetchWorker(self.llm_client, parent=None)
         ModelManagerDialog._fetch_instance = self.paid_fetch_worker
@@ -852,7 +852,7 @@ class ModelManagerDialog(QDialog):
         NEW: Fetch ALL models (free + paid) in one go.
         Add this as a third button if you want.
         """
-        from server.logic.llm_client import LLMClient
+        from synora_server.logic.llm_client import LLMClient
         
         settings = get_app_settings()
         active_p = settings.value("active_provider_id", "nvidia")
@@ -983,7 +983,7 @@ class ModelManagerDialog(QDialog):
 
     def generate_descriptions(self):
         """Generate descriptions for models using the active chat model selected in main tab"""
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
 
         # Find models without descriptions
         models_to_update = []
@@ -1020,7 +1020,7 @@ class ModelManagerDialog(QDialog):
         self.accept()
 
         # Start description generator worker with active model & global llm client
-        from server.workers.description_generator import DescriptionGeneratorWorker
+        from synora_server.workers.description_generator import DescriptionGeneratorWorker
         self.generator_worker = DescriptionGeneratorWorker(self.llm_client, selected_model_id, models_to_update, parent=None)
         ModelManagerDialog._fetch_instance = self.generator_worker
         self.generator_worker.progress.connect(self._on_generation_progress)
@@ -1029,18 +1029,18 @@ class ModelManagerDialog(QDialog):
         self.generator_worker.start()
 
     def _on_generation_progress(self, current, total, model_name, status):
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         logger = get_logger()
         logger.add_log(f"[{current}/{total}] {model_name}: {status}", "INFO")
 
     def _on_generation_finished(self):
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         logger = get_logger()
         logger.add_log("Description generation complete!", "SUCCESS")
         ModelManagerDialog._fetch_in_progress = False
 
     def _on_generation_error(self, error_msg):
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         logger = get_logger()
         logger.add_log(f"Generation error: {error_msg}", "ERROR")
         ModelManagerDialog._fetch_in_progress = False

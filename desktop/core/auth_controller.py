@@ -16,7 +16,7 @@ class AuthController:
             print("[*] Admin login cancelled. Exiting.")
             sys.exit(0)
             
-        from server.logic.llm_client import LLMClient
+        from synora_server.logic.llm_client import LLMClient
         client = LLMClient()
         client.hydrate()
         

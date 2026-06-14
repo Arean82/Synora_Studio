@@ -10,9 +10,9 @@ and Dead Letter Queue fault states in real time.
 from PySide6.QtWidgets import QDialog, QMessageBox, QTableWidgetItem, QHeaderView
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QTimer, Qt
-from server.utils.path_utils import get_resource_path
-from server.logic.queue.job_queue import JobQueueEngine
-from server.logic.services import ServiceRegistry
+from synora_server.utils.path_utils import get_resource_path
+from synora_server.logic.queue.job_queue import JobQueueEngine
+from synora_server.logic.services import ServiceRegistry
 from desktop.ui.shared_widgets import set_app_icon
 
 class SystemHealthDialog(QDialog):

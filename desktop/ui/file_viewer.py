@@ -10,7 +10,7 @@ from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices, QTextCursor, QMouseEvent
 from pathlib import Path
 
-from server.utils.path_utils import get_resource_path, get_cache_path
+from synora_server.utils.path_utils import get_resource_path, get_cache_path
 
 class BadgeCacheWorker(QThread):
     """Background thread to download badge images so the UI doesn't freeze"""

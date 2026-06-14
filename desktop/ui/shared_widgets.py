@@ -49,7 +49,7 @@ class ChatDisplay(QTextEdit):
 
 def set_app_icon(window):
     """Applies the app icon to any window passed to it."""
-    from server.utils.path_utils import get_resource_path
+    from synora_server.utils.path_utils import get_resource_path
     import platform
     
     print(f"[Icon Loader] set_app_icon called for: {window}")

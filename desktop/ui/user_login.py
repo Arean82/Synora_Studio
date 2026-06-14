@@ -6,10 +6,10 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QIcon, QPixmap, QPainter, QPen, QColor, QBrush, QPainterPath
 
-from server.utils.path_utils import get_resource_path
+from synora_server.utils.path_utils import get_resource_path
 from desktop.ui.shared_widgets import set_app_icon
-from web.core.tenant_db import TenantDatabaseManager
-import server.utils.security_utils as security_utils
+from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
+import synora_server.utils.security_utils as security_utils
 
 def create_eye_icon(visible: bool) -> QIcon:
     if visible:

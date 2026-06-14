@@ -13,7 +13,7 @@ from PySide6.QtUiTools import QUiLoader
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from server.utils.path_utils import get_resource_path
+from synora_server.utils.path_utils import get_resource_path
 
 class InstructionEditorDialog(QDialog):
     """Mini dialog to edit Name and Text of an instruction"""
