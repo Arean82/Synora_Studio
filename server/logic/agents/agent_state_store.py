@@ -14,7 +14,7 @@ import logging
 import time
 from typing import Optional
 
-logger = logging.getLogger("QuantumAgentStateStore")
+logger = logging.getLogger("SynoraAgentStateStore")
 
 
 class AgentStateStore:

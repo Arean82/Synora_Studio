@@ -5,7 +5,7 @@ import logging
 from server.logic.agents.base_agent import BaseAgent
 from server.logic.agents.sandbox import ToolExecutionSandbox
 
-logger = logging.getLogger("QuantumCodingAgent")
+logger = logging.getLogger("SynoraCodingAgent")
 
 class CodingAgent(BaseAgent):
     """

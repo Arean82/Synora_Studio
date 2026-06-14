@@ -15,13 +15,13 @@ export const App = {
 export function saveSession(user, token) {
     App.user = user;
     App.token = token;
-    sessionStorage.setItem('quantum_user', JSON.stringify(user));
-    sessionStorage.setItem('quantum_token', token);
+    sessionStorage.setItem('synora_user', JSON.stringify(user));
+    sessionStorage.setItem('synora_token', token);
 }
 
 export function loadSession() {
-    const savedUser = sessionStorage.getItem('quantum_user');
-    const savedToken = sessionStorage.getItem('quantum_token');
+    const savedUser = sessionStorage.getItem('synora_user');
+    const savedToken = sessionStorage.getItem('synora_token');
     if (savedUser && savedToken) {
         try {
             App.user = JSON.parse(savedUser);
@@ -35,8 +35,8 @@ export function loadSession() {
 }
 
 export function clearSession() {
-    sessionStorage.removeItem('quantum_user');
-    sessionStorage.removeItem('quantum_token');
+    sessionStorage.removeItem('synora_user');
+    sessionStorage.removeItem('synora_token');
     App.user = null;
     App.token = null;
 }

@@ -696,7 +696,7 @@ Below is the full technical breakdown of every stabilization applied to the envi
 * **Severity:** 🟠 Medium
 * **Status:** ⏳ **Open**
 * **Location:** `saas/static/js/state.js`, `saas/app.py`
-* **Details:** The SaaS browser client stores the bearer passport in `localStorage` as `quantum_token`. Any future XSS or injected script can read and replay this token. The current app escapes many rendered paths, but token placement still increases blast radius.
+* **Details:** The SaaS browser client stores the bearer passport in `localStorage` as `synora_token`. Any future XSS or injected script can read and replay this token. The current app escapes many rendered paths, but token placement still increases blast radius.
 * **Recommended Remediation:** Move SaaS sessions to `HttpOnly`, `Secure`, `SameSite` cookies or short-lived access tokens with refresh rotation. If API bearer storage must remain client-side, add strict CSP and reduce token lifetime.
 
 #### 71. Audit ID 071: Forceful QThread Termination Remains in Stop Paths

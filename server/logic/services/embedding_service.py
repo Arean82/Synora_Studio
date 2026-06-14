@@ -5,7 +5,7 @@ import hashlib
 import logging
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumEmbeddingService")
+logger = logging.getLogger("SynoraEmbeddingService")
 
 class EmbeddingService(BaseService):
     """
@@ -17,13 +17,17 @@ class EmbeddingService(BaseService):
         self.db_mgr = None
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Embedding Service...")
-        from web.core.tenant_db import TenantDatabaseManager
-        self.db_mgr = TenantDatabaseManager()
+        logger.info("Initializing Synora Embedding Service...")
+        try:
+            from web.core.tenant_db import TenantDatabaseManager
+            self.db_mgr = TenantDatabaseManager()
+        except ImportError:
+            logger.warning("web.core.tenant_db not found. Embedding L2 Cache disabled.")
+            self.db_mgr = None
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Embedding Service...")
+        logger.info("Shutting down Synora Embedding Service...")
         self.db_mgr = None
         return True
 

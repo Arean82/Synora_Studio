@@ -24,7 +24,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-logger = logging.getLogger("QuantumToolSandbox")
+logger = logging.getLogger("SynoraToolSandbox")
 
 # Modules / calls that are forbidden inside sandboxed code
 FORBIDDEN_PATTERNS = [

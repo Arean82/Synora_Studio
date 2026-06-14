@@ -4,7 +4,7 @@
 import logging
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumSecurityService")
+logger = logging.getLogger("SynoraSecurityService")
 
 class SecurityService(BaseService):
     """
@@ -15,11 +15,11 @@ class SecurityService(BaseService):
         super().__init__()
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Security Service...")
+        logger.info("Initializing Synora Security Service...")
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Security Service...")
+        logger.info("Shutting down Synora Security Service...")
         return True
 
     def check_permission(self, user: dict, required_role: str) -> bool:

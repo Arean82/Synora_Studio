@@ -114,7 +114,7 @@ class AutoSaveWorker(QThread):
                             "model_id": self.model_id,
                             "user_id": 1
                         }
-                        queue_broker.enqueue("quantum_tasks", task_payload)
+                        queue_broker.enqueue("synora_tasks", task_payload)
                     except Exception as e: 
                         import logging
                         logging.error(f"Caught exception: {e}", exc_info=True)

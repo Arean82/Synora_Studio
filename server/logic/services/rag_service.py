@@ -11,7 +11,7 @@ from server.logic.vector_db import VectorDatabase
 from server.logic.rag_manager import RAGManager
 from server.logic.rerank_engine import RerankEngine
 
-logger = logging.getLogger("QuantumRAGService")
+logger = logging.getLogger("SynoraRAGService")
 
 class RAGService(BaseService):
     """
@@ -26,14 +26,14 @@ class RAGService(BaseService):
         self.rerank_engine = None
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum RAG Service...")
+        logger.info("Initializing Synora RAG Service...")
         self.vector_db = VectorDatabase.get_instance()
         self.lexical_mgr = RAGManager()
         self.rerank_engine = RerankEngine()
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum RAG Service resources...")
+        logger.info("Shutting down Synora RAG Service resources...")
         if self.vector_db:
             self.vector_db.close()
         self.vector_db = None

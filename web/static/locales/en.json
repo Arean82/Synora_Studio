@@ -1,8 +1,8 @@
 {
   "app_title": "Synora Studio SaaS - Multi-Tenant Cloud AI Console",
-  "app_description": "Experience high-performance, low-latency inference with the self-hosted Quantum Multi-Tenant SaaS Cloud Workstation.",
+  "app_description": "Experience high-performance, low-latency inference with the self-hosted Synora Multi-Tenant SaaS Cloud Workstation.",
   "brand": {
-    "quantum": "Quantum",
+    "synora": "Synora",
     "saas": "SaaS",
     "grid": "Grid",
     "subtitle": "Universal Cloud Inference Gateway"
@@ -59,7 +59,7 @@
     "arena_model_a": "Pilot Model A",
     "arena_model_b": "Pilot Model B",
     "arena_vs": "VS",
-    "welcome_title": "Quantum Virtual Sandbox Provisioned",
+    "welcome_title": "Synora Virtual Sandbox Provisioned",
     "welcome_desc": "Your communications are isolated and mapped strictly into your private server directory. Enter a prompt to mobilize the compute cluster.",
     "prompt_suggest_1": "💡 Explain Multi-Tenancy",
     "prompt_suggest_2": "💻 Python SSE Processor",

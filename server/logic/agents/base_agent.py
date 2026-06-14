@@ -8,7 +8,7 @@ from typing import Optional
 from server.logic.agents.agent_state_store import AgentStateStore
 from server.logic.services.base_service import ServiceRegistry
 
-logger = logging.getLogger("QuantumBaseAgent")
+logger = logging.getLogger("SynoraBaseAgent")
 
 class BaseAgent:
     """

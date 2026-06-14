@@ -7,7 +7,7 @@ import time
 from .base_service import BaseService, ServiceRegistry
 from server.utils.path_utils import get_app_settings
 
-logger = logging.getLogger("QuantumRedisManager")
+logger = logging.getLogger("SynoraRedisManager")
 
 # Gracefully handle missing redis package
 REDIS_AVAILABLE = False
@@ -191,7 +191,7 @@ class RedisManager(BaseService):
         self.enabled = False
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Redis Manager Service...")
+        logger.info("Initializing Synora Redis Manager Service...")
         settings = get_app_settings()
         
         # Load configurations
@@ -246,7 +246,7 @@ class RedisManager(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Redis Manager Service...")
+        logger.info("Shutting down Synora Redis Manager Service...")
         if self.pool:
             try:
                 self.pool.disconnect()

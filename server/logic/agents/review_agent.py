@@ -4,7 +4,7 @@
 import logging
 from server.logic.agents.base_agent import BaseAgent
 
-logger = logging.getLogger("QuantumReviewAgent")
+logger = logging.getLogger("SynoraReviewAgent")
 
 class ReviewAgent(BaseAgent):
     """

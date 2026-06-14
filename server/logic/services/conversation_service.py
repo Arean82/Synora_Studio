@@ -8,7 +8,7 @@ import re
 from .base_service import BaseService, ServiceRegistry
 from server.logic.llm_client import LLMClient
 
-logger = logging.getLogger("QuantumConversationService")
+logger = logging.getLogger("SynoraConversationService")
 
 class RateLimitExceeded(Exception):
     """Exception raised when a user/tenant exceeds their rate limit budget."""
@@ -66,14 +66,14 @@ class ConversationService(BaseService):
         self.rate_limiter = None
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Conversation Service...")
+        logger.info("Initializing Synora Conversation Service...")
         self.llm_client = LLMClient()
         self.llm_client.hydrate()
         self.rate_limiter = TokenBucketRateLimiter()
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Conversation Service...")
+        logger.info("Shutting down Synora Conversation Service...")
         self.llm_client = None
         self.rate_limiter = None
         return True

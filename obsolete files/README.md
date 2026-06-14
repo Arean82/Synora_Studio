@@ -240,7 +240,7 @@ synora_studio/
 
 The application leverages a fully-isolated, multi-threaded modular chassis designed to support concurrent operations across multiple interfaces without database locking or UI freezing:
 
-![Quantum Architecture Diagram](resources/arch_diagram.png)
+![Synora Architecture Diagram](resources/arch_diagram.png)
 
 ### 🧱 Three-Tier Modular System Layout:
 

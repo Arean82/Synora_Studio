@@ -17,18 +17,10 @@ def run_headless_server():
     client = LLMClient()
     client.hydrate()
     
-    # 1. Initialize Headless Environment
-    from desktop.headless.engine import HeadlessEngine
-    try:
-        HeadlessEngine.ensure_initialized(client)
-    except Exception as e:
-        logger.error(f"Headless Setup Failed: {e}")
-        print(f"[!] Headless Setup Failed: {e}")
-        return
-
-    # 2. Start API Manager with Headless Handler
+    # 1. Start API Manager (Pure Headless Daemon)
     from server.logic.api_manager import ApiManager
-    api_manager = ApiManager(client, request_handler_callback=HeadlessEngine.request_handler)
+    # Removed the request_handler_callback that was coupling the server to the Desktop engine
+    api_manager = ApiManager(client)
     
     try:
         api_manager.start_api_server()

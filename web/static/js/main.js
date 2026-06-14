@@ -10,7 +10,7 @@ import {
 import { loadSettingsHub, switchSettingsTab } from './settings_hub.js';
 
 export function initMainApp() {
-    console.log("System initialized. Quantum client loaded.");
+    console.log("System initialized. Synora client loaded.");
     setupEventListeners();
     
     if (loadSession()) {

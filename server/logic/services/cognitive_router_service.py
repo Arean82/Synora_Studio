@@ -5,7 +5,7 @@ import logging
 import time
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumCognitiveRouterService")
+logger = logging.getLogger("SynoraCognitiveRouterService")
 
 class CognitiveRouterService(BaseService):
     """
@@ -24,11 +24,11 @@ class CognitiveRouterService(BaseService):
         }
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Cognitive Router Service...")
+        logger.info("Initializing Synora Cognitive Router Service...")
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Cognitive Router Service...")
+        logger.info("Shutting down Synora Cognitive Router Service...")
         return True
 
     def route_model(self, user_id: int, task: str, requested_model: str = None) -> str:

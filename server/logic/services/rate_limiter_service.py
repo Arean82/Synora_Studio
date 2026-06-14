@@ -5,7 +5,7 @@ import time
 import logging
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumRateLimiterService")
+logger = logging.getLogger("SynoraRateLimiterService")
 
 class RateLimiterService(BaseService):
     """
@@ -19,7 +19,7 @@ class RateLimiterService(BaseService):
         self.client = None
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Rate Limiter Service...")
+        logger.info("Initializing Synora Rate Limiter Service...")
         try:
             self.redis_svc = ServiceRegistry.get("redis")
             self.client = self.redis_svc.get_client()
@@ -30,7 +30,7 @@ class RateLimiterService(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Rate Limiter Service...")
+        logger.info("Shutting down Synora Rate Limiter Service...")
         self.client = None
         self.redis_svc = None
         return True

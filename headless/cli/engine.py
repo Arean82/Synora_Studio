@@ -27,9 +27,13 @@ class HeadlessEngine:
             print(f"[*] Services initialization failed: {e}")
 
         if not client.is_globally_authenticated():
-            from desktop.headless.auth import HeadlessAuth
-            if not HeadlessAuth.run_login_flow(client):
-                raise RuntimeError("API key configuration failed or was cancelled.")
+            import os
+            if os.environ.get("ALLOW_UNAUTHENTICATED_SERVER"):
+                print("[!] Warning: Upstream LLM Auth bypassed via environment variable. Server starting in limited mode.")
+            else:
+                from desktop.headless.auth import HeadlessAuth
+                if not HeadlessAuth.run_login_flow(client):
+                    raise RuntimeError("API key configuration failed or was cancelled.")
 
         # Automated Model Manifest Sync (CLI)
         from desktop.headless.models import HeadlessModels

@@ -7,7 +7,7 @@ import base64
 # Transient session-bound password store
 SESSION_MASTER_PASSWORD = None
 
-def derive_key(password: str, salt: bytes = b"Quantum_Vault_Salt_v7.3", iterations: int = 50000) -> bytes:
+def derive_key(password: str, salt: bytes = b"Synora_Vault_Salt_v7.3", iterations: int = 50000) -> bytes:
     """Derives a cryptographically strong 256-bit key from the password using PBKDF2-HMAC-SHA256."""
     return hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations, 32)
 
@@ -42,7 +42,7 @@ import base64
 # Transient session-bound password store
 SESSION_MASTER_PASSWORD = None
 
-def derive_key(password: str, salt: bytes = b"Quantum_Vault_Salt_v7.3", iterations: int = 50000) -> bytes:
+def derive_key(password: str, salt: bytes = b"Synora_Vault_Salt_v7.3", iterations: int = 50000) -> bytes:
     """Derives a cryptographically strong 256-bit key from the password using PBKDF2-HMAC-SHA256."""
     return hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations, 32)
 

@@ -394,7 +394,7 @@ msgid "[System] Hermes Agent Orchestrator Ready..."
 msgstr ""
 
 #: templates/partials/auth_screen.html:11 templates/partials/sidebar.html:6
-msgid "Quantum"
+msgid "Synora"
 msgstr ""
 
 #: templates/partials/auth_screen.html:11 templates/partials/sidebar.html:6
@@ -506,7 +506,7 @@ msgid "Create Workspace"
 msgstr ""
 
 #: templates/partials/chat_pane.html:6
-msgid "Quantum Virtual Sandbox Provisioned"
+msgid "Synora Virtual Sandbox Provisioned"
 msgstr ""
 
 #: templates/partials/chat_pane.html:7

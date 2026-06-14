@@ -17,7 +17,7 @@ try:
 except ImportError:
     OTEL_AVAILABLE = False
 
-logger = logging.getLogger("QuantumTelemetry")
+logger = logging.getLogger("SynoraTelemetry")
 
 class TelemetryManager(BaseService):
     """
@@ -64,11 +64,11 @@ class TelemetryManager(BaseService):
                 logger.warning(f"Failed to initialize OpenTelemetry: {e}")
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Telemetry Observability Service...")
+        logger.info("Initializing Synora Telemetry Observability Service...")
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Telemetry Observability Service...")
+        logger.info("Shutting down Synora Telemetry Observability Service...")
         return True
 
     def record_request(self, tenant_id: str, latency: float, tokens: int, error: bool = False) -> None:
@@ -162,29 +162,29 @@ class TelemetryManager(BaseService):
         """
         metrics = self.get_realtime_metrics()
         lines = [
-            "# HELP quantum_http_throughput_rpm Requests per minute",
-            "# TYPE quantum_http_throughput_rpm gauge",
-            f"quantum_http_throughput_rpm {metrics['http_throughput_rpm']}",
+            "# HELP synora_http_throughput_rpm Requests per minute",
+            "# TYPE synora_http_throughput_rpm gauge",
+            f"synora_http_throughput_rpm {metrics['http_throughput_rpm']}",
             
-            "# HELP quantum_average_latency_seconds Average request latency in seconds",
-            "# TYPE quantum_average_latency_seconds gauge",
-            f"quantum_average_latency_seconds {metrics['average_latency_seconds']}",
+            "# HELP synora_average_latency_seconds Average request latency in seconds",
+            "# TYPE synora_average_latency_seconds gauge",
+            f"synora_average_latency_seconds {metrics['average_latency_seconds']}",
             
-            "# HELP quantum_total_requests_total Total number of processed requests",
-            "# TYPE quantum_total_requests_total counter",
-            f"quantum_total_requests_total {metrics['total_requests']}",
+            "# HELP synora_total_requests_total Total number of processed requests",
+            "# TYPE synora_total_requests_total counter",
+            f"synora_total_requests_total {metrics['total_requests']}",
             
-            "# HELP quantum_error_count_total Total number of errors",
-            "# TYPE quantum_error_count_total counter",
-            f"quantum_error_count_total {metrics['error_count']}",
+            "# HELP synora_error_count_total Total number of errors",
+            "# TYPE synora_error_count_total counter",
+            f"synora_error_count_total {metrics['error_count']}",
             
-            "# HELP quantum_active_connections Current number of active connections",
-            "# TYPE quantum_active_connections gauge",
-            f"quantum_active_connections {metrics['active_connections']}",
+            "# HELP synora_active_connections Current number of active connections",
+            "# TYPE synora_active_connections gauge",
+            f"synora_active_connections {metrics['active_connections']}",
             
-            "# HELP quantum_cache_hit_ratio_percent Cache hit ratio",
-            "# TYPE quantum_cache_hit_ratio_percent gauge",
-            f"quantum_cache_hit_ratio_percent {metrics['cache_hit_ratio_percent']}"
+            "# HELP synora_cache_hit_ratio_percent Cache hit ratio",
+            "# TYPE synora_cache_hit_ratio_percent gauge",
+            f"synora_cache_hit_ratio_percent {metrics['cache_hit_ratio_percent']}"
         ]
         return "\n".join(lines) + "\n"
 

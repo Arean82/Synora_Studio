@@ -16,7 +16,7 @@ import uuid
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional
 
-logger = logging.getLogger("QuantumAgentPlanner")
+logger = logging.getLogger("SynoraAgentPlanner")
 
 
 @dataclass

@@ -5,7 +5,7 @@ import json
 import logging
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumShortTermMemoryService")
+logger = logging.getLogger("SynoraShortTermMemoryService")
 
 class ShortTermMemoryService(BaseService):
     """
@@ -18,7 +18,7 @@ class ShortTermMemoryService(BaseService):
         self.client = None
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Short-Term Memory Service...")
+        logger.info("Initializing Synora Short-Term Memory Service...")
         try:
             self.redis_svc = ServiceRegistry.get("redis")
             self.client = self.redis_svc.get_client()
@@ -29,7 +29,7 @@ class ShortTermMemoryService(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Short-Term Memory Service...")
+        logger.info("Shutting down Synora Short-Term Memory Service...")
         self.client = None
         self.redis_svc = None
         return True

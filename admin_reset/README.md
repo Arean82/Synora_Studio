@@ -1,34 +1,31 @@
-# Universal Admin Credentials Resetter
+# Universal Admin Credentials Resetter (`/admin_reset`)
 
-This tool allows server administrators to securely reset the Master Admin Credentials across all environments.
+The Admin Reset Utility is a highly destructive, last-resort recovery tool for the Synora ecosystem. 
 
-## Features
-- **Intelligent Headless & Dual-Mode Execution**:
-  - **Intelligent Headless CLI Mode**: Bypasses GUI dependencies entirely using `--headless` or `--cli`, making it perfect for remote SSH terminals, automation scripts, and cron jobs.
-  - **GUI Mode**: Spawns a high-fidelity PySide6 wizard dialog for local desktop environments.
-- **Dynamic Password Options**:
-  - `--random-password`: Generates a secure, randomized 12-character alphanumeric password.
-  - `--custom-password "your_password"`: Sets a specific, custom password string.
-  - Defaults to `admin` password if no option is specified.
-- **Auto Driver Detection**: Automatically reads connection information and resolves driver parameters from `saas/config.ini` or the environment.
+Because Synora utilizes strictly isolated SQLite/Turso tenant databases and advanced `Argon2id` password hashing, it is impossible to recover a lost password. This module exists to forcefully wipe and regenerate the root administrative account.
 
-## Local Configuration & Packaging Files
-To support decoupled modular compilation, this directory contains its own self-contained packaging files:
-- **`reset_admin.spec`**: PyInstaller spec file specific to packaging the admin reset tool.
-- **`build.py`**: Local Python build script executing PyInstaller commands targeting `reset_admin.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
-- **`installer_script.iss`**: Local Inno Setup configuration to package the compiled admin reset tool.
+## 🛑 DANGER ZONE
 
-## Execution
+**Running this script will:**
+1. Connect directly to the underlying `tenant_db.sqlite`.
+2. Delete the existing root admin account.
+3. Generate a new cryptographic salt and password hash.
+4. Insert a fresh root admin account with default credentials.
 
-### CLI/Headless Mode:
+**Any custom configurations, BYOK (Bring Your Own Key) settings, or usage telemetry associated with the old admin account WILL BE LOST FOREVER.**
+
+## 🚀 Execution Guide
+
+Only run this if you are completely locked out of the Web Portal SaaS dashboard.
+
+**Step 1:** Ensure the API Server and Web Portal are completely shut down (to avoid SQLite locking conflicts).
+
+**Step 2:** Navigate to this directory and execute the reset script:
 ```bash
-python reset_admin.py --headless
+cd admin_reset
+python reset_admin.py
 ```
 
-### PyInstaller Spec
-To compile the standalone binary `Admin_Reset` using PyInstaller:
-```bash
-pyinstaller reset_admin.spec
-```
-This isolates the password reset functionality from public client distributions, keeping administrative keys secure.
+**Step 3:** The terminal will output the newly generated, temporary root password. Copy it securely.
+
+**Step 4:** Restart the API Server and Web Portal, log in with the new credentials, and immediately change your password in the dashboard.

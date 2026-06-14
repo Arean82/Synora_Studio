@@ -73,7 +73,7 @@
         "llmChat.apiUrl": {
           "type": "string",
           "default": "http://localhost:5000",
-          "description": "The base server URL (e.g. http://localhost:5000 or https://saas.quantum.net)"
+          "description": "The base server URL (e.g. http://localhost:5000 or https://saas.synora.net)"
         },
         "llmChat.apiToken": {
           "type": "string",

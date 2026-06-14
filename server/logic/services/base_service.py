@@ -3,7 +3,7 @@
 
 import logging
 
-logger = logging.getLogger("QuantumServices")
+logger = logging.getLogger("SynoraServices")
 
 class BaseService:
     """

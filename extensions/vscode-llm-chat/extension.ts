@@ -438,7 +438,7 @@ function getOnboardingHtml(): string {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Quantum Onboard</title>
+            <title>Synora Onboard</title>
             <style>
                 body {
                     background-color: #1e1e1e;
@@ -538,7 +538,7 @@ function getOnboardingHtml(): string {
         </head>
         <body>
             <div class="card">
-                <h2>🤖 Quantum Workspace Onboarding</h2>
+                <h2>🤖 Synora Workspace Onboarding</h2>
                 
                 <div class="tabs">
                     <div id="tab-login" class="tab active" onclick="switchMode('login')">Connect Sign In</div>
@@ -558,7 +558,7 @@ function getOnboardingHtml(): string {
 
                     <div class="input-group">
                         <label>Email Address:</label>
-                        <input type="email" id="email" placeholder="pilot@quantum.net" required autocomplete="username">
+                        <input type="email" id="email" placeholder="pilot@synora.net" required autocomplete="username">
                     </div>
 
                     <div class="input-group">

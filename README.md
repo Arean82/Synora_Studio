@@ -2,49 +2,70 @@
 
 Welcome to **Synora Studio**! This repository hosts a highly modular, enterprise-grade AI chat ecosystem and RAG platform.
 
-Synora Studio has undergone a massive architectural overhaul. To guarantee stability, security, and scalability, the monolithic application has been decoupled into three strictly isolated, standalone components. 
+Synora Studio has undergone a massive architectural overhaul. To guarantee stability, security, and scalability, the monolithic application has been **decoupled into strictly isolated, standalone components**. 
 
-There is no longer a monolithic `master.py` entry point. Instead, you can run, scale, and distribute each component entirely independently, or use the unified `run.py` traffic controller.
-
-### 🚀 Quick Start (Unified Entry Point)
-If you prefer a single command, you can use the unified `run.py` in the root directory:
-- **Desktop:** `python run.py`
-- **Server:** `python run.py --server`
-- **Web:** `python run.py --web`
+There is no monolithic entry point. You must run, scale, and distribute each component entirely independently.
 
 ---
 
-## 🏗️ Architecture & Modules
+## 🚀 Getting Started (Quick Boot)
 
-The platform is divided into three primary modules. Each module contains its own dedicated execution script and `INSTALLATION.md` manual.
+Since the architecture is strictly modular, you must start the **API Server** first so that the other modules have a backend to connect to. 
+
+### Prerequisites
+1. Ensure you have **Python 3.10+** installed.
+2. Install all global dependencies from the root directory:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Copy the `.env.example` file to `.env` in the root directory and configure your environment variables.
+
+### Boot Sequence
+
+**1. Start the API Server (Backend Core)**
+```bash
+python server/run_server.py
+```
+*(Note: When you run this for the first time, you will encounter the `CLI AUTHENTICATION GATE` prompt in your terminal. Please read the `/server/INSTALLATION.md` for a complete walkthrough of how to satisfy this prompt.)*
+
+**2. Start the Web Portal (SaaS Frontend)**
+```bash
+python web/run_web.py
+```
+
+**3. Start the Desktop Client (Local Native App)**
+```bash
+python desktop/main.py
+```
+
+*(Note: The Companion Operation toolkit and the Universal Admin Credentials Resetter are on-demand utilities and do not need to be left running.)*
+
+---
+
+## 🏗️ Architecture & Detailed Installation Manuals
+
+The platform is divided into primary modules. **Each module contains its own dedicated, highly detailed `INSTALLATION.md` manual for Windows and Linux.**
 
 ### 1. 🧠 API Server (`/server`)
 The foundational centralized intelligence core.
-- **Features:** Exposes REST gateways, handles LLM orchestration (OpenAI, Google GenAI, local Ollama endpoints), manages RAG ingestion pipelines, and semantic vector routing (Dual-Mode: `sentence-transformers` & Ollama). Runs completely independent of any UI.
-- **Direct Source:** `python server/run_server.py`
-- **Compiled Binary:** `./synora_server.exe`
-- **Documentation:** `server/docs/HEADLESS_GUIDE.md`
+- **Features:** Exposes REST gateways, handles LLM orchestration (OpenAI, Google GenAI, local Ollama endpoints), manages RAG ingestion pipelines, and semantic vector routing.
+- **Setup Guide:** [server/INSTALLATION.md](server/INSTALLATION.md)
 
 ### 2. 🌐 Web Portal (`/web`)
 A multi-tenant SaaS dashboard and administration portal that consumes the server backend.
 - **Features:** User registration, usage accounting, BYOK (Bring Your Own Key) management, and OAuth integrations.
-- **Direct Source:** `python web/run_web.py`
-- **Compiled Binary:** `./synora_web.exe`
-- **Documentation:** `web/docs/USER_MANUAL_SAAS.md`
+- **Setup Guide:** [web/INSTALLATION.md](web/INSTALLATION.md)
 
 ### 3. 🖥️ Desktop Client (`/desktop`)
 A native desktop GUI application for end-users that wraps the core engine for native usage.
 - **Features:** Connects to the local API Server, manages system prompts, chat history, and seamless AI interactions without browser overhead.
-- **Direct Source:** `python desktop/main.py`
-- **Compiled Binary:** `./Synora_Studio.exe`
-- **Documentation:** `desktop/docs/USER_MANUAL_DESKTOP.md`
+- **Setup Guide:** [desktop/INSTALLATION.md](desktop/INSTALLATION.md)
 
 ### 4. 🛠️ Companion Operation Toolkit (`/companion_operation`)
 The primary administration toolkit for system administrators and DevOps engineers.
-- **Features:** Automated SaaS database migrations, **Global SSH Tunnel Piggybacking** (via Desktop App), background service installation, automated backups, **Demo User Injection**, and highly restricted **Web Platform Resets (Danger Zone)**.
-- **Direct Source:** `python companion_operation/companion_operation.py`
-- **Compiled Binary:** `./companion_operation.exe`
-- **Documentation:** `companion_operation/README.md` and native Linux `man` pages located in `companion_operation/docs/man/`.
+- **Features:** Automated SaaS database migrations, background service installation, automated backups, and restricted Web Platform Resets.
+- **Setup Guide:** [companion_operation/INSTALLATION.md](companion_operation/INSTALLATION.md)
+
 ---
 
 ## 🔒 Security Posture
@@ -52,7 +73,7 @@ The primary administration toolkit for system administrators and DevOps engineer
 Synora Studio enforces a strict security perimeter:
 - **AES-GCM Encryption:** All external API Keys (BYOK) are encrypted at rest using `cryptography.fernet`.
 - **Argon2id Hashing:** Password hashes use modern GPU-resistant key stretching.
-- **Dynamic Authorization:** Local API server tokens are cryptographically generated and stored securely in the SQLite database to prevent hardcoded secret leaks.
+- **Dynamic Authorization:** Local API server tokens are cryptographically generated and stored securely.
 - **Email OTP 2FA:** Guest login flows utilize Time-based One-Time Passwords (TOTP) delivered asynchronously via email.
 
 ---
@@ -61,5 +82,3 @@ Synora Studio enforces a strict security perimeter:
 All legacy architectural plans, headless guides, and compilation manuals have been archived in the `/docs` directory. 
 - Build scripts and PyInstaller pipelines are stored in `/build_scripts`.
 - Deprecated monolithic files are safely archived in `/obsolete files`.
-
-*Please refer to the `INSTALLATION.md` inside each module's respective folder to begin.*

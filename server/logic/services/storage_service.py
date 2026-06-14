@@ -10,7 +10,7 @@ from .base_service import BaseService, ServiceRegistry
 from server.utils.storage_config import StorageManager
 from server.utils.path_utils import get_app_settings
 
-logger = logging.getLogger("QuantumStorageService")
+logger = logging.getLogger("SynoraStorageService")
 
 class StorageService(BaseService):
     """
@@ -26,13 +26,13 @@ class StorageService(BaseService):
         self.drivers = {}  # Cache drivers per tenant_id to avoid redundant instantiation
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Storage Service...")
+        logger.info("Initializing Synora Storage Service...")
         # Pre-warm the default tenant connection
         self.get_driver("default_user")
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Storage Service connections...")
+        logger.info("Shutting down Synora Storage Service connections...")
         self.drivers.clear()
         return True
 

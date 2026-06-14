@@ -1,50 +1,46 @@
-# Order of Operation & Architectural Flow
+# Synora Ecosystem: Order of Operation
 
-Synora Studio (v2.0) has been refactored into a strictly modularized system. This document outlines the explicit execution pathways, dependencies, and boot sequences for each primary component.
+Because Synora Studio operates on a strictly decoupled architecture, you cannot simply double-click a single file to boot the entire ecosystem. The modules rely on each other via API communication, meaning they must be started in a specific order.
 
-## 1. Server / Headless Engine (`server/`)
-*The foundational API and backend orchestrator. Runs completely independent of any UI.*
+## 🟢 1. The API Server (Mandatory)
 
-**Execution:**
-- **Direct Source:** `python server/run_server.py`
-- **Compiled Binary:** `./synora_server.exe`
+The Server module is the central nervous system. It holds the LLM connections, processes the RAG chunking, and serves the SQLite tenant databases. **Nothing else will work if the server is offline.**
 
-**Boot Sequence:**
-1. **Init:** Loads environment variables and instantiates the core `AgentManager`.
-2. **Database Binding:** Mounts to the active tenant database (libSQL/Turso, PostgreSQL, or local SQLite).
-3. **Socket Binding:** Initializes the high-concurrency `Flask-SocketIO` multiplexer.
-4. **Listener:** Begins listening on the designated API port (default: `5000`) for REST and WebSocket traffic. 
+```bash
+# Terminal 1
+cd server
+python run_server.py
+```
+*Wait until you see `[+] Backend Engine is live. Listening for API requests on Port 5000...` before proceeding to Step 2.*
 
-## 2. SaaS Web Portal (`web/`)
-*The multi-tenant frontend interface that consumes the server backend.*
+## 🟡 2. Start a Client (Choose One)
 
-**Execution:**
-- **Direct Source:** `python web/run_web.py`
-- **Compiled Binary:** `./synora_web.exe`
+Once the server is running silently in the background, you can connect to it using any of the available clients.
 
-**Boot Sequence:**
-1. **Config Load:** Reads `config.ini` to determine port and active bindings.
-2. **Mounting:** Dynamically mounts isolated route blueprints (`auth_routes.py`, `admin_routes.py`, `api_routes.py`, `dashboard_routes.py`).
-3. **Worker Pool:** Spins up the isolated background worker pools via `launcher.py` to handle agentic reasoning loops without blocking the Flask UI.
-4. **Listener:** Starts serving the glassmorphic web portal (default port: `8080`).
+### Option A: The Web SaaS Portal (For Multi-Tenant Access)
+```bash
+# Terminal 2
+cd web
+python app.py
+```
+*The web portal will boot on port 8080 and communicate with the server on port 5000.*
 
-## 3. Desktop GUI (`desktop/`)
-*The PySide6 native client that wraps the core engine for native usage.*
+### Option B: The Desktop GUI (For Native OS Experience)
+```bash
+# Terminal 2
+cd desktop
+python main.py
+```
+*The PyQt6 app will launch and communicate with the server on port 5000.*
 
-**Execution:**
-- **Direct Source:** `python desktop/main.py`
-- **Compiled Binary:** `./Synora_Studio.exe`
+### Option C: The Headless CLI (For Terminal Power Users)
+```bash
+# Terminal 2
+cd headless
+python run_cli.py
+```
+*The text-based chat interface will connect to the server on port 5000.*
 
-**Boot Sequence:**
-1. **GUI Init:** Initializes the `QApplication` event loop.
-2. **Authentication Gate (`auth_controller.py`):** Prompts the user for OS-level secure credentials or bypass logic.
-3. **Settings Mount (`settings_controller.py`):** Loads the user's `QSettings` into the environment.
-4. **Interface Load (`chat_controller.py`):** Mounts the PySide6 UI files and begins executing the main `QMainWindow` event loops.
-5. **Worker Offload:** Passes all LLM generation streams to a `QThread` daemon to prevent UI lockup.
+## 🛑 3. Shutdown Sequence
 
-## 4. Unified Entry Point (`run.py` - Optional)
-For convenience, `run.py` acts as a unified traffic controller in the root directory.
-
-- `python run.py --server` routes to `server/run_server.py`
-- `python run.py --web` routes to `web/run_web.py`
-- `python run.py` (no flags) defaults to `desktop/main.py`
+To prevent database corruption and gracefully terminate all active LLM streams, shut down your clients first, and **shut down the server last** by pressing `Ctrl+C` in the server's terminal window.

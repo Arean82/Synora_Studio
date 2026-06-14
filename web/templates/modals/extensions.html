@@ -48,7 +48,7 @@
         container.innerHTML = '<div style="color: var(--text-dim); font-size: 0.9rem;"><i class="fa-solid fa-circle-notch fa-spin"></i> Crawling directories...</div>';
         
         try {
-            const token = sessionStorage.getItem('quantum_token') || (typeof App !== 'undefined' ? App.token : '');
+            const token = sessionStorage.getItem('synora_token') || (typeof App !== 'undefined' ? App.token : '');
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -127,7 +127,7 @@
         const details = document.getElementById('extension-details-panel');
         
         // Check if current user has admin access
-        const savedUserStr = sessionStorage.getItem('quantum_user');
+        const savedUserStr = sessionStorage.getItem('synora_user');
         let isSaaSAdmin = false;
         if (savedUserStr) {
             try {
@@ -135,7 +135,7 @@
                 isSaaSAdmin = u.key_type === 'admin_funded' || u.username === 'admin';
             } catch(e){}
         }
-        const token = sessionStorage.getItem('quantum_token') || '';
+        const token = sessionStorage.getItem('synora_token') || '';
 
         details.innerHTML = `
             <div style="flex: 1; display: flex; flex-direction: column; gap: 15px; padding: 0 10px 10px 0;">
@@ -196,7 +196,7 @@
         btn.disabled = true;
 
         try {
-            const token = sessionStorage.getItem('quantum_token') || '';
+            const token = sessionStorage.getItem('synora_token') || '';
             const res = await fetch('/api/admin/extensions/generate-desc', {
                 method: 'POST',
                 headers: {
@@ -230,7 +230,7 @@
         const description = document.getElementById('admin-desc-txt').value;
 
         try {
-            const token = sessionStorage.getItem('quantum_token') || '';
+            const token = sessionStorage.getItem('synora_token') || '';
             const res = await fetch('/api/admin/extensions/save', {
                 method: 'POST',
                 headers: {

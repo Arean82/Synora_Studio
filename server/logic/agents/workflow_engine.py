@@ -6,7 +6,7 @@ from typing import Dict, Any, List
 
 from server.logic.agents.planner import PlanStep
 
-logger = logging.getLogger("QuantumWorkflowEngine")
+logger = logging.getLogger("SynoraWorkflowEngine")
 
 class WorkflowEngine:
     """

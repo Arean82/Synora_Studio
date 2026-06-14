@@ -1,76 +1,28 @@
-# ☁️ Synora Studio - SaaS Multi-Tenant Guide
+# Synora SaaS Web Portal: User Manual
 
-Welcome to the **Synora Studio SaaS Multi-Tenant Gateway**. This platform allows organizations to centrally host and orchestrate LLM inference across hundreds of concurrent users, offering enterprise-grade telemetry, isolated sandboxes, and hybrid authentication models.
+Welcome to the **Synora Web Portal**. This web dashboard provides a robust, multi-tenant interface that connects remote users to your centralized API server.
 
----
+## 🚀 Getting Started
 
-## 1. Getting Started & Authentication
+**Step 1:** Ensure the API Server is running in the background. The Web Portal has no built-in AI logic; it simply forwards your requests to the server.
 
-### Platform Architecture
-The SaaS platform operates on a dual-tier trust model:
-1. **Admin Vault:** Administrators log in using a central "master" key. All inference costs are subsidized by the central admin's budget.
-2. **BYOK Tier (Bring Your Own Key):** Guest users or developers can connect and log in by providing their own personal API Keys, entirely offloading cost to the tenant.
+**Step 2:** Open your web browser and navigate to `http://localhost:8080`.
 
-### Launching the Portal
-To start the SaaS web server, execute the following from your terminal:
+**Step 3:** Register a new user account. 
+*Note: Because Synora uses isolated tenant databases, you cannot log in with the Desktop GUI's internal credentials. You must create a dedicated Web SaaS account.*
 
-```bash
-# Direct Source
-python web/run_web.py
+## 💳 Bring Your Own Key (BYOK)
 
-# Compiled Binary
-./synora_web.exe
-```
+To keep server operations decoupled and secure, the Synora Web Portal uses a BYOK architecture. This means the server administrator does not pay for your AI API usage. 
 
-### Accessing the Portal
-1. Navigate to your organization's SaaS portal URL (default: `http://localhost:8080`).
-2. **Key-Passport Validation:** 
-   - Select your Inference Provider.
-   - Enter your secure API Key.
-   - The platform will execute a Pre-Flight validation handshake to ensure your credentials are valid.
-3. Once validated, set your localized Display Name and Email to provision your secure workspace!
+1. Click on the **Settings** gear icon in the bottom-left corner.
+2. Select **API Keys**.
+3. Enter your OpenAI, Gemini, Anthropic, or Groq API keys.
+4. These keys are heavily encrypted in your isolated `tenant_db.sqlite` profile and are passed securely to the API Server during inference.
 
----
+## 📁 RAG Documents & Cloud Storage
 
-## 2. Navigating the SaaS Dashboard
-
-The SaaS interface utilizes a stunning glassmorphic design that intelligently adapts to Light and Dark modes.
-
-### Your Workspace
-- **Physical Sandboxed Streams:** All conversations are physically isolated. When you launch a new stream, a dedicated orchestration sandbox is assigned to you.
-- **Model Deployment Selector:** Swap between active models using the dropdown in the header. Only models natively supported by your authenticated ecosystem will appear here.
-- **Telemetry Engine:** Watch real-time execution statistics directly in your header, showing your active status and exact Token counts.
-
-### Chat Interface
-- Type prompts in the dynamic input canvas at the bottom of the screen.
-- Enjoy full Markdown rendering, code execution visualizations, and error-handling alerts cleanly inside the web UI.
-
----
-
-## 3. Administrative Controls (Node Config)
-
-If you are authenticated as an **Admin Vault** user, you gain access to the secure **Node Config** terminal. Click the Settings icon in the sidebar to access these modules:
-
-### Telemetry & System Health
-- **Live Worker Metrics:** View concurrent background threads and HTTP transaction success rates.
-- **Latency & Throughput:** Monitor the literal speed of your AI endpoints in RPM (Requests Per Minute) and milliseconds.
-- **Dead Letter Queue (DLQ):** Analyze dropped, corrupted, or rate-limited requests that failed to reach the LLM provider.
-
-### Model Parameters & Instructions
-- **System Instructions:** Broadcast global behavioral rules to all users utilizing the Admin Vault.
-- **Generation Parameters:** Force ceiling limits on Output Tokens and Temperature to strictly manage costs across the organization.
-
-### 🔌 Local API Control
-Want to expose your local desktop configuration to external automated scripts, or use it as a middle-tier for other software?
-1. Navigate to the **Local API Control** tab.
-2. **Disable/Enable:** Instantly toggle the active connection state of your local desktop port (5000).
-3. **Regenerate Key:** Instantly destroy the old key and mint a secure new token. *Warning: This forces a hard server restart and severs all active connections.*
-
----
-
-## 4. Tenant Management
-
-Administrators can physically view the load their platform is experiencing:
-- Go to the **Tenants** tab inside the Node Config.
-- View a live roster of all active users, their authentication tier (Admin vs BYOK), and their connection stability.
-- Quickly identify "freeloaders" or troubleshoot connectivity issues for your BYOK developers.
+When you upload a document in the chat interface:
+1. The web portal securely transmits the file to the API Server.
+2. The server parses the text, generates vector embeddings, and stores them in your tenant's dedicated Qdrant collection.
+3. Your documents remain strictly isolated from other tenants on the SaaS platform.

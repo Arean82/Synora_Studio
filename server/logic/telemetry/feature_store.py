@@ -7,7 +7,7 @@ from typing import Any, Dict
 
 from server.logic.services.base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumFeatureStore")
+logger = logging.getLogger("SynoraFeatureStore")
 
 class FeatureStore(BaseService):
     """
@@ -28,7 +28,7 @@ class FeatureStore(BaseService):
         self._prefix = "feature_flag:"
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Feature Store...")
+        logger.info("Initializing Synora Feature Store...")
         try:
             self.redis_svc = ServiceRegistry.get("redis")
             self.client = self.redis_svc.get_client()
@@ -37,7 +37,7 @@ class FeatureStore(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Feature Store...")
+        logger.info("Shutting down Synora Feature Store...")
         return True
 
     def get_flag(self, flag_name: str, default: Any = False) -> Any:

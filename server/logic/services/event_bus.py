@@ -6,7 +6,7 @@ import logging
 import threading
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumEventBus")
+logger = logging.getLogger("SynoraEventBus")
 
 class EventBusService(BaseService):
     """
@@ -24,7 +24,7 @@ class EventBusService(BaseService):
         self._stop_event = threading.Event()
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Event Bus Service...")
+        logger.info("Initializing Synora Event Bus Service...")
         self._stop_event.clear()
         
         try:
@@ -38,7 +38,7 @@ class EventBusService(BaseService):
             # Start background thread to listen to messages
             self._listener_thread = threading.Thread(
                 target=self._listen_loop,
-                name="QuantumEventBusListener",
+                name="SynoraEventBusListener",
                 daemon=True
             )
             self._listener_thread.start()
@@ -51,7 +51,7 @@ class EventBusService(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Event Bus Service...")
+        logger.info("Shutting down Synora Event Bus Service...")
         self._stop_event.set()
         
         # Unsubscribe all

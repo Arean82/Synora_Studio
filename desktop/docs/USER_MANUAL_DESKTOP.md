@@ -1,110 +1,25 @@
-# 🖥️ Synora Studio - Desktop User Guide
+# Synora Desktop Client: User Manual
 
-Welcome to the **Synora Studio Desktop Client**, a sleek, high-performance workstation for interacting with the world's most powerful AI ecosystems including OpenAI, Google Gemini, Anthropic, Ollama, NVIDIA NIM, Groq, and custom local endpoints.
+Welcome to the **Synora Desktop Client**. This application gives you a native, lightning-fast window into the intelligence of your isolated backend API server.
 
----
+## Getting Started
 
-## 1. Getting Started
+1. **Start the API Server:** Before opening the desktop app, ensure you have run `python server/run_server.py`. The desktop app cannot function without the backend running on port 5000.
+2. **Launch the App:** Run `python desktop/main.py`.
 
-### Launching the Application
-To launch the desktop client, run the following command in your terminal:
+## Core Features
 
-```bash
-# Direct Source
-python desktop/main.py
+### 1. Chat Interface
+The primary view is your conversational interface. 
+- You can seamlessly switch between AI Providers (e.g., OpenAI, Google Gemini, Ollama) using the drop-down menu in the top-right corner.
+- **RAG (Retrieval-Augmented Generation):** Click the "Attach Document" button to seamlessly upload PDFs, Code files, or Text documents. The desktop client will securely transmit them to the API Server for chunking and semantic search indexing.
 
-# Compiled Binary
-./Synora_Studio.exe
-```
+### 2. System Prompts
+Customize your AI's persona and behavior.
+- Click the **Agent Persona** button to define global instructions (e.g., "You are an expert Python developer. Never explain the code, just output the script.")
 
-### 🔑 The Secure Admin Login Gate
-Upon launching the client, you will be greeted by the **Synora Admin Login Gateway**:
-1. Log in with your Super Admin credentials (`admin` / `admin` by default). Your credentials are secure and validated against the partitioned database.
-2. The login screen features a high-fidelity vector eyelash eye toggle button directly inside the password field to securely show or hide your typed password.
-
-### 📸 The Ecosystem Selector Dialog
-Once authenticated, if no active ecosystem has been configured yet, the **Switch Ecosystem** dialog appears:
-1. Select your active AI provider ecosystem (e.g., Google Gemini, NVIDIA NIM, OpenAI, or Local Offline).
-2. Enter your private API Key.
-   - *Note: If you are using local models via Ollama or LM Studio, no key is required. The sweeper will automatically detect and bind your offline endpoints.*
-3. Click Save. Your keys are immediately encrypted using zero-trust symmetric PBKDF2 ciphers derived dynamically from your master login password. Raw keys are never written to disk and exist only in transient system memory during runtime sessions.
-
----
-
-## 2. Navigating the Interface
-
-### The Main Chat Canvas
-- **Message Input**: Type your query in the bottom input bar. Press `Enter` to send, or `Shift + Enter` for a new line.
-- **Dynamic Formatting**: Responses are rendered in real-time with rich Markdown, tables, and syntax-highlighted code blocks.
-- **File Attachments**: Click the 📎 icon to attach code files (`.py`, `.js`, etc.) or documents directly into the chat context.
-
-### Sidebars & History
-- **Conversation History**: Previous chats are automatically saved to your local SQLite database using Write-Ahead Logging (WAL) for maximum safety against corruption.
-- **Model Selector**: Use the top-right dropdown to swap between available AI models on the fly. The UI will only show models that you have active keys for!
-
----
-
-## 3. Advanced Features
-
-### ⚔️ Model Arena (Benchmarking)
-Want to test two AI models against each other?
-1. Click the **Arena** button.
-2. Select your two combatants (e.g., *GPT-4o vs Claude 3.5 Sonnet*).
-3. Send a prompt. Both models will stream their responses side-by-side.
-4. Evaluate their performance and declare a winner!
-
-### 🧠 Semantic Memory (RAG Database)
-Your app is equipped with a high-performance **Qdrant Vector Database**.
-1. Open the **Memory Explorer** via the sidebar.
-2. Upload a large document or codebase.
-3. The AI will chunk, vectorize, and index the file. In future chats, the AI can "remember" and reference these precise documents!
-
-### ⚙️ Generation Parameters & Reranking
-Click the **Settings** gear icon to access advanced controls:
-- **Temperature / Tokens**: Control the creativity and length of the AI's response.
-- **System Instructions**: Set global rules (e.g., *"Always reply in Pirate speak"*).
-- **2-Stage Reranking**: Improve the precision of document search by enabling a Cross-Encoder Reranker.
-
----
-
-## 4. Headless & IDE Integration
-
-For advanced users and developers, the desktop client features a fully functional **Local API Server**!
-
-### Launching the API
-In the **Settings > Local API Control** tab, you can enable the background API daemon. This spins up an OpenAI-compatible endpoint on port `5000`.
-
-### Integrating with IDEs (VS Code / Cursor / PyCharm)
-You can use the desktop application to route AI intelligence directly into your code editor!
-1. Point your IDE's custom endpoint setting to: `http://localhost:5000/v1`
-2. Use the Local API Key provided in your desktop app's Settings menu.
-3. The IDE can now leverage your desktop's memory, context, and model configurations securely!
-
----
-
-## 5. Operator Admin Tools
-
-The following standalone utilities are exclusively reserved for the hosting administrator. They are **not distributed** with the public client bundle.
-
-### 🔄 Companion Operation (Database Relocator)
-Safely migrate your SaaS tenant database from Turso/libSQL to PostgreSQL or MySQL.
-
-- **From the Desktop App**: Navigate to **Settings → Database Relocator (Companion Operation)**. This will auto-save your chat, close the main app to release database locks, and launch the companion utility.
-- **CLI/Headless Mode**: For remote servers, run:
-  ```bash
-  # Direct Source
-  python companion_operation/companion_operation.py --headless
-  
-  # Compiled Binary
-  ./Companion_Operation.exe --headless
-  ```
-
-### 🔐 Master Password Reset
-If you lose your Super Admin password, reset it to `admin` using:
-```bash
-# Direct Source
-python admin_reset/reset_admin.py
-
-# Compiled Binary
-./Admin_Reset.exe
-```
+### 3. Security Vault & API Keys
+Because Synora enforces a Bring-Your-Own-Key (BYOK) architecture, you must configure your API credentials locally.
+- Navigate to **Settings (Gear Icon) -> Security Vault**.
+- Enter your Provider API Keys.
+- The Desktop App uses `cryptography.fernet` and your Operating System's native `keyring` to heavily encrypt these keys at rest. The plain text is never exposed, and keys are only transmitted locally to the API Server during active inference.

@@ -1,63 +1,18 @@
-# Isolated Multi-Tenant SaaS Portal Architecture Plan
+# SaaS Storage Architecture
 
-This architecture plan governs the design and deployment of the high-concurrency, multi-user SaaS portal served from the headless API Server (Port 8888 by default). It establishes a strict **Virtual Sandbox** model ensuring absolute data, configuration, and session privacy for registered users.
+The Synora Web Portal acts as a gateway for multiple tenants to access the backend API Server. To guarantee absolute data privacy between tenants, the ecosystem employs a strict isolation model.
 
----
+## 🗄️ Relational Data (`tenant_db.sqlite`)
 
-## 🛡️ The Isolated "Virtual Sandbox" Model
-Every registered user operates inside an isolated sandbox, acting exactly as if they booted a completely private virtual desktop application instance all to themselves.
+The Web Portal provisions a dedicated SQLite (or Turso) database upon the first boot.
+- **Tenant Isolation:** Users are tied to unique `tenant_id` UUIDs.
+- **Data Encapsulation:** A user's Chat History, RAG Document Metadata, and API Keys are strictly segregated by their `tenant_id`.
+- **Stateless Server:** The API Server itself holds NO relational state. When the Web Portal makes a request, it passes an authenticated JWT containing the `tenant_id`, which the server uses to temporarily retrieve the required data from the database.
 
-```mermaid
-graph TD
-    UserA["User A (Web Portal)"] -->|JWT: user_a| Gateway["SaaS API Gateway (Port 8888)"]
-    UserB["User B (Web Portal)"] -->|JWT: user_b| Gateway
-    
-    Gateway -->|Verify Claims| Router{"Dynamic Routing Layer"}
-    
-    Router -->|Session: user_a| DriverA["PostgreSQLStorageDriver / LibSQLStorageDriver"]
-    Router -->|Session: user_b| DriverB["PostgreSQLStorageDriver / LibSQLStorageDriver"]
-    
-    DriverA -->|Isolate Schema| DbA[("User A Database (Schema: user_a)")]
-    DriverB -->|Isolate Schema| DbB[("User B Database (Schema: user_b)")]
-    
-    style DbA fill:#059669,stroke:#047857,stroke-width:2px,color:#fff
-    style DbB fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Gateway fill:#4f46e5,stroke:#4338ca,stroke-width:2px,color:#fff
-```
+## 🧠 Vector Data (`Qdrant` / `ChromaDB`)
 
----
+RAG embeddings require a different isolation strategy due to the mechanics of high-dimensional vector search.
 
-## 1. Multi-Tier Isolation Schema
-
-### 🗄️ 1. Database-Level Isolation
-* **Dynamic Tenant Sharding**: Storage connections are established using the abstract `BaseStorageDriver` implementing dynamic `{tenant_id}` path expansion.
-* **libSQL/Turso**: Dynamically creates or routes to isolated database instances/directories for each tenant (e.g. `libsql://user_a-database.turso.io`).
-* **PostgreSQL**: Routes connections to isolated database names or private schemas (e.g. `postgresql://user:pass@host:5432/user_a`).
-* **Absolute Privacy**: Cross-tenant data reads or writes are blocked at the infrastructure level.
-
-### 🔑 2. Settings & Credentials Isolation (BYOK)
-* **Dedicated Settings Namespaces**: The settings loader isolates config files per active `tenant_id` namespace.
-* **Isolated Provider Keys**: User A and User B manage their own Secure Provider API Keys (e.g. private Anthropic, OpenAI, or Gemini keys) independently.
-* **Headless Hydration**: The LLM Client dynamically loads the provider keys belonging strictly to the active authenticated tenant session at runtime.
-
-### 🎫 3. Session-Level Security (JWT Middleware)
-* **Cryptographic Tokens**: Successful registration or authentication issues a signed JSON Web Token (JWT) encapsulating the user's `tenant_id` claim.
-* **Claims Extraction**: The API Server middleware intercepts incoming requests, validates signature integrity, extracts the `tenant_id`, and binds it to the storage driver transaction pipeline.
-
----
-
-## 2. SaaS Web Portal Asset Structure (Phase 8 Modularization)
-The portal is served headlessly by the API Server on port 8888 as a stunning modular web application:
-
-| Component | Technology | Visual & Functional Purpose |
-| :--- | :--- | :--- |
-| **Modular Templates** | Jinja2 Extends & Includes | Surgical decomposition of the 90KB monolithic `index.html` into independent modules (`layouts/base.html`, `partials/chat_pane.html`, `modals/credentials.html`, etc.) resulting in a clean, 29-line orchestrator shell with zero performance overhead. |
-| **Styling** | Vanilla CSS (HSL dark mode) | Modern dark charcoal backdrops, transparent glassmorphism panels, harmonious emerald/indigo accents, and responsive layout wrappers. |
-| **Logic** | Asynchronous JS (Fetch API) | Executes dynamic API bridging to save configurations, fetch chats, and report database health dynamically without browser page reloads. |
-| **Structure** | Semantic HTML5 | Structured grid dashboards containing the login gate, the BYOK key configurators, and real-time database connection telemetry cards. |
-
----
-
-## 3. High-Concurrency Multi-Client Safety
-* **Lock-Free Concurrency**: With SQLite completely bypassed, both Turso and PostgreSQL leverage Multiversion Concurrency Control (MVCC) to support parallel requests across CLI, GUI, and SaaS Portal interfaces.
-* **Zero Shared State Leakage**: Every incoming connection thread acts on a stateless session instantiated per JWT claim, keeping memory footprints highly isolated and secure.
+- **Collection Isolation:** Each tenant gets a dedicated "Collection" inside the central Qdrant instance.
+- **Routing:** When a tenant uploads a document or asks a question, the API Server extracts their `tenant_id` from the JWT and automatically routes the embedding payload into their specific isolated collection.
+- **Prevention of Data Bleed:** Because searches are constrained strictly at the collection level, it is mathematically impossible for a semantic search to retrieve a text chunk from a different tenant.

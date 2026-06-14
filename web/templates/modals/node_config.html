@@ -318,7 +318,7 @@
                 // Load Local API status when the tab is shown
                 document.getElementById('tab-btn-nc-local-api').addEventListener('click', function () {
                     fetch('/api/admin/local_api', {
-                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}` }
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}` }
                     })
                         .then(res => res.json())
                         .then(data => {
@@ -355,7 +355,7 @@
                     fetch('/api/admin/local_api', {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`,
+                            'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ action: 'toggle' })
@@ -375,7 +375,7 @@
                     fetch('/api/admin/local_api', {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`,
+                            'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ action: 'regen' })
@@ -423,7 +423,7 @@
             <script>
                 document.getElementById('tab-btn-nc-sso').addEventListener('click', function() {
                     fetch('/api/admin/enterprise_sso', {
-                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}` }
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}` }
                     }).then(res => res.json()).then(data => {
                         if(data.success) {
                             document.getElementById('nc-sso-enable').checked = data.data.sso_enabled;
@@ -442,7 +442,7 @@
                     };
                     fetch('/api/admin/enterprise_sso', {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`, 'Content-Type': 'application/json' },
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     }).then(res => res.json()).then(data => {
                         if(data.success) showNotification('SSO Config Saved', 'success');
@@ -475,7 +475,7 @@
             <script>
                 document.getElementById('tab-btn-nc-siem').addEventListener('click', function() {
                     fetch('/api/admin/siem', {
-                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}` }
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}` }
                     }).then(res => res.json()).then(data => {
                         if(data.success) {
                             document.getElementById('nc-siem-enable').checked = data.data.siem_enabled;
@@ -492,7 +492,7 @@
                     };
                     fetch('/api/admin/siem', {
                         method: 'POST',
-                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('quantum_token')}`, 'Content-Type': 'application/json' },
+                        headers: { 'Authorization': `Bearer ${sessionStorage.getItem('synora_token')}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     }).then(res => res.json()).then(data => {
                         if(data.success) showNotification('SIEM Config Saved', 'success');

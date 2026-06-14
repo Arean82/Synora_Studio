@@ -1,28 +1,20 @@
-# Central Headless Core Engine (Backend Server)
+# Synora API Server (`/server`)
 
-This directory houses the core backend logic, AI runtime orchestration, vector database interfaces, and background tasks. It is strictly **UI-agnostic** and contains no desktop UI or web-route definitions.
+The API Server is the foundational intelligence core of the Synora Studio ecosystem. It operates entirely independently of any UI frontend. 
 
-## Directory Structure
-- **`logic/`**: Unified LLM Client router (Google/NVIDIA/OpenAI/Custom), embedding services, database connection adapters (PostgreSQL/Turso), and background chat worker queues.
-- **`utils/`**: Shared settings helpers, secure credential resolvers, storage path configurations, and system-wide constants.
-- **`workers/`**: Asynchronous task consumers executing vector embeddings, token usage tracking, background log ingestion, and indexing.
-- **`resources/`**: Static metadata assets such as the providers schema and model registration manifests.
-- **`run_server.py`**: Runs the standalone server routing API (port 5000) for local offline gateways.
+By running as a standalone module, it allows developers to build custom web, desktop, or mobile applications that simply consume its highly optimized REST and WebSocket endpoints.
 
-## Local Configuration & Packaging Files
-To support decoupled modular compilation, this directory contains its own self-contained packaging files:
-- **`server.spec`**: PyInstaller spec file specific to packaging the API server.
-- **`build.py`**: Local Python build script executing PyInstaller commands targeting `server.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
-- **`installer_script.iss`**: Local Inno Setup configuration to package the compiled server application.
+## 🚀 Quick Setup
+Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step instructions on how to install dependencies, run the server, and pass the initial CLI Authentication Gate.
 
-## Features
-- **Intelligent LLM Router**: Polymorphic interface resolving requests dynamically.
-- **Decoupled RAG**: Caching vectors directly using decoupled embedding utilities.
-- **Secure Storage Gateway**: Integrates Turso database bootstrap with dynamic failovers.
+## 🏗️ Core Responsibilities
 
-## Executable Compilation
-To compile the standalone binary `API_Server.exe` using PyInstaller:
-```bash
-pyinstaller server.spec
-```
+1. **LLM Orchestration:** Dynamically routes requests between local models (Ollama, LMStudio) and cloud providers (OpenAI, Google GenAI) via a unified `AgentManager`.
+2. **Retrieval-Augmented Generation (RAG):** Manages the ingestion, chunking, and semantic searching of context files using dual-mode embeddings (`sentence-transformers` or remote models).
+3. **Database Management:** Binds to the designated tenant database (SQLite, PostgreSQL, or libSQL/Turso).
+4. **Multiplexing:** Handles high-concurrency event streams over `Flask-SocketIO` on port `5000`.
+
+## 📚 Advanced Documentation
+
+- [API_SERVER.md](docs/API_SERVER.md) - Detailed specifications of the REST routes and WebSocket event payloads.
+- [HEADLESS_GUIDE.md](docs/HEADLESS_GUIDE.md) - Advanced documentation on deploying the server headlessly via Docker or Systemd, managing API key injection, and securing endpoints in production.

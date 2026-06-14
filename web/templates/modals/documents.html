@@ -55,7 +55,7 @@
         listUl.innerHTML = '<div style="color: var(--text-dim); font-size: 0.9rem;"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading available documents...</div>';
         
         try {
-            const token = sessionStorage.getItem('quantum_token') || (typeof App !== 'undefined' ? App.token : '');
+            const token = sessionStorage.getItem('synora_token') || (typeof App !== 'undefined' ? App.token : '');
             if (!token) {
                 listUl.innerHTML = '<div style="color: #e74c3c; font-size: 0.9rem;">Error: No passport token found in session. Please log in again.</div>';
                 return;
@@ -97,7 +97,7 @@
         renderArea.innerHTML = '<div style="display: flex; height: 100%; align-items: center; justify-content: center; color: var(--text-dim);"><i class="fa-solid fa-circle-notch fa-spin"></i> Reading document content...</div>';
         
         try {
-            const token = sessionStorage.getItem('quantum_token') || (typeof App !== 'undefined' ? App.token : '');
+            const token = sessionStorage.getItem('synora_token') || (typeof App !== 'undefined' ? App.token : '');
             const res = await fetch(`/api/documents/content/${docName}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });

@@ -94,10 +94,9 @@ def organize_workspace():
     print("\n--- Removing Migrated JSON Configurations ---")
     json_targets = []
     
-    # Check resources dir for api_providers and models
+    # Check resources dir for models files (api_providers.json is STATIC and MUST NOT BE DELETED)
     resources_dir = root_dir / "resources"
     if resources_dir.exists():
-        json_targets.append(resources_dir / "api_providers.json")
         json_targets.append(resources_dir / "models.json")
         json_targets.extend(list(resources_dir.glob("models_*.json")))
         json_targets.extend(list((resources_dir / "models").glob("models_*.json")))
@@ -149,8 +148,27 @@ def organize_workspace():
         except Exception as e:
             print(f"Could not delete operator_tools: {e}")
 
+    # 7. Documentation Cleanup: Remove localized translations
+    print("\n--- Documentation Cleanup: Purging Translations ---")
+    
+    localized_files = ["README_de.md", "README_es.md", "README_fr.md"]
+    
+    # Recursive delete of translated READMEs
+    for root_dir_path, dirs, files in os.walk(root_dir):
+        # Skip git or build dirs
+        if ".git" in root_dir_path or "__pycache__" in root_dir_path:
+            continue
+        for file in files:
+            if file in localized_files:
+                target_file = Path(root_dir_path) / file
+                try:
+                    os.remove(target_file)
+                    print(f"Purged localized docs: {target_file.relative_to(root_dir)}")
+                except Exception as e:
+                    print(f"Could not delete {file}: {e}")
+
     print("\n✅ Cleanup Complete! The root directory is now strictly modularized.")
-    print("Documentation has been moved to /docs and legacy build files to /build_scripts.")
+    print("Documentation translations have been purged.")
 
 if __name__ == "__main__":
     organize_workspace()

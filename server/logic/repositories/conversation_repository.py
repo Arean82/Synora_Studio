@@ -5,7 +5,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from server.logic.services.base_service import ServiceRegistry
 
-logger = logging.getLogger("QuantumConversationRepository")
+logger = logging.getLogger("SynoraConversationRepository")
 
 class ConversationRepository:
     """

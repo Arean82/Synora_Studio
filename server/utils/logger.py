@@ -35,7 +35,7 @@ class AppLogger:
 
     def __init__(self, component_name="app"):
         self.component_name = component_name
-        self.logger = logging.getLogger(f"QuantumApp_{component_name}")
+        self.logger = logging.getLogger(f"SynoraApp_{component_name}")
         self.logger.propagate = False
         self.formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         

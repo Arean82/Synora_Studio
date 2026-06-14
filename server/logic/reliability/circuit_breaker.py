@@ -6,7 +6,7 @@ import logging
 import threading
 from server.logic.services.base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumCircuitBreaker")
+logger = logging.getLogger("SynoraCircuitBreaker")
 
 class CircuitBreakerState:
     CLOSED = "CLOSED"      # Primary connection is healthy, routing all queries
@@ -35,7 +35,7 @@ class CircuitBreaker(BaseService):
         self.is_failover_enabled = True
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Circuit Breaker Service...")
+        logger.info("Initializing Synora Circuit Breaker Service...")
         # Sync initial state from system configurations if needed
         from server.utils.path_utils import get_app_settings
         settings = get_app_settings()
@@ -43,7 +43,7 @@ class CircuitBreaker(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Circuit Breaker Service...")
+        logger.info("Shutting down Synora Circuit Breaker Service...")
         return True
 
     def is_enabled(self) -> bool:

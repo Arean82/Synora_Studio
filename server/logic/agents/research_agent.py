@@ -4,7 +4,7 @@
 import logging
 from server.logic.agents.base_agent import BaseAgent
 
-logger = logging.getLogger("QuantumResearchAgent")
+logger = logging.getLogger("SynoraResearchAgent")
 
 class ResearchAgent(BaseAgent):
     """

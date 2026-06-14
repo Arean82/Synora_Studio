@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from server.logic.services.base_service import ServiceRegistry
 
-logger = logging.getLogger("QuantumJobQueue")
+logger = logging.getLogger("SynoraJobQueue")
 
 class JobQueueEngine:
     """
@@ -35,7 +35,7 @@ class JobQueueEngine:
         self._initialized = True
         
         # In-memory queues & worker pool
-        self.executor = ThreadPoolExecutor(max_workers=3, thread_name_prefix="QuantumWorker")
+        self.executor = ThreadPoolExecutor(max_workers=3, thread_name_prefix="SynoraWorker")
         self.active_jobs = {} # Job ID -> status dict
         self.completed_jobs = {}
         

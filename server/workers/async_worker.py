@@ -19,7 +19,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] (%(threadName)s) %(message)s"
 )
-logger = logging.getLogger("QuantumAsyncWorker")
+logger = logging.getLogger("SynoraAsyncWorker")
 
 # Bootstrap shared service registry
 from server.logic.services.base_service import ServiceRegistry
@@ -37,7 +37,7 @@ class AsyncWorker:
         self.stop_event = threading.Event() if 'threading' in sys.modules else None
         
     def start(self):
-        logger.info("Initializing Quantum Core Services in Standalone Daemon Mode...")
+        logger.info("Initializing Synora Core Services in Standalone Daemon Mode...")
         # Initialize storage, RAG, cache, telemetry, and redis connections
         if not ServiceRegistry.initialize_all():
             logger.error("Failed to initialize all registered backend services. Exiting.")
@@ -51,9 +51,9 @@ class AsyncWorker:
         self.llm_client.hydrate()
         
         logger.info("====================================================")
-        logger.info("🚀 QUANTUM ASYNCHRONOUS DAEMON WORKER IS ACTIVE")
-        logger.info("Listening on queue: 'quantum_tasks'")
-        logger.info("Dead Letter Queue (DLQ): 'quantum_dlq'")
+        logger.info("🚀 SYNORA ASYNCHRONOUS DAEMON WORKER IS ACTIVE")
+        logger.info("Listening on queue: 'synora_tasks'")
+        logger.info("Dead Letter Queue (DLQ): 'synora_dlq'")
         logger.info("GUI dependencies (PySide6/Qt): NONE (Fully Decoupled)")
         logger.info("====================================================")
 
@@ -64,7 +64,7 @@ class AsyncWorker:
         while True:
             try:
                 # Dequeue FIFO task block (blocks up to 2 seconds if empty)
-                task = self.queue_broker.dequeue("quantum_tasks", timeout=2)
+                task = self.queue_broker.dequeue("synora_tasks", timeout=2)
                 if not task:
                     continue
                 
@@ -220,12 +220,12 @@ class AsyncWorker:
             # Re-enqueue after sleeping (in a blocking manner for simplicity of single-worker model, 
             # or push back to queue immediately so delay happens on pickup)
             time.sleep(backoff_delay)
-            self.queue_broker.enqueue("quantum_tasks", task)
+            self.queue_broker.enqueue("synora_tasks", task)
         else:
             logger.error(f"❌ Job '{job_id}' completely failed after {max_retries} retries. Shifting to Dead Letter Queue (DLQ).")
             # Push payload to DLQ for admin inspection
             task["failed_at"] = time.time()
-            self.queue_broker.enqueue("quantum_dlq", task)
+            self.queue_broker.enqueue("synora_dlq", task)
 
 
 if __name__ == "__main__":

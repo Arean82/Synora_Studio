@@ -29,19 +29,23 @@ from pathlib import Path
 # --- Auto-Cleanup Block (Moves files improperly placed in root) ---
 try:
     _root = Path(__file__).parent
-    if (_root / "saas_tenants.db").exists():
-        (_root / "data").mkdir(exist_ok=True)
-        shutil.move(str(_root / "saas_tenants.db"), str(_root / "data/saas_tenants.db"))
-    if (_root / "reset_admin.py").exists():
-        os.makedirs(str(_root / "operator_tools" / "admin_reset"), exist_ok=True)
-        shutil.move(str(_root / "reset_admin.py"), str(_root / "operator_tools/admin_reset/reset_admin.py"))
-    if (_root / "test_reranker.py").exists():
-        (_root / "scratch").mkdir(exist_ok=True)
-        shutil.move(str(_root / "test_reranker.py"), str(_root / "scratch/test_reranker.py"))
-except Exception as e: 
+    
+    def safe_move(src_name, dst_dir_name, dst_file_name):
+        src = _root / src_name
+        dst_dir = _root / dst_dir_name
+        dst = dst_dir / dst_file_name
+        if src.exists():
+            dst_dir.mkdir(parents=True, exist_ok=True)
+            if not dst.exists():
+                shutil.copy2(str(src), str(dst))
+                os.remove(str(src))
+                
+    safe_move("saas_tenants.db", "data", "saas_tenants.db")
+    safe_move("reset_admin.py", "operator_tools/admin_reset", "reset_admin.py")
+    safe_move("test_reranker.py", "scratch", "test_reranker.py")
+except OSError as e: 
     import logging
-    logging.error(f"Caught exception: {e}", exc_info=True)
-    pass
+    logging.error(f"Auto-cleanup failed (OS Error): {e}")
 # -----------------------------------------------------------------
 
 from server.utils.path_utils import get_resource_path
@@ -59,6 +63,7 @@ def detect_environment():
     """
     Logic: Intelligently auto-detect if running in a Headless/CLI environment or a GUI environment.
     - Explicit flags override: --headless or --cli.
+    - Docker: Checks for .dockerenv or DOCKER_CONTAINER.
     - Linux: Checks for 'DISPLAY' or 'WAYLAND_DISPLAY'.
     - SSH/TTY Check: Detects running in SSH terminals or non-interactive container services.
     """
@@ -68,6 +73,10 @@ def detect_environment():
         return "CLI"
     if "--list-models" in sys.argv or "--update-models" in sys.argv:
         return "CLI"
+        
+    # Check Docker Container explicitly
+    if os.path.exists("/.dockerenv") or os.environ.get("DOCKER_CONTAINER"):
+        return "HEADLESS"
         
     # Check Linux displays
     if sys.platform == "linux" and not os.environ.get('DISPLAY') and not os.environ.get('WAYLAND_DISPLAY'):
@@ -203,8 +212,10 @@ def main():
         app = QCoreApplication.instance() or QCoreApplication(sys.argv)
     
     # --- SINGLE INSTANCE LOCK (Restored from v6) ---
-    from PySide6.QtCore import QLockFile, QDir
-    lock_path = os.path.join(QDir.tempPath(), "llm_chat_app_v6.lock")
+    from PySide6.QtCore import QLockFile, QDir, QStandardPaths
+    lock_dir = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    os.makedirs(lock_dir, exist_ok=True)
+    lock_path = os.path.join(lock_dir, "synorastudio.lock")
     lock_file = QLockFile(lock_path)
     if not lock_file.tryLock(500):
         if env_mode == "GUI":

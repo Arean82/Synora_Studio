@@ -5,9 +5,8 @@ import logging
 import datetime
 import hashlib
 from .base_service import BaseService, ServiceRegistry
-from web.core.tenant_db import TenantDatabaseManager
 
-logger = logging.getLogger("QuantumAuthService")
+logger = logging.getLogger("SynoraAuthService")
 
 class AuthService(BaseService):
     """
@@ -20,12 +19,17 @@ class AuthService(BaseService):
         self.db = None
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Authentication Service...")
-        self.db = TenantDatabaseManager()
+        logger.info("Initializing Synora Authentication Service...")
+        try:
+            from web.core.tenant_db import TenantDatabaseManager
+            self.db = TenantDatabaseManager()
+        except ImportError:
+            logger.warning("web.core.tenant_db not found. Running standalone without Tenant DB.")
+            self.db = None
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Authentication Service...")
+        logger.info("Shutting down Synora Authentication Service...")
         self.db = None
         return True
 
@@ -113,7 +117,7 @@ class AuthService(BaseService):
         signature_base = f"{header_b64}.{payload_b64}"
         
         # Cryptographic signing using master salt secret
-        secret = "Quantum_SaaS_JWT_Secret_Salt_v9_SuperSecureKey"
+        secret = "Synora_SaaS_JWT_Secret_Salt_v9_SuperSecureKey"
         signature = hmac.new(
             secret.encode('utf-8'),
             signature_base.encode('utf-8'),
@@ -147,7 +151,7 @@ class AuthService(BaseService):
             
             # Verify signature
             signature_base = f"{header_b64}.{payload_b64}"
-            secret = "Quantum_SaaS_JWT_Secret_Salt_v9_SuperSecureKey"
+            secret = "Synora_SaaS_JWT_Secret_Salt_v9_SuperSecureKey"
             expected_signature = hmac.new(
                 secret.encode('utf-8'),
                 signature_base.encode('utf-8'),

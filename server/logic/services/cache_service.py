@@ -6,7 +6,7 @@ import logging
 import hashlib
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumCacheService")
+logger = logging.getLogger("SynoraCacheService")
 
 class CacheService(BaseService):
     """
@@ -27,11 +27,11 @@ class CacheService(BaseService):
         self.misses = 0
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Cache Service...")
+        logger.info("Initializing Synora Cache Service...")
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Clearing Quantum Cache Service in-memory tables...")
+        logger.info("Clearing Synora Cache Service in-memory tables...")
         self._query_cache.clear()
         self._content_registry.clear()
         return True

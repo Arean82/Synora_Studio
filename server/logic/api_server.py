@@ -28,14 +28,20 @@ class APIServer:
     def setup_security(self):
         from server.utils.path_utils import get_app_settings
         import uuid
+        import os
         
         settings = get_app_settings()
-        # Get existing key or generate a new one
-        api_key = settings.value("local_api_auth_key", "")
-        if not api_key:
-            api_key = f"llm-local-auth-{uuid.uuid4().hex[:10]}"
-            settings.setValue("local_api_auth_key", api_key)
-            settings.sync()
+        
+        # Determine API key: Priority to Environment Variable (for Docker/Production), fallback to QSettings
+        env_api_key = os.environ.get("SYNORA_API_KEY")
+        if env_api_key:
+            api_key = env_api_key
+        else:
+            api_key = settings.value("local_api_auth_key", "")
+            if not api_key:
+                api_key = f"llm-local-auth-{uuid.uuid4().hex[:10]}"
+                settings.setValue("local_api_auth_key", api_key)
+                settings.sync()
             
         @self.app.before_request
         def verify_auth():
@@ -45,8 +51,8 @@ class APIServer:
             
             auth_header = request.headers.get('Authorization')
             
-            # Fetch the dynamic key
-            current_key = settings.value("local_api_auth_key", "")
+            # Fetch the dynamic key. Again, prioritize env var in case it was injected later.
+            current_key = os.environ.get("SYNORA_API_KEY") or settings.value("local_api_auth_key", "")
             expected = f"Bearer {current_key}"
             
             if not auth_header or auth_header != expected:

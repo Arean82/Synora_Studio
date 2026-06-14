@@ -9,7 +9,7 @@ import time
 from collections import deque
 from .base_service import BaseService, ServiceRegistry
 
-logger = logging.getLogger("QuantumQueueBroker")
+logger = logging.getLogger("SynoraQueueBroker")
 
 class RedisQueueBroker(BaseService):
     """
@@ -27,7 +27,7 @@ class RedisQueueBroker(BaseService):
         self._mock_lock = threading.Lock()
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Quantum Queue Broker Service...")
+        logger.info("Initializing Synora Queue Broker Service...")
         try:
             self.redis_svc = ServiceRegistry.get("redis")
             self.client = self.redis_svc.get_client()
@@ -38,7 +38,7 @@ class RedisQueueBroker(BaseService):
         return True
 
     def on_shutdown(self) -> bool:
-        logger.info("Shutting down Quantum Queue Broker Service...")
+        logger.info("Shutting down Synora Queue Broker Service...")
         with self._mock_lock:
             self._mock_queues.clear()
             self._mock_cvs.clear()

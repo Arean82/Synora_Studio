@@ -9,7 +9,7 @@ import subprocess
 import threading
 from typing import Optional
 
-logger = logging.getLogger("QuantumSSHTunnel")
+logger = logging.getLogger("SynoraSSHTunnel")
 
 class HybridSSHTunnel:
     """

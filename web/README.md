@@ -1,28 +1,18 @@
-# Web SaaS Portal & Multi-Tenant Gateway
+# Synora Web Portal (`/web`)
 
-This directory hosts the web application portal, database routing switchboard, dynamic tenant sandboxing engines, and SaaS client management interfaces.
+The Web Portal is the standalone, multi-tenant SaaS frontend for the Synora Studio ecosystem. It relies on the API Server backend for intelligence, allowing the Web UI to remain entirely focused on user management and billing.
 
-## Directory Structure
-- **`app.py`**: The core Flask application controller handling routes, JWT authentications, tenant logins, session flows, and REST endpoints.
-- **`run_web.py`**: Standard script runner that imports the `app` instance and fires up the server loop.
-- **`core/`**: SaaS core helper modules (e.g. `launcher.py`, `agent_manager.py`, `config_manager.py`, `tenant_db.py`).
-- **`tenant_drivers/`**: Middleware orchestrating schema isolations and cloud db migrations for multi-tenant users.
-- **`static/` & `templates/`**: Pure HTML/CSS/JS frontend views, stylesheets, and dashboard screens.
-- **`saas_docs/`**: Platform operating guidelines and administrative instructions.
+## 🚀 Quick Setup
+Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step instructions on how to install and boot the web portal for local development.
 
-## Local Configuration & Packaging Files
-To support decoupled modular compilation, this directory contains its own self-contained packaging files:
-- **`web.spec`**: PyInstaller spec file specific to packaging the SaaS web portal.
-- **`build.py`**: Local Python build script executing PyInstaller commands targeting `web.spec`. (Global orchestrator is in `scripts/build.py`).
-- **`file_version_info.txt`**: OS-level metadata defining the executable's version, copyrights, and descriptions.
-- **`installer_script.iss`**: Local Inno Setup configuration to package the compiled SaaS web application.
+## 🏗️ Core Responsibilities
 
-## Key Architecture Notes
-- **Zero GUI Overhead**: Strictly isolated from PySide6 and Qt components to run efficiently on headless production servers.
-- **Micro-Gateway Routing**: Delegates intensive generation and embedding queries to the underlying `server/` layer.
+1. **Multi-Tenant Administration:** Handles user registration, JWT-based session management, and role-based access control (RBAC).
+2. **BYOK Management (Bring Your Own Key):** Allows individual tenants to securely upload and encrypt their own OpenAI/Google API keys, which are passed off to the Server module securely.
+3. **Usage Accounting:** Tracks token consumption and session telemetry per user.
+4. **Decoupled Connectivity:** The web portal does not process AI models or RAG chunking locally. It forwards all requests to the central API Server over `REST` and `Socket.IO`.
 
-## Executable Compilation
-To compile the standalone binary `SaaS_Web_Portal.exe` using PyInstaller:
-```bash
-pyinstaller web.spec
-```
+## 📚 Advanced Documentation
+
+- [USER_MANUAL_SAAS.md](docs/USER_MANUAL_SAAS.md) - End-user guide for operating the web dashboard.
+- [SAAS_STORAGE_ARCHITECTURE_PLAN.md](docs/SAAS_STORAGE_ARCHITECTURE_PLAN.md) - Deep dive into how tenant databases are isolated and synced.

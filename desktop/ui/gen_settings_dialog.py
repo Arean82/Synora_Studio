@@ -720,7 +720,7 @@ class GenSettingsDialog(QDialog):
                     self.parent().chat_view.add_system_message(f"⚙️ Redis settings updated. {state_msg}")
             except Exception as e:
                 import logging
-                logging.getLogger("QuantumRedisUI").error(f"Failed to dynamically apply new Redis configuration: {str(e)}")
+                logging.getLogger("SynoraRedisUI").error(f"Failed to dynamically apply new Redis configuration: {str(e)}")
                 
         # Commit SSH changes
         if hasattr(self, "ssh_enable_cb") and self.ssh_enable_cb:
