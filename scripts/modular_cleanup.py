@@ -15,10 +15,10 @@ def organize_workspace():
     docs_dir = root_dir / "docs"
     
     doc_moves = {
-        "API_SERVER.md": root_dir / "server" / "docs",
-        "HEADLESS_GUIDE.md": root_dir / "server" / "docs",
-        "USER_MANUAL_SAAS.md": root_dir / "web" / "docs",
-        "SAAS_STORAGE_ARCHITECTURE_PLAN.md": root_dir / "web" / "docs",
+        "API_SERVER.md": root_dir / "synora_server" / "docs",
+        "HEADLESS_GUIDE.md": root_dir / "synora_server" / "docs",
+        "USER_MANUAL_SAAS.md": root_dir / "synora_saas" / "docs",
+        "SAAS_STORAGE_ARCHITECTURE_PLAN.md": root_dir / "synora_saas" / "docs",
         "USER_MANUAL_DESKTOP.md": root_dir / "desktop" / "docs",
         "IDE_INTEGRATION.md": root_dir / "extensions" / "docs",
     }
@@ -74,13 +74,13 @@ def organize_workspace():
     # 4. Remove Redundant Wrapper Scripts & Obsolete Modules
     print("\n--- Removing Redundant/Obsolete Files ---")
     wrappers_to_delete = [
-        "web/web_script.py",
-        "server/server_script.py",
+        "synora_saas/web_script.py",
+        "synora_server/server_script.py",
         "desktop/desktop_script.py",
         "companion_operation/core/local_relocator.py",
         "companion_operation/ui_assets/local_relocator.ui",
-        "server/run_server.py",
-        "web/run_web.py",
+        "synora_server/run_server.py",
+        "synora_saas/run_saas.py",
         "headless/run_cli.py",
         "desktop/main.py",
         "admin_reset/reset_admin.py"
@@ -118,9 +118,9 @@ def organize_workspace():
     print("\n--- Distributing Shared Resources ---")
     if resources_dir.exists():
         targets = {
-            "web/resources_web": "web",
+            "synora_saas/resources_synora_saas": "synora_saas",
             "desktop/resources_desktop": "desktop",
-            "server/resources_server": "server",
+            "synora_server/resources_synora_server": "synora_server",
             "companion_operation/resources_comp": "companion",
             "admin_reset/resources_rest": "reset"
         }

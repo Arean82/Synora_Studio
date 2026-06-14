@@ -4,9 +4,9 @@
 # Allows listing and updating models directly from the terminal.
 
 import json
-from server.logic.model_io import load_all_models, save_all_models
-from server.logic.llm_client import LLMClient
-from server.workers.model_fetch_worker import ModelFetchWorker
+from synora_server.logic.model_io import load_all_models, save_all_models
+from synora_server.logic.llm_client import LLMClient
+from synora_server.workers.model_fetch_worker import ModelFetchWorker
 
 class HeadlessModels:
     """
@@ -66,7 +66,7 @@ class HeadlessModels:
         """
         Sets the active model ID in the settings.
         """
-        from server.utils.path_utils import get_app_settings
+        from synora_server.utils.path_utils import get_app_settings
         models = load_all_models()
         if any(m.get("id") == model_id for m in models):
             settings = get_app_settings()

@@ -103,7 +103,7 @@ class AutoSaveWorker(QThread):
 
                 if user_content and assistant_content:
                     try:
-                        from server.logic.services.base_service import ServiceRegistry
+                        from synora_server.logic.services.base_service import ServiceRegistry
                         queue_broker = ServiceRegistry.get("queue_broker")
                         
                         task_payload = {
@@ -128,13 +128,13 @@ class AutoSaveWorker(QThread):
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtGui import QTextCursor
 
-from server.logic.chat_worker import ChatWorker
-from server.logic.conversation_manager import ConversationManager
-from server.logic.rag_manager import RAGManager
-from server.utils.path_utils import get_resource_path, get_app_settings
-from server.utils.helpers import strip_markdown
-from server.utils.model_config import get_context_limit
-from server.utils.constants import RESPONSE_BUFFER_CHARS
+from synora_server.logic.chat_worker import ChatWorker
+from synora_server.logic.conversation_manager import ConversationManager
+from synora_server.logic.rag_manager import RAGManager
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.helpers import strip_markdown
+from synora_server.utils.model_config import get_context_limit
+from synora_server.utils.constants import RESPONSE_BUFFER_CHARS
 
 from desktop.ui.shared_widgets import MessageData, ChatDisplay
 
@@ -260,7 +260,7 @@ class ChatViewWidget(QWidget):
 
         # Explicitly close the singleton VectorDatabase client connection to avoid interpreter shutdown warnings/race exceptions
         try:
-            from server.logic.vector_db import VectorDatabase
+            from synora_server.logic.vector_db import VectorDatabase
             if VectorDatabase._instance:
                 vdb = VectorDatabase.get_instance()
                 vdb.close()
@@ -276,7 +276,7 @@ class ChatViewWidget(QWidget):
         self.send_btn.setEnabled(enabled)
 
     def update_model_ui(self, model_id):
-        from server.logic.model_io import load_all_models
+        from synora_server.logic.model_io import load_all_models
         name = model_id
         desc = ""
         try:
@@ -1109,7 +1109,7 @@ class ChatViewWidget(QWidget):
                     messages.append(msg)
             else: messages.append(msg)
         
-        from server.utils.helpers import get_active_system_instructions
+        from synora_server.utils.helpers import get_active_system_instructions
         instructions = get_active_system_instructions()
         if instructions:
             messages.insert(0, {"role": "system", "content": instructions})

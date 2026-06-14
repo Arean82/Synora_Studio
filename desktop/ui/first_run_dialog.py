@@ -8,7 +8,7 @@ from PySide6.QtGui import QIcon, QFont, QPixmap
 
 import sys
 from pathlib import Path
-from server.utils.storage_config import StorageManager
+from synora_server.utils.storage_config import StorageManager
 from desktop.ui.shared_widgets import set_app_icon
 
 class FirstRunDialog(QDialog):

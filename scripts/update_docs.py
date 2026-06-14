@@ -14,13 +14,13 @@ replacements = [
     (re.compile(r'python desktop[\\/]desktop\.py --cli'), r'python headless/headless.py --cli'),
     (re.compile(r'python desktop[\\/]desktop\.py --list-models'), r'python headless/headless.py --list-models'),
     (re.compile(r'python desktop[\\/]desktop\.py --update-models'), r'python headless/headless.py --update-models'),
-    (re.compile(r'python desktop[\\/]desktop\.py --migrate'), r'python server/server.py --migrate'),
-    (re.compile(r'python desktop[\\/]desktop\.py --api-manager'), r'python server/server.py --api-manager'),
+    (re.compile(r'python desktop[\\/]desktop\.py --migrate'), r'python synora_synora_server/synora_server.py --migrate'),
+    (re.compile(r'python desktop[\\/]desktop\.py --api-manager'), r'python synora_synora_server/synora_server.py --api-manager'),
     (re.compile(r'python desktop\.py --cli'), r'python headless/headless.py --cli'),
     (re.compile(r'python desktop\.py --list-models'), r'python headless/headless.py --list-models'),
     (re.compile(r'python desktop\.py --update-models'), r'python headless/headless.py --update-models'),
-    (re.compile(r'python desktop\.py --migrate'), r'python server/server.py --migrate'),
-    (re.compile(r'python desktop\.py --api-manager'), r'python server/server.py --api-manager'),
+    (re.compile(r'python desktop\.py --migrate'), r'python synora_synora_server/synora_server.py --migrate'),
+    (re.compile(r'python desktop\.py --api-manager'), r'python synora_synora_server/synora_server.py --api-manager'),
 ]
 
 for doc in docs_to_check:

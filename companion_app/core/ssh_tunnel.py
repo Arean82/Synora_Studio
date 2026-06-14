@@ -124,7 +124,7 @@ class SSHTunnelManager:
         Dynamically monkeypatches TenantDatabaseManager to route connections through the SSH Tunnel
         if a remote desktop config is present.
         """
-        from web.core import tenant_db
+        from synora_server.logic.tenant import tenant_db
         import re
         
         original_load = tenant_db._load_tenant_config

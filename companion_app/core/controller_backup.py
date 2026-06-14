@@ -15,7 +15,7 @@ class BackupController:
         self.ui_parent = ui_parent
 
     def run_gui_backup(self):
-        config_path = os.path.join(ROOT_DIR, "saas", "config.ini")
+        config_path = os.path.join(ROOT_DIR, "synora_saas", "config.ini")
         driver = "sqlite"
         cp = configparser.ConfigParser()
         if os.path.exists(config_path):
@@ -24,7 +24,7 @@ class BackupController:
                 driver = cp["TENANT_DB"]["driver"]
                 
         if driver == "sqlite" or driver == "turso":
-            db_path = os.path.join(ROOT_DIR, "data", "saas_tenants.db")
+            db_path = os.path.join(ROOT_DIR, "synora_server", "data", "saas_tenants.db")
             if not os.path.exists(db_path):
                 QMessageBox.critical(self.ui_parent, "Error", "Local Turso DB not found.")
                 return
@@ -88,7 +88,7 @@ class BackupController:
 
     @staticmethod
     def run_cli_action(target_dir=None):
-        db_path = os.path.join(ROOT_DIR, "data", "saas_tenants.db")
+        db_path = os.path.join(ROOT_DIR, "synora_server", "data", "saas_tenants.db")
         if not os.path.exists(db_path):
             print("❌ Local Turso Database not found at:", db_path)
             return 1

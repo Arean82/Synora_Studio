@@ -8,7 +8,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QSettings, Qt
 from PySide6.QtGui import QIcon
 
-from server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
 from desktop.ui.shared_widgets import set_app_icon
 
 class GenSettingsDialog(QDialog):
@@ -656,7 +656,7 @@ class GenSettingsDialog(QDialog):
             settings.setValue("logging/enable_log", "true" if self.log_enable_cb.isChecked() else "false")
             settings.setValue("logging/enable_debug", "true" if self.debug_enable_cb.isChecked() else "false")
             try:
-                from server.utils.logger import AppLogger
+                from synora_server.utils.logger import AppLogger
                 AppLogger.get_instance().reconfigure()
             except ImportError:
                 pass
@@ -670,7 +670,7 @@ class GenSettingsDialog(QDialog):
             
             # Dynamically apply config to active Redis & Event Bus services
             try:
-                from server.logic.services.base_service import ServiceRegistry
+                from synora_server.logic.services.base_service import ServiceRegistry
                 redis_svc = ServiceRegistry.get("redis")
                 event_bus_svc = ServiceRegistry.get("event_bus")
                 

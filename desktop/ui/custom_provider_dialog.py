@@ -4,7 +4,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QPushButton, QCheckBox, QMessageBox, QLabel
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtUiTools import QUiLoader
-from server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
 from desktop.ui.shared_widgets import set_app_icon
 
 class CustomProviderDialogClass(QDialog):

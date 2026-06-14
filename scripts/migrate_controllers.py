@@ -11,6 +11,6 @@ print(f"Moved {src1} to {dst1}")
 
 # Move settings_controller
 src2 = os.path.join(root, "desktop", "core", "settings_controller.py")
-dst2 = os.path.join(root, "server", "logic", "settings_controller.py")
+dst2 = os.path.join(root, "synora_server", "logic", "settings_controller.py")
 shutil.move(src2, dst2)
 print(f"Moved {src2} to {dst2}")

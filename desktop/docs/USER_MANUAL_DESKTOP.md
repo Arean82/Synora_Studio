@@ -4,7 +4,7 @@ Welcome to the **Synora Desktop Client**. This application gives you a native, l
 
 ## Getting Started
 
-1. **Start the API Server:** Before opening the desktop app, ensure you have run `python server/server.py`. The desktop app cannot function without the backend running on port 5000.
+1. **Start the API Server:** Before opening the desktop app, ensure you have run `python synora_synora_server/synora_server.py`. The desktop app cannot function without the backend running on port 5000.
 2. **Launch the App:** Run `python desktop/desktop.py`.
 
 ## Core Features

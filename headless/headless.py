@@ -8,7 +8,7 @@ if current_dir in sys.path:
 root_dir = os.path.abspath(os.path.join(current_dir, '..'))
 sys.path.insert(0, root_dir)
 
-from server.logic.llm_client import LLMClient
+from synora_server.logic.llm_client import LLMClient
 from headless.cli.auth import HeadlessAuth
 
 if __name__ == "__main__":

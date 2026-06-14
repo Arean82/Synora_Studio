@@ -10,7 +10,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 def save_config(driver, credentials):
     import configparser
-    config_path = os.path.join(ROOT_DIR, "saas", "config.ini")
+    config_path = os.path.join(ROOT_DIR, "synora_saas", "config.ini")
     config = configparser.ConfigParser()
     if os.path.exists(config_path):
         config.read(config_path)
@@ -44,15 +44,15 @@ class SaasMigrationWorker(QThread):
     def run(self):
         try:
             self.log_msg.emit("Connecting to Source (Turso)...")
-            from web.tenant_drivers.turso_tenant_driver import TursoTenantDriver
+            from synora_server.logic.tenant.drivers.turso_tenant_driver import TursoTenantDriver
             source = TursoTenantDriver(db_name="saas_tenants.db")
             
             self.log_msg.emit("Connecting to Target dynamically...")
             if self.driver == "postgres":
-                from web.tenant_drivers.postgres_tenant_driver import PostgresTenantDriver
+                from synora_server.logic.tenant.drivers.postgres_tenant_driver import PostgresTenantDriver
                 target = PostgresTenantDriver(self.credentials['pgConnStr'])
             elif self.driver == "mysql":
-                from web.tenant_drivers.mysql_tenant_driver import MySQLTenantDriver
+                from synora_server.logic.tenant.drivers.mysql_tenant_driver import MySQLTenantDriver
                 target = MySQLTenantDriver(
                     host=self.credentials['myHost'], port=int(self.credentials['myPort']),
                     user=self.credentials['myUser'], password=self.credentials['myPass'],
@@ -62,7 +62,7 @@ class SaasMigrationWorker(QThread):
                 self.finished.emit(False, "Unsupported target driver.")
                 return
                 
-            from server.logic.migration_bridge import migrate_saas_tenant_database, verify_saas_tenant_integrity
+            from synora_server.logic.migration_bridge import migrate_saas_tenant_database, verify_saas_tenant_integrity
             count = migrate_saas_tenant_database(source, target, progress_callback=lambda m: self.log_msg.emit(m))
             self.prog_upd.emit(70)
             
@@ -70,10 +70,10 @@ class SaasMigrationWorker(QThread):
             source_verify = TursoTenantDriver(db_name="saas_tenants.db")
             
             if self.driver == "postgres":
-                from web.tenant_drivers.postgres_tenant_driver import PostgresTenantDriver
+                from synora_server.logic.tenant.drivers.postgres_tenant_driver import PostgresTenantDriver
                 target_verify = PostgresTenantDriver(self.credentials['pgConnStr'])
             elif self.driver == "mysql":
-                from web.tenant_drivers.mysql_tenant_driver import MySQLTenantDriver
+                from synora_server.logic.tenant.drivers.mysql_tenant_driver import MySQLTenantDriver
                 target_verify = MySQLTenantDriver(
                     host=self.credentials['myHost'], port=int(self.credentials['myPort']),
                     user=self.credentials['myUser'], password=self.credentials['myPass'],
@@ -107,7 +107,7 @@ class SaasMigratorController:
         
         if self.sourceInfoLabel:
             import configparser
-            config_path = os.path.join(ROOT_DIR, "saas", "config.ini")
+            config_path = os.path.join(ROOT_DIR, "synora_saas", "config.ini")
             driver_display = "Turso / libSQL (Local SQLite)\nsaas_tenants.db"
             if os.path.exists(config_path):
                 cp = configparser.ConfigParser()
@@ -158,7 +158,7 @@ class SaasMigratorController:
         if driver == "postgres":
             creds['pgConnStr'] = f"postgresql://{creds['myUser']}:{creds['myPass']}@{creds['myHost']}:{creds['myPort']}/{creds['myDB']}"
 
-        reply = QMessageBox.question(self.ui_tab, "Confirm", "Start migration to the selected database?\n\nThis will safely rewrite saas/config.ini upon success.", QMessageBox.Yes | QMessageBox.No)
+        reply = QMessageBox.question(self.ui_tab, "Confirm", "Start migration to the selected database?\n\nThis will safely rewrite synora_saas/config.ini upon success.", QMessageBox.Yes | QMessageBox.No)
         if reply != QMessageBox.Yes: return
 
         self.saas_btn.setEnabled(False)

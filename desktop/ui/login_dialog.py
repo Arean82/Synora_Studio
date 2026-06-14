@@ -12,9 +12,9 @@ from PySide6.QtWidgets import QDialog, QMessageBox, QVBoxLayout, QLineEdit, QPus
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtUiTools import QUiLoader
 
-from server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
 from desktop.ui.shared_widgets import set_app_icon
-from server.utils.storage_config import StorageManager
+from synora_server.utils.storage_config import StorageManager
 from desktop.ui.custom_provider_dialog import CustomProviderDialogClass
 
 class LoginDialogClass(QDialog):
@@ -308,8 +308,8 @@ class LoginDialogClass(QDialog):
             try:
                 from PySide6.QtWidgets import QApplication
                 from PySide6.QtCore import Qt
-                from server.logic.llm_client import LLMClient
-                from server.logic.model_io import save_all_models, load_all_models
+                from synora_server.logic.llm_client import LLMClient
+                from synora_server.logic.model_io import save_all_models, load_all_models
                 
                 QApplication.setOverrideCursor(Qt.WaitCursor)
                 temp_client = LLMClient()

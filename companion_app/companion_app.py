@@ -30,7 +30,7 @@ from companion_app.core.reset_controller import ResetAdminController
 from companion_app.core.headless_reset import run_headless_reset
 
 def check_admin_access() -> bool:
-    saas_dir = os.path.join(ROOT_DIR, "saas")
+    saas_dir = os.path.join(ROOT_DIR, "synora_saas")
     config_path = os.path.join(saas_dir, "config.ini")
     os.makedirs(saas_dir, exist_ok=True)
     try:
@@ -52,7 +52,7 @@ def run_headless_migration(args=None):
     print("======================================================================")
     
     if not check_admin_access():
-        print("❌ CRITICAL: Access Denied to saas/config.ini.")
+        print("❌ CRITICAL: Access Denied to synora_saas/config.ini.")
         print("Please restart this terminal as Administrator.")
         return 1
         
@@ -61,7 +61,7 @@ def run_headless_migration(args=None):
         if args.action == "backup":
             return BackupController.run_cli_action(getattr(args, 'target_dir', None))
         elif args.action == "migrate":
-            from server.logic.migration_bridge import run_interactive_cli_migration
+            from synora_server.logic.migration_bridge import run_interactive_cli_migration
             run_interactive_cli_migration()
             return 0
         elif args.action == "create-user":
@@ -93,7 +93,7 @@ def run_headless_migration(args=None):
             return 0
             
         if choice == "1":
-            from server.logic.migration_bridge import run_interactive_cli_migration
+            from synora_server.logic.migration_bridge import run_interactive_cli_migration
             run_interactive_cli_migration()
         elif choice == "2":
             CreateTenantController.run_cli_interactive()
@@ -161,7 +161,7 @@ def run_gui_migration():
     app.setStyleSheet(style)
     
     if not check_admin_access():
-        QMessageBox.critical(None, "Permission Denied", "Access to saas/config.ini is restricted.\nPlease run as Administrator.")
+        QMessageBox.critical(None, "Permission Denied", "Access to synora_saas/config.ini is restricted.\nPlease run as Administrator.")
         return 1
 
     class DashboardDialog(QDialog):

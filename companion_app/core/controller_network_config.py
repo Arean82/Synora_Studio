@@ -3,7 +3,7 @@
 
 import os
 from PySide6.QtWidgets import QLineEdit, QPushButton, QMessageBox
-from web.core.config_manager import SaaSConfigManager
+from synora_server.logic.tenant.config_manager import SaaSConfigManager
 
 class NetworkConfigController:
     def __init__(self, ui_tab=None):

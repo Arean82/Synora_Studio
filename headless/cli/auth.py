@@ -4,8 +4,8 @@
 # Allows configuring API keys directly from the terminal without a GUI.
 
 import keyring
-from server.utils.path_utils import get_app_settings
-from server.logic.llm_client import LLMClient
+from synora_server.utils.path_utils import get_app_settings
+from synora_server.logic.llm_client import LLMClient
 
 class HeadlessAuth:
     """
@@ -23,7 +23,7 @@ class HeadlessAuth:
         print("No active session found. Please configure your provider.")
         
         # Load providers dynamically from the unified registry
-        from server.logic.model_io import load_provider_metadata
+        from synora_server.logic.model_io import load_provider_metadata
         metadata = load_provider_metadata()
         raw_providers = metadata.get("providers", [])
         

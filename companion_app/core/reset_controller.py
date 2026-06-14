@@ -99,7 +99,7 @@ class ResetAdminController:
 
     def on_reset(self):
         from PySide6.QtWidgets import QRadioButton, QLineEdit, QMessageBox
-        from web.core.tenant_db import TenantDatabaseManager
+        from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
         import string
         import random
 

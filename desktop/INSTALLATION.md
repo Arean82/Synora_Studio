@@ -5,7 +5,7 @@
 
 This guide will walk you through setting up the **Synora Studio Desktop Client**. The Desktop application provides a native, highly responsive Graphical User Interface (GUI) to interact with your AI agents. 
 
-Because Synora is modular, the desktop app **requires the API Server to be running** first. Please ensure you have completed `server/INSTALLATION.md` before proceeding.
+Because Synora is modular, the desktop app **requires the API Server to be running** first. Please ensure you have completed `synora_server/INSTALLATION.md` before proceeding.
 
 ---
 

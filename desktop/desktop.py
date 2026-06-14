@@ -54,7 +54,7 @@ except OSError as e:
     logging.error(f"Auto-cleanup failed (OS Error): {e}")
 # -----------------------------------------------------------------
 
-from server.utils.path_utils import get_resource_path
+from synora_server.utils.path_utils import get_resource_path
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -126,7 +126,7 @@ def copy_bundled_resources():
         return
     
     try:
-        from server.utils.storage_config import StorageManager
+        from synora_server.utils.storage_config import StorageManager
         bundle_dir = Path(sys._MEIPASS)
         # Crucial Fix: Extract into the verified writable storage path, not the EXE folder
         target_root = StorageManager.get_instance().get_storage_root()
@@ -184,8 +184,8 @@ def main():
     import sys
     from PySide6.QtCore import QSettings
     
-    from server.utils.storage_config import StorageManager
-    from server.utils.logger import AppLogger
+    from synora_server.utils.storage_config import StorageManager
+    from synora_server.utils.logger import AppLogger
     
     manager = StorageManager.get_instance()
     
@@ -218,7 +218,7 @@ def main():
         set_app_icon(app)
 
         # 3. LOAD STYLES
-        from server.utils.path_utils import get_resource_path
+        from synora_server.utils.path_utils import get_resource_path
         app.setStyle("Fusion")
         
     # Ensure QCoreApplication exists for Headless / CLI threads to avoid "QCoreApplication must be created before QObject"
@@ -246,7 +246,7 @@ def main():
         return
     
     # --- STORAGE CONFIGURATION LAYER ---
-    from server.utils.storage_config import StorageManager
+    from synora_server.utils.storage_config import StorageManager
     from desktop.ui.first_run_dialog import FirstRunDialog
     from PySide6.QtCore import QSettings
     
@@ -296,8 +296,8 @@ def main():
         print("  python headless/headless.py --cli           (Launch Terminal Chat)")
         print("  python headless/headless.py --list-models   (List active models)")
         print("  python headless/headless.py --update-models (Sync models from cloud)")
-        print("  python server/server.py --migrate           (Migrate backend databases)")
-        print("  python server/server.py --api-manager       (Manage Port 5000 API Keys)")
+        print("  python synora_synora_server/synora_server.py --migrate           (Migrate backend databases)")
+        print("  python synora_synora_server/synora_server.py --api-manager       (Manage Port 5000 API Keys)")
         print("  python admin_reset/admin_reset.py           (Reset SaaS admin credentials)")
         print("="*50 + "\n")
         return

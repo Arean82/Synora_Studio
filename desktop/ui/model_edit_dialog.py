@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 from PySide6.QtUiTools import QUiLoader
 
-from server.utils.path_utils import get_resource_path
+from synora_server.utils.path_utils import get_resource_path
 from desktop.ui.shared_widgets import set_app_icon
 
 class ModelEditDialog(QDialog):

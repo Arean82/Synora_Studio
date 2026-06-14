@@ -1,7 +1,7 @@
 # companion_operation/core/admin_demo_manager.py
 # Backend script for managing the isolated demo user.
 
-from web.core.tenant_db import TenantDatabaseManager
+from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
 from .ssh_tunnel import SSHTunnelManager
 import json
 

@@ -6,7 +6,7 @@
 This guide will walk you through setting up the **Synora Headless CLI Client**. 
 This is a lightweight, terminal-based interaction suite designed for pure speed and server administration without Graphical UI overhead.
 
-Because Synora is modular, the headless app **requires the API Server to be running** first. Please ensure you have completed `server/INSTALLATION.md` before proceeding.
+Because Synora is modular, the headless app **requires the API Server to be running** first. Please ensure you have completed `synora_server/INSTALLATION.md` before proceeding.
 
 ---
 

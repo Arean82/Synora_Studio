@@ -8,10 +8,10 @@ class ChatController:
     @staticmethod
     def run_cli_chat():
         print("[*] Initializing interactive CLI Chat...")
-        from server.logic.llm_client import LLMClient
+        from synora_server.logic.llm_client import LLMClient
         from headless.cli.engine import HeadlessEngine
-        from server.utils.path_utils import get_app_settings
-        from server.logic.model_io import load_all_models
+        from synora_server.utils.path_utils import get_app_settings
+        from synora_server.logic.model_io import load_all_models
         
         client = LLMClient()
         client.hydrate()

@@ -4,7 +4,7 @@
 import os
 from PySide6.QtWidgets import QWidget, QMessageBox, QListWidgetItem, QVBoxLayout
 from PySide6.QtUiTools import QUiLoader
-from server.utils.path_utils import get_resource_path
+from synora_server.utils.path_utils import get_resource_path
 
 class AgentHubViewWidget(QWidget):
     def __init__(self, parent_window):
@@ -35,7 +35,7 @@ class AgentHubViewWidget(QWidget):
         
     def start_agent(self):
         try:
-            from web.core.agent_manager import AgentManager
+            from synora_server.logic.agents.agent_manager import AgentManager
             mgr = AgentManager.get_instance()
             gateway_url = f"http://localhost:{os.getenv('PORT', 5000)}/v1"
             api_key = self.window.llm_client.api_key if self.window.llm_client.api_key else "GOD_MODE"
@@ -50,7 +50,7 @@ class AgentHubViewWidget(QWidget):
 
     def stop_agent(self):
         try:
-            from web.core.agent_manager import AgentManager
+            from synora_server.logic.agents.agent_manager import AgentManager
             mgr = AgentManager.get_instance()
             success = mgr.stop_agent(self.admin_user_id)
             if success:
@@ -69,7 +69,7 @@ class AgentHubViewWidget(QWidget):
             return
             
         try:
-            from web.core.tenant_db import TenantDatabaseManager
+            from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
             db = TenantDatabaseManager()
             db.add_agent_skill(self.admin_user_id, name, code)
             QMessageBox.information(self, "Success", f"Skill '{name}' added successfully!")
@@ -82,7 +82,7 @@ class AgentHubViewWidget(QWidget):
     def load_skills(self):
         self.ui.skills_list_widget.clear()
         try:
-            from web.core.tenant_db import TenantDatabaseManager
+            from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
             db = TenantDatabaseManager()
             skills = db.get_agent_skills(self.admin_user_id)
             for s in skills:
@@ -101,7 +101,7 @@ class AgentHubViewWidget(QWidget):
         # Called when view is shown
         self.load_skills()
         try:
-            from web.core.agent_manager import AgentManager
+            from synora_server.logic.agents.agent_manager import AgentManager
             mgr = AgentManager.get_instance()
             status = mgr.get_status(self.admin_user_id)
             self.ui.status_label.setText(f"Status: {status}")

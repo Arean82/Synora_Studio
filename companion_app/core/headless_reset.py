@@ -5,14 +5,14 @@ import sys
 import os
 
 
-from web.core.tenant_db import TenantDatabaseManager
+from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
 
 def run_headless_reset(random_pass=False, custom_pass=None):
     print("======================================================================")
     print(" 🚀 UNIVERSAL MASTER PASSWORD RESET SEQUENCE (CLI MODE)")
     print("======================================================================")
     print(f"Resolving project root directory: {root_dir}")
-    print("Detecting active database driver from 'saas/config.ini'...")
+    print("Detecting active database driver from 'synora_saas/config.ini'...")
     
     try:
         import string, random

@@ -9,12 +9,12 @@ from PySide6.QtCore import QTimer, Qt, QSettings, QEvent
 from PySide6.QtGui import QIcon, QPixmap, QAction, QTextBlockUserData, QActionGroup
 from PySide6.QtUiTools import QUiLoader
 
-from server.logic.llm_client import LLMClient
-from server.logic.formatter import MessageFormatter
+from synora_server.logic.llm_client import LLMClient
+from synora_server.logic.formatter import MessageFormatter
 from desktop.ui.theme_manager import ThemeManager
-from server.workers.connection_worker import ConnectionWorker
-from server.workers.local_model_detector import LocalModelDetector
-from server.utils.path_utils import get_resource_path, get_app_settings
+from synora_server.workers.connection_worker import ConnectionWorker
+from synora_server.workers.local_model_detector import LocalModelDetector
+from synora_server.utils.path_utils import get_resource_path, get_app_settings
 from desktop.ui.shared_widgets import set_app_icon
 
 # Import child modules
@@ -66,7 +66,7 @@ class MainWindowClass(QMainWindow):
     def start_services(self):
         """Starts background workers only after authentication is confirmed."""
         try:
-            from server.logic.services import ServiceRegistry
+            from synora_server.logic.services import ServiceRegistry
             ServiceRegistry.initialize_all()
         except Exception as e:
             print(f"[Services] Failed to initialize: {e}")
@@ -209,7 +209,7 @@ class MainWindowClass(QMainWindow):
              return
              
         # 3. Restore Credentials ONLY for active session
-        from server.utils.security_utils import decrypt_data, SESSION_MASTER_PASSWORD
+        from synora_server.utils.security_utils import decrypt_data, SESSION_MASTER_PASSWORD
         gk = keyring.get_password("LLMChatApp", "api_key_google")
         if gk:
             gk = decrypt_data(gk, SESSION_MASTER_PASSWORD)
@@ -232,7 +232,7 @@ class MainWindowClass(QMainWindow):
         
         # 4. Restore Last Selected Model & UI States
         mid = str(settings.value("current_model_id", "")).strip()
-        from server.logic.model_io import load_all_models
+        from synora_server.logic.model_io import load_all_models
         all_models = load_all_models()
         
         # MASTER GATE SEAL: Confirm model ID actually exists in current ecosystem manifest
@@ -294,7 +294,7 @@ class MainWindowClass(QMainWindow):
 
     def show_model_popup(self):
         from desktop.ui.model_popup import ModelPopupClass
-        from server.logic.model_io import load_all_models
+        from synora_server.logic.model_io import load_all_models
         mid = get_app_settings().value("current_model_id", "")
         d = ModelPopupClass(current_model_id=mid, parent=self)
         if d.exec():
@@ -360,7 +360,7 @@ class MainWindowClass(QMainWindow):
 
     def open_storage_location(self):
         """Direct OS trigger to pop open active filesystem database root"""
-        from server.utils.storage_config import StorageManager
+        from synora_server.utils.storage_config import StorageManager
         from PySide6.QtGui import QDesktopServices
         from PySide6.QtCore import QUrl
         root = StorageManager.get_instance().get_storage_root()
@@ -447,7 +447,7 @@ class MainWindowClass(QMainWindow):
             QMessageBox.information(self, "No Remote Host", "Please configure the Remote SaaS Host URL in the API Credentials tab first.")
 
     def show_about(self):
-        from server.utils.constants import APP_VERSION
+        from synora_server.utils.constants import APP_VERSION
         border_color = "#3c3c3c" if self.theme_manager.current_theme == "dark" else "#e0e0e0"
         
         text = f"""
@@ -543,7 +543,7 @@ class MainWindowClass(QMainWindow):
         if hasattr(self, 'telemetry_timer'):
             self.telemetry_timer.stop()
         try:
-            from server.logic.services import ServiceRegistry
+            from synora_server.logic.services import ServiceRegistry
             ServiceRegistry.shutdown_all()
         except Exception as e: 
             import logging
@@ -605,7 +605,7 @@ class MainWindowClass(QMainWindow):
             self.telemetry_timer.stop()
         print("[Shutdown] Cleaning up services...")
         try:
-            from server.logic.services import ServiceRegistry
+            from synora_server.logic.services import ServiceRegistry
             ServiceRegistry.shutdown_all()
         except Exception as e: 
             import logging
@@ -707,7 +707,7 @@ class MainWindowClass(QMainWindow):
 
     def clear_update_log(self):
         """Clears the persistent diagnostic log."""
-        from server.workers.update_logger import get_logger
+        from synora_server.workers.update_logger import get_logger
         if QMessageBox.question(self, "Clear Logs", "Are you sure you want to delete all diagnostic logs?") == QMessageBox.Yes:
             get_logger().clear()
             self.chat_view.add_system_message("🗑️ Update logs purged successfully.")

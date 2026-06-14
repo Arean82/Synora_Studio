@@ -5,7 +5,7 @@ import json
 import pyotp
 import secrets
 from PySide6.QtWidgets import QLineEdit, QCheckBox, QPushButton, QTextEdit, QMessageBox
-from web.core.tenant_db import TenantDatabaseManager
+from synora_server.logic.tenant.tenant_db import TenantDatabaseManager
 from .admin_demo_manager import AdminDemoManager
 
 class CreateTenantController:

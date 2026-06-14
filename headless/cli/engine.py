@@ -4,8 +4,8 @@
 # Decoupled from GUI via Callback Patterns.
 
 from desktop.headless.worker import HeadlessWorker
-from server.logic.llm_client import LLMClient
-from server.logic.model_io import load_all_models
+from synora_server.logic.llm_client import LLMClient
+from synora_server.logic.model_io import load_all_models
 
 class HeadlessEngine:
     """
@@ -21,7 +21,7 @@ class HeadlessEngine:
         """
         # Boot service layer
         try:
-            from server.logic.services import ServiceRegistry
+            from synora_server.logic.services import ServiceRegistry
             ServiceRegistry.initialize_all()
         except Exception as e:
             print(f"[*] Services initialization failed: {e}")
