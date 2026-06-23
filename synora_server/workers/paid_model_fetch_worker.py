@@ -76,7 +76,8 @@ class PaidModelFetchWorker(QThread):
                         "description": "",
                         "developer": developer.capitalize(),
                         "free": False,
-                        "provider": active_p
+                        "provider": active_p,
+                        "base_rank": 10 if any(t in model_id_lower for t in ['gpt-4', 'claude-3-opus', 'gemini-1.5-pro']) else 30
                     })
                     self.logger.add_log(f"💰 {model_id} - identified as paid model", "INFO")
                 

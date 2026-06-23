@@ -412,7 +412,8 @@ class LLMClient:
                     "free": True,
                     "context_length": getattr(model, 'max_model_len', None),
                     "is_chat_model": True,
-                    "provider": "nvidia"
+                    "provider": "nvidia",
+                    "base_rank": 10 if any(t in model.id.lower() for t in ['llama-3.1', 'nemotron']) else 50
                 }
                 result["all"].append(model_info)
                 result["free"].append(model_info)   
@@ -447,7 +448,8 @@ class LLMClient:
                         "free": True,
                         "context_length": model.input_token_limit,
                         "is_chat_model": True,
-                        "provider": "google"
+                        "provider": "google",
+                        "base_rank": 10 if "pro" in mid.lower() else (20 if "flash" in mid.lower() else 50)
                     }
                     result["all"].append(info)
                     result["free"].append(info)
@@ -620,7 +622,8 @@ class LLMClient:
                     "free": True,
                     "context_length": c_len,
                     "is_chat_model": True,
-                    "provider": provider_id
+                    "provider": provider_id,
+                    "base_rank": 50
                 }
                 models_found.append(model_info)
                 

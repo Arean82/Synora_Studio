@@ -6,6 +6,9 @@ Synora Studio has undergone a massive architectural overhaul. To guarantee stabi
 
 There is no monolithic entry point. You must run, scale, and distribute each component entirely independently.
 
+### ✨ Key Features
+- **Self-Learning Model Ranking**: Models are automatically sorted and ranked dynamically based on your usage frequency, pushing the most relevant models to the top of the Desktop and SaaS portals.
+
 ---
 
 ### System Requirements (Cloud Deployments)

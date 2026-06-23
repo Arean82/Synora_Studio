@@ -158,10 +158,10 @@ class ModelManagerDialog(QDialog):
             tab_widget = QWidget()
             layout = QVBoxLayout(tab_widget)
 
-            # Create table with 4 columns
+            # Create table with 5 columns
             table = QTableWidget()
-            table.setColumnCount(4)
-            table.setHorizontalHeaderLabels(["Model Name", "Capabilities", "Description", "Status"])
+            table.setColumnCount(5)
+            table.setHorizontalHeaderLabels(["Rank", "Model Name", "Capabilities", "Description", "Status"])
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
             table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
             table.setAlternatingRowColors(False)
@@ -172,22 +172,37 @@ class ModelManagerDialog(QDialog):
             table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
             # Set column widths
-            table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
-            table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
-            table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
-            table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)
-            table.setColumnWidth(3, 100)
+            table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents) # Rank
+            table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Model Name
+            table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Capabilities
+            table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch) # Description
+            table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.Fixed) # Status
+            table.setColumnWidth(4, 100)
 
             # Populate rows
             table.setRowCount(len(models))
             for row, model in enumerate(models):
-                # Column 0: Display Name
+                # Column 0: Rank (Self-Learning Logic)
+                base_rank = model.get("base_rank", 99)
+                settings = get_app_settings()
+                usage_counts = settings.value("model_usage_counts", "{}")
+                if isinstance(usage_counts, str):
+                    try: usage_counts = json.loads(usage_counts)
+                    except: usage_counts = {}
+                usage = usage_counts.get(model.get("id"), 0)
+                dyn_rank = max(1, base_rank - (usage * 2))
+                
+                rank_item = QTableWidgetItem()
+                rank_item.setData(Qt.ItemDataRole.EditRole, dyn_rank)
+                table.setItem(row, 0, rank_item)
+
+                # Column 1: Display Name
                 from synora_server.utils.model_config import does_model_support_tools
                 supports_tools = does_model_support_tools(model.get('id'))
                 name_suffix = " 🛠️" if supports_tools else ""
-                table.setItem(row, 0, QTableWidgetItem(model.get("name", "") + name_suffix))
+                table.setItem(row, 1, QTableWidgetItem(model.get("name", "") + name_suffix))
 
-                # Column 1: Capabilities
+                # Column 2: Capabilities
                 caps = []
                 m_id_l = model.get("id", "").lower()
                 m_desc_l = model.get("description", "").lower()
@@ -200,12 +215,12 @@ class ModelManagerDialog(QDialog):
                 if model.get("coding", False) or any(k in m_id_l for k in ["code", "coder", "codellama"]) or "gemini" in m_id_l or "gpt-4" in m_id_l:
                     caps.append("💻 Coding")
                 caps_str = ", ".join(caps) if caps else "💬 Chat"
-                table.setItem(row, 1, QTableWidgetItem(caps_str))
+                table.setItem(row, 2, QTableWidgetItem(caps_str))
 
-                # Column 2: Description
-                table.setItem(row, 2, QTableWidgetItem(strip_markdown(model.get("description", ""))))
+                # Column 3: Description
+                table.setItem(row, 3, QTableWidgetItem(strip_markdown(model.get("description", ""))))
 
-                # Column 3: Status (Using ThemeManager Badge style)
+                # Column 4: Status (Using ThemeManager Badge style)
                 status_text = "Free" if model.get("free", True) else "Paid"
                 status_label = QLabel(status_text)
                 status_label.setAlignment(Qt.AlignCenter)
@@ -218,7 +233,10 @@ class ModelManagerDialog(QDialog):
                 status_layout = QHBoxLayout(status_widget)
                 status_layout.setContentsMargins(4, 2, 4, 2)
                 status_layout.addWidget(status_label)
-                table.setCellWidget(row, 3, status_widget)
+                table.setCellWidget(row, 4, status_widget)
+            
+            table.setSortingEnabled(True)
+            table.sortByColumn(0, Qt.AscendingOrder)
             
             # Store models for this tab
             table.setProperty("developer", developer)

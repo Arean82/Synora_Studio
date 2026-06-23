@@ -318,7 +318,7 @@ class CredentialManagerDialog(QDialog):
             table = QTableWidget()
             
             # Setup Table Columns and Headers
-            cols = ["Model Name", "Ecosystem", "Capabilities", "Description", "Status"] if is_global else ["Model Name", "Capabilities", "Description", "Status"]
+            cols = ["Rank", "Model Name", "Ecosystem", "Capabilities", "Description", "Status"] if is_global else ["Rank", "Model Name", "Capabilities", "Description", "Status"]
             table.setColumnCount(len(cols))
             table.setHorizontalHeaderLabels(cols)
             table.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -336,17 +336,35 @@ class CredentialManagerDialog(QDialog):
                 header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
                 header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
                 header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
-                header.setSectionResizeMode(3, QHeaderView.Stretch)
-                header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(4, QHeaderView.Stretch)
+                header.setSectionResizeMode(5, QHeaderView.ResizeToContents)
             else:
                 header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
                 header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
-                header.setSectionResizeMode(2, QHeaderView.Stretch)
-                header.setSectionResizeMode(3, QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+                header.setSectionResizeMode(3, QHeaderView.Stretch)
+                header.setSectionResizeMode(4, QHeaderView.ResizeToContents)
             
             table.setRowCount(len(models))
+            
+            settings = get_app_settings()
+            import json
+            usage_counts = settings.value("model_usage_counts", "{}")
+            if isinstance(usage_counts, str):
+                try: usage_counts = json.loads(usage_counts)
+                except: usage_counts = {}
+
             for row, m in enumerate(models):
-                table.setItem(row, 0, QTableWidgetItem(m.get('name', '')))
+                base_rank = m.get("base_rank", 99)
+                usage = usage_counts.get(m.get("id"), 0)
+                dyn_rank = max(1, base_rank - (usage * 2))
+                
+                rank_item = QTableWidgetItem()
+                rank_item.setData(Qt.ItemDataRole.EditRole, dyn_rank)
+                table.setItem(row, 0, rank_item)
+                
+                table.setItem(row, 1, QTableWidgetItem(m.get('name', '')))
                 
                 # Resolve capabilities
                 caps = []
@@ -373,17 +391,19 @@ class CredentialManagerDialog(QDialog):
                 status_layout = QHBoxLayout(status_widget)
                 status_layout.setContentsMargins(4, 2, 4, 2)
                 status_layout.addWidget(status_label)
-
+                
                 if is_global:
-                    table.setItem(row, 1, QTableWidgetItem(m.get('provider', 'nvidia').upper()))
+                    table.setItem(row, 2, QTableWidgetItem(m.get('provider', 'nvidia').upper()))
+                    table.setItem(row, 3, QTableWidgetItem(caps_str))
+                    table.setItem(row, 4, QTableWidgetItem(strip_markdown(m.get('description', ''))))
+                    table.setCellWidget(row, 5, status_widget)
+                else:
                     table.setItem(row, 2, QTableWidgetItem(caps_str))
                     table.setItem(row, 3, QTableWidgetItem(strip_markdown(m.get('description', ''))))
                     table.setCellWidget(row, 4, status_widget)
-                else:
-                    table.setItem(row, 1, QTableWidgetItem(caps_str))
-                    table.setItem(row, 2, QTableWidgetItem(strip_markdown(m.get('description', ''))))
-                    table.setCellWidget(row, 3, status_widget)
             
+            table.setSortingEnabled(True)
+            table.sortByColumn(0, Qt.AscendingOrder)
             layout.addWidget(table)
             self.ui.modelDeveloperTabs.addTab(tab, dev)
 

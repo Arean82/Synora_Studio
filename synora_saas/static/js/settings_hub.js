@@ -335,6 +335,11 @@ function renderModelDeveloperTabs(filterEcosystem) {
         thead.style.cssText = "border-bottom: 1px solid var(--border-glow); background: rgba(0,0,0,0.2);";
         const trHead = document.createElement('tr');
         
+        const thRank = document.createElement('th');
+        thRank.textContent = "Rank";
+        thRank.style.textAlign = "center";
+        trHead.appendChild(thRank);
+        
         const thName = document.createElement('th');
         thName.textContent = "Model Name";
         trHead.appendChild(thName);
@@ -359,7 +364,19 @@ function renderModelDeveloperTabs(filterEcosystem) {
         
         const tbody = document.createElement('tbody');
         
-        Reflect.get(modelsByDev, dev).forEach(m => {
+        // Dynamic Ranking (Self-Learning Logic)
+        let usageCounts = JSON.parse(localStorage.getItem('model_usage_counts') || '{}');
+        let modelsArray = Reflect.get(modelsByDev, dev);
+        modelsArray.forEach(m => {
+            let baseRank = m.base_rank !== undefined ? m.base_rank : 99;
+            let usage = usageCounts[m.id] || 0;
+            m._dynRank = Math.max(1, baseRank - (usage * 2));
+        });
+        
+        // Sort by dynamic rank ascending
+        modelsArray.sort((a, b) => a._dynRank - b._dynRank);
+        
+        modelsArray.forEach(m => {
             const isFree = m.free !== undefined ? m.free : true;
             const statusText = isFree ? 'Free' : 'Paid';
             const statusStyle = isFree ? 'color: #28a745; border: 1px solid #28a745; background: transparent;' : 'color: #dc3545; border: 1px solid #dc3545; background: transparent;';
@@ -368,6 +385,13 @@ function renderModelDeveloperTabs(filterEcosystem) {
             tr.style.cssText = "border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;";
             tr.onmouseover = () => tr.style.background = 'rgba(255,255,255,0.05)';
             tr.onmouseout = () => tr.style.background = 'transparent';
+            
+            const tdRank = document.createElement('td');
+            tdRank.style.fontWeight = "bold";
+            tdRank.style.color = "#10b981";
+            tdRank.style.textAlign = "center";
+            tdRank.textContent = m._dynRank;
+            tr.appendChild(tdRank);
             
             const tdName = document.createElement('td');
             tdName.style.fontWeight = "500";

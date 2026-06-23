@@ -72,7 +72,8 @@ class LocalModelDetector(QThread):
                     "description": target["default_desc"],
                     "developer": target["name"],
                     "free": True,
-                    "provider": provider_id
+                    "provider": provider_id,
+                    "base_rank": 50
                 })
 
             if new_models:
