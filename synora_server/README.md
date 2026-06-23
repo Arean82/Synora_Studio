@@ -13,6 +13,7 @@ Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step
 2. **Retrieval-Augmented Generation (RAG):** Manages the ingestion, chunking, and semantic searching of context files using dual-mode embeddings (`sentence-transformers` or remote models).
 3. **Database Management:** Binds to the designated tenant database (SQLite, PostgreSQL, or libSQL/Turso).
 4. **Multiplexing:** Handles high-concurrency event streams over `Flask-SocketIO` on port `5000`.
+5. **Dynamic Self-Learning:** Tracks and persists AI model usage statistics, injecting base and dynamic `Rank` metrics into model discovery payloads for frontend optimization.
 
 ## 📚 Advanced Documentation
 

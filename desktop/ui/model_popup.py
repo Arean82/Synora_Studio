@@ -79,12 +79,12 @@ class ModelPopupClass(QDialog):
         # Define specific behaviors for columns
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
         table.setColumnWidth(0, 60) # Active checkbox
-        
-        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Ecosystem
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Developer
-        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents) # Model Name
-        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents) # Capabilities
-        header.setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)          # Description Stretch
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents) # Rank
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Ecosystem
+        header.setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents) # Developer
+        header.setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents) # Model Name
+        header.setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents) # Capabilities
+        header.setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)          # Description Stretch
         
         # Ensure row heights expand for wrapped text
         table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
@@ -175,6 +175,13 @@ class ModelPopupClass(QDialog):
         table = self.ui.model_table
         table.setRowCount(len(self.models_data))
         
+        settings = get_app_settings()
+        import json
+        usage_counts = settings.value("model_usage_counts", "{}")
+        if isinstance(usage_counts, str):
+            try: usage_counts = json.loads(usage_counts)
+            except: usage_counts = {}
+
         for row, model in enumerate(self.models_data):
             # Col 0: CENTERED CHECKBOX
             container = QWidget()
@@ -192,27 +199,36 @@ class ModelPopupClass(QDialog):
             dummy_item.setFlags(dummy_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             table.setItem(row, 0, dummy_item)
             
-            # Col 1: Ecosystem (Provider)
+            # Col 1: Rank (Dynamic)
+            base_rank = model.get("base_rank", 99)
+            usage = usage_counts.get(model.get("id"), 0)
+            dyn_rank = max(1, base_rank - (usage * 2))
+            rank_item = QTableWidgetItem()
+            rank_item.setData(Qt.ItemDataRole.EditRole, dyn_rank)
+            rank_item.setFlags(rank_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            table.setItem(row, 1, rank_item)
+            
+            # Col 2: Ecosystem (Provider)
             prov = model.get('provider', 'nvidia').upper()
             prov_item = QTableWidgetItem(prov)
             prov_item.setFlags(prov_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            table.setItem(row, 1, prov_item)
+            table.setItem(row, 2, prov_item)
             
-            # Col 2: Developer
+            # Col 3: Developer
             dev = model.get('developer', 'Unknown')
             dev_item = QTableWidgetItem(dev)
             dev_item.setFlags(dev_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            table.setItem(row, 2, dev_item)
+            table.setItem(row, 3, dev_item)
                         
-            # Col 3: Model Name
+            # Col 4: Model Name
             from synora_server.utils.model_config import does_model_support_tools
             supports_tools = does_model_support_tools(model.get('id'))
             name_suffix = " 🛠️" if supports_tools else ""
             name_item = QTableWidgetItem(model.get('name', 'Unnamed') + name_suffix)
             name_item.setFlags(name_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            table.setItem(row, 3, name_item)
+            table.setItem(row, 4, name_item)
 
-            # Col 4: Capabilities
+            # Col 5: Capabilities
             caps = []
             m_id_lower = model.get("id", "").lower()
             m_desc_lower = model.get("description", "").lower()
@@ -228,17 +244,20 @@ class ModelPopupClass(QDialog):
             caps_str = ", ".join(caps) if caps else "💬 Chat"
             caps_item = QTableWidgetItem(caps_str)
             caps_item.setFlags(caps_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            table.setItem(row, 4, caps_item)
+            table.setItem(row, 5, caps_item)
             
-            # Col 5: Description
+            # Col 6: Description
             desc_item = QTableWidgetItem(strip_markdown(model.get('description', '')))
             desc_item.setFlags(desc_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            table.setItem(row, 5, desc_item)
+            table.setItem(row, 6, desc_item)
             
             if model['id'] == self.current_model_id:
                 self.set_row_active(row, True)
             else:
                 self.set_row_active(row, False)
+        
+        table.setSortingEnabled(True)
+        table.sortByColumn(1, Qt.AscendingOrder)
 
     def on_checkbox_toggled(self, state):
         # Get the row from the checkbox property
@@ -277,8 +296,8 @@ class ModelPopupClass(QDialog):
             bg_color = QColor("#FFFFFF")  # White
             text_color = QColor("#333333") # Dark gray text
         
-        # Apply to all 6 columns
-        for col in range(6):
+        # Apply to all 7 columns
+        for col in range(7):
             item = self.ui.model_table.item(row, col)
             if item:
                 item.setBackground(bg_color)

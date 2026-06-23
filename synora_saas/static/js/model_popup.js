@@ -57,6 +57,17 @@ export function renderDesktopCloneTable() {
         return true;
     });
     
+    // Dynamic Ranking (Self-Learning Logic)
+    let usageCounts = JSON.parse(localStorage.getItem('model_usage_counts') || '{}');
+    filtered.forEach(m => {
+        let baseRank = m.base_rank !== undefined ? m.base_rank : 99;
+        let usage = usageCounts[m.id] || 0;
+        m._dynRank = Math.max(1, baseRank - (usage * 2));
+    });
+    
+    // Sort by dynamic rank ascending
+    filtered.sort((a, b) => a._dynRank - b._dynRank);
+    
     tbody.innerHTML = '';
     
     if (filtered.length === 0) {
@@ -79,6 +90,7 @@ export function renderDesktopCloneTable() {
             <td style="text-align: center; padding: 10px;">
                 <input type="radio" name="pure_model_radio" value="${m.id}" ${isSelected ? 'checked' : ''} style="cursor: pointer;">
             </td>
+            <td style="text-align: center; padding: 10px; font-weight: bold; color: #10b981;">${m._dynRank}</td>
             <td style="padding: 10px; color: var(--accent-cyan); font-weight: 500;">${(m.owned_by || 'nvidia').toUpperCase()}</td>
             <td style="padding: 10px;">${m.developer || 'Other'}</td>
             <td style="padding: 10px; font-weight: 600;">${m.name || m.id}</td>
@@ -115,6 +127,11 @@ export function applyModelSelection() {
     
     // Close the modal
     document.getElementById('pure-model-selection-modal').style.display = 'none';
+    
+    // Track usage count
+    let usageCounts = JSON.parse(localStorage.getItem('model_usage_counts') || '{}');
+    usageCounts[pendingModelId] = (usageCounts[pendingModelId] || 0) + 1;
+    localStorage.setItem('model_usage_counts', JSON.stringify(usageCounts));
 }
 
 // Expose strictly to window so inline onclicks can reach them

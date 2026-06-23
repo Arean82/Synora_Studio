@@ -727,6 +727,16 @@ class ChatViewWidget(QWidget):
             a_temp = c_temp if c_temp is not None else float(settings.value("gen_temperature", 0.7))
             a_tokens = c_max if c_max is not None else int(settings.value("gen_max_tokens", 4096))
         
+        # Track usage for self-learning model ranking
+        active_model_id = self.llm_client.current_model
+        if active_model_id:
+            import json
+            usage_str = settings.value("model_usage_counts", "{}")
+            try: usage_counts = json.loads(usage_str)
+            except: usage_counts = {}
+            usage_counts[active_model_id] = usage_counts.get(active_model_id, 0) + 1
+            settings.setValue("model_usage_counts", json.dumps(usage_counts))
+            
         api_payload = custom_msgs if custom_msgs is not None else self.get_messages_for_api()
         
         # Detect active live search routing

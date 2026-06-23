@@ -121,6 +121,11 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
      </column>
      <column>
       <property name="text">
+       <string>Rank</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>Ecosystem</string>
       </property>
      </column>
