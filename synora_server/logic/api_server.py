@@ -22,6 +22,17 @@ class APIServer:
         self.conversation_history = OrderedDict()  # Store history per session with LRU capability
         self._history_lock = threading.Lock()  # Lock for thread-safe history access
         self.MAX_HISTORY_SESSIONS = 100  # Safeguard to prevent memory leaks
+        try:
+            from flasgger import Swagger
+            self.swagger = Swagger(self.app, template={
+                "info": {
+                    "title": "Synora Studio Headless API",
+                    "description": "Enterprise-grade AI chat ecosystem and RAG platform.",
+                    "version": "1.0.0"
+                }
+            })
+        except ImportError:
+            self.swagger = None
         self.setup_routes()
         self.setup_security()
     
@@ -61,6 +72,15 @@ class APIServer:
     def setup_routes(self):
         @self.app.route('/v1/models', methods=['GET'])
         def list_models():
+            """
+            List available models
+            ---
+            tags:
+              - Models
+            responses:
+              200:
+                description: A list of available AI models
+            """
             return jsonify({
                 "data": [{
                     "id": self.llm_client.current_model or "unknown",
@@ -72,6 +92,39 @@ class APIServer:
         
         @self.app.route('/v1/chat/completions', methods=['POST'])
         def chat_completion():
+            """
+            Chat Completions endpoint
+            ---
+            tags:
+              - Chat
+            parameters:
+              - in: body
+                name: body
+                required: true
+                schema:
+                  type: object
+                  properties:
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          role:
+                            type: string
+                          content:
+                            type: string
+                    stream:
+                      type: boolean
+                    temperature:
+                      type: number
+                    max_tokens:
+                      type: integer
+                    session_id:
+                      type: string
+            responses:
+              200:
+                description: Successful response (can be stream or JSON)
+            """
             data = request.get_json(silent=True) or {}
             messages = data.get('messages', [])
             stream = data.get('stream', False)
@@ -156,6 +209,20 @@ class APIServer:
         
         @self.app.route('/v1/chat/history/<session_id>', methods=['DELETE'])
         def clear_history(session_id):
+            """
+            Clear Conversation History
+            ---
+            tags:
+              - Chat
+            parameters:
+              - in: path
+                name: session_id
+                required: true
+                type: string
+            responses:
+              200:
+                description: Status of the deletion operation
+            """
             with self._history_lock:
                 if session_id in self.conversation_history:
                     del self.conversation_history[session_id]
@@ -163,10 +230,30 @@ class APIServer:
         
         @self.app.route('/health', methods=['GET'])
         def health():
+            """
+            Health Check
+            ---
+            tags:
+              - System
+            responses:
+              200:
+                description: Current status and active model
+            """
             return jsonify({"status": "running", "model": self.llm_client.current_model})
             
         @self.app.route('/v1/system/shutdown', methods=['POST'])
         def system_shutdown():
+            """
+            Graceful Shutdown
+            ---
+            tags:
+              - System
+            responses:
+              200:
+                description: Initiates server shutdown
+              403:
+                description: Unauthorized access (must be localhost)
+            """
             if request.remote_addr not in ['127.0.0.1', '::1', 'localhost']:
                 return jsonify({"error": "Unauthorized"}), 403
             

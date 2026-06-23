@@ -8,6 +8,7 @@ There is no monolithic entry point. You must run, scale, and distribute each com
 
 ### ✨ Key Features
 - **Self-Learning Model Ranking**: Models are automatically sorted and ranked dynamically based on your usage frequency, pushing the most relevant models to the top of the Desktop and SaaS portals.
+- **Interactive OpenAPI Dashboard**: The backend hosts an interactive Swagger UI (`http://localhost:5000/apidocs`) allowing 3rd-party developers to easily browse and test REST endpoints.
 
 ---
 

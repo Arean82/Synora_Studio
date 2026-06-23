@@ -17,5 +17,6 @@ Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step
 
 ## 📚 Advanced Documentation
 
+- **Interactive Swagger UI:** Accessible at `http://localhost:5000/apidocs` when the server is running. Allows developers to natively test REST endpoints and explore schemas.
 - [API_SERVER.md](docs/API_SERVER.md) - Detailed specifications of the REST routes and WebSocket event payloads.
 - [HEADLESS_GUIDE.md](docs/HEADLESS_GUIDE.md) - Advanced documentation on deploying the server headlessly via Docker or Systemd, managing API key injection, and securing endpoints in production.
