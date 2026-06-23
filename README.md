@@ -83,7 +83,7 @@ A lightweight terminal-based interaction suite.
 
 ### 5. 🛠️ Companion App Toolkit (`/companion_app`)
 The primary administration toolkit for system administrators and DevOps engineers.
-- **Features:** Unified Database Relocation (Chat DBs & SaaS Tenant DBs) via `--action migrate`, background service installation, automated backups, and Universal Admin Credentials Recovery (`--action reset-admin`).
+- **Features:** Background service installation, automated backups, and Universal Admin Credentials Recovery (`--action reset-admin`).
 - **Setup Guide:** [companion_app/INSTALLATION.md](companion_app/INSTALLATION.md)
 
 ---

@@ -57,7 +57,14 @@ class SaaSConfigManager:
                     ("RELIABILITY", "failover_seq"): "google,openai,ollama",
                     ("GLOBAL_KEYS", "nvidia_api_key"): "",
                     ("GLOBAL_KEYS", "google_api_key"): "",
-                    ("GLOBAL_KEYS", "openai_api_key"): ""
+                    ("GLOBAL_KEYS", "openai_api_key"): "",
+                    ("TENANT_DB", "driver"): "postgres",
+                    ("TENANT_DB", "pg_user"): "synora_user",
+                    ("TENANT_DB", "pg_password"): "synora_secure_pw",
+                    ("TENANT_DB", "pg_host"): "localhost",
+                    ("TENANT_DB", "pg_port"): "5432",
+                    ("TENANT_DB", "pg_saas_db"): "synora_saas",
+                    ("TENANT_DB", "pg_chat_db"): "synora_chat"
                 }
                 
                 for (sec, key), val in defaults.items():
@@ -122,6 +129,17 @@ failover_seq = google,openai,ollama
 nvidia_api_key = 
 google_api_key = 
 openai_api_key = 
+
+[TENANT_DB]
+driver = postgres
+
+# --- PostgreSQL Config ---
+pg_user = synora_user
+pg_password = synora_secure_pw
+pg_host = localhost
+pg_port = 5432
+pg_saas_db = synora_saas
+pg_chat_db = synora_chat
 """
         try:
             with open(self.config_path, 'w', encoding='utf-8') as f:

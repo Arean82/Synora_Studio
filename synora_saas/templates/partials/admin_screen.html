@@ -78,10 +78,19 @@
                     </div>
                 </div>
 
-                <!-- Historical aggregations for backwards compatibility -->
-                <div id="admin-stats-container"
-                    style="display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; padding: 10px; background: rgba(0,0,0,0.15); border-radius: var(--radius-sm); border: 1px dashed var(--border-glow);">
-                    <!-- Injected Stats -->
+                <!-- Financial Analytics & Chart UI -->
+                <div class="glass-panel" style="margin-top: 1.5rem; padding: 1.5rem; background: rgba(0,0,0,0.15); border: 1px solid var(--border-glow); border-radius: var(--radius-sm);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="color: var(--accent-cyan); margin: 0; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-chart-pie"></i> {{ _('Financial Analytics & Token Usage') }}
+                        </h4>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: var(--accent-success);">
+                            {{ _('Total Estimated Cost:') }} <span id="telemetry-total-cost" style="font-family: monospace;">$0.00</span>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 300px; position: relative;">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -144,3 +153,4 @@
         </div>
     </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

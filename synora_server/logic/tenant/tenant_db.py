@@ -3,16 +3,15 @@
 
 """
 SaaS Multi-Tenant Database Factory Manager
-Acts as a switchboard that dynamically loads the correct tenant driver
-based on config.ini settings. Downstream callers never need to change.
+Acts as a switchboard that manages the PostgreSQL SaaS Tenant connection.
+Downstream callers never need to change.
 
 Supported backends:
-  - turso   (default) — Turso/libSQL via local sqlite3 with WAL
-  - postgres          — PostgreSQL via psycopg2
-  - mysql             — MySQL/MariaDB/TiDB via pymysql
+  - postgres — PostgreSQL via psycopg2
 """
 
 import os
+import urllib.parse
 import configparser
 import threading
 from pathlib import Path
@@ -20,30 +19,27 @@ from pathlib import Path
 
 def _load_tenant_config() -> dict:
     """
-    Reads the [TENANT_DB] section from synora_saas/config.ini.
-    Returns a dict with at minimum {'driver': 'turso'}.
+    Reads the [TENANT_DB] section from synora_server/data/config.ini.
     """
     config = configparser.ConfigParser()
-    config_path = Path(__file__).parent / "config.ini"
+    config_path = Path(__file__).parent.parent.parent / "data" / "config.ini"
     if config_path.exists():
         config.read(str(config_path))
     
-    result = {
-        "driver": "turso",
-        "db_name": "saas_tenants.db",
-    }
-    
+    result = {}
     if config.has_section("TENANT_DB"):
-        result["driver"] = config.get("TENANT_DB", "driver", fallback="turso").strip().lower()
-        result["db_name"] = config.get("TENANT_DB", "db_name", fallback="saas_tenants.db").strip()
-        # PostgreSQL
-        result["pg_connection_string"] = config.get("TENANT_DB", "pg_connection_string", fallback="").strip()
-        # MySQL
-        result["mysql_host"] = config.get("TENANT_DB", "mysql_host", fallback="127.0.0.1").strip()
-        result["mysql_port"] = config.getint("TENANT_DB", "mysql_port", fallback=3306)
-        result["mysql_user"] = config.get("TENANT_DB", "mysql_user", fallback="root").strip()
-        result["mysql_password"] = config.get("TENANT_DB", "mysql_password", fallback="").strip()
-        result["mysql_database"] = config.get("TENANT_DB", "mysql_database", fallback="saas_tenants").strip()
+        user = config.get("TENANT_DB", "pg_user", fallback="synora")
+        password = config.get("TENANT_DB", "pg_password", fallback="synora_secure_pw")
+        host = config.get("TENANT_DB", "pg_host", fallback="localhost")
+        port = config.get("TENANT_DB", "pg_port", fallback="5432")
+        db = config.get("TENANT_DB", "pg_saas_db", fallback="synora_saas")
+        
+        encoded_user = urllib.parse.quote_plus(user)
+        encoded_password = urllib.parse.quote_plus(password)
+        
+        result["pg_connection_string"] = f"postgresql://{encoded_user}:{encoded_password}@{host}:{port}/{db}"
+    else:
+        result["pg_connection_string"] = "postgresql://synora:synora_secure_pw@localhost:5432/synora_saas"
     
     return result
 
@@ -52,10 +48,9 @@ class TenantDatabaseManager:
     """
     Factory switchboard for the SaaS tenant database.
     
-    Reads config.ini [TENANT_DB] section to determine which backend to use.
-    Delegates ALL method calls to the underlying concrete driver instance.
+    Delegates ALL method calls to the underlying PostgreSQL concrete driver instance.
     
-    Usage (unchanged from before):
+    Usage:
         db = TenantDatabaseManager()
         user = db.authenticate_by_passport("my_api_key")
     """
@@ -66,98 +61,28 @@ class TenantDatabaseManager:
         """Thread-Local Singleton pattern — isolate DB connections per thread."""
         if not hasattr(cls._thread_local, 'instance'):
             cls._thread_local.instance = super().__new__(cls)
-            cls._thread_local.instance._driver = cls._create_driver(db_name)
+            cls._thread_local.instance._driver = cls._create_driver()
         return cls._thread_local.instance
     
     @classmethod
-    def _create_driver(cls, db_name_override=None):
-        """Factory method that instantiates the correct driver based on config."""
+    def _create_driver(cls):
+        """Factory method that instantiates the PostgreSQL driver."""
         config = _load_tenant_config()
-        driver_type = config["driver"]
-        
-        if driver_type == "postgres":
-            conn_str = config.get("pg_connection_string", "")
-            if not conn_str:
-                raise ValueError("[TENANT_DB] driver=postgres requires pg_connection_string in config.ini")
-            from synora_server.logic.tenant.drivers.postgres_tenant_driver import PostgresTenantDriver
-            print(f"[TenantDB Factory] Loading PostgreSQL driver...")
-            return PostgresTenantDriver(conn_str)
-        
-        elif driver_type == "mysql":
-            from synora_server.logic.tenant.drivers.mysql_tenant_driver import MySQLTenantDriver
-            print(f"[TenantDB Factory] Loading MySQL driver...")
-            return MySQLTenantDriver(
-                host=config.get("mysql_host", "127.0.0.1"),
-                port=config.get("mysql_port", 3306),
-                user=config.get("mysql_user", "root"),
-                password=config.get("mysql_password", ""),
-                database=config.get("mysql_database", "saas_tenants")
-            )
-        
-        else:
-            # Default: Turso/libSQL (backward compatible)
-            from synora_server.logic.tenant.drivers.turso_tenant_driver import TursoTenantDriver
-            name = db_name_override or config.get("db_name", "saas_tenants.db")
-            return TursoTenantDriver(db_name=name)
-    
-    @classmethod
-    def reset_instance(cls):
-        """Force re-creation of the singleton (useful after config changes or migration)."""
-        if hasattr(cls._thread_local, 'instance'):
-            del cls._thread_local.instance
-    
-    # --- DELEGATE ALL METHOD CALLS TO THE UNDERLYING DRIVER ---
-    
+        conn_str = config["pg_connection_string"]
+        from synora_server.logic.tenant.drivers.postgres_tenant_driver import PostgresTenantDriver
+        print(f"[TenantDB Factory] Loading PostgreSQL driver...")
+        return PostgresTenantDriver(conn_str)
+
+    # ------------------------------------------------------------------------
+    # DELEGATION METHODS
+    # ------------------------------------------------------------------------
+
     def __getattr__(self, name):
-        """
-        Magic delegation: any method call on TenantDatabaseManager that isn't
-        defined here is forwarded to the underlying concrete driver.
-        This ensures 100% backward compatibility with all existing callers.
-        """
+        """Delegate all missing attributes/methods to the underlying driver instance."""
         return getattr(self._driver, name)
-    
-    # --- STATIC HELPERS (remain on the manager for backward compat) ---
-    
-    @staticmethod
-    def hash_password(password: str) -> str:
-        """Secure SHA-256 salted password hashing routine."""
-        import hashlib
-        salt = "SaaS_Passport_Salt_v7_"
-        return hashlib.sha256((salt + password).encode('utf-8')).hexdigest()
 
-    @staticmethod
-    def encrypt_byok(key: str) -> str:
-        import base64
-        return base64.b64encode(key.encode('utf-8')).decode('utf-8')
-        
-    @staticmethod
-    def decrypt_byok(cipher: str) -> str:
-        import base64
-        import logging
-        try:
-            return base64.b64decode(cipher.encode('utf-8')).decode('utf-8')
-        except Exception as e: 
-            import logging
-            logging.error(f"Caught exception: {e}", exc_info=True)
-            pass
-            return cipher
+    def force_reconnect(self):
+        """Force the factory to drop the current connection and reload from config."""
+        self._driver = self._create_driver()
+        return True
 
-    @staticmethod
-    def get_user_workspace(user_id: int) -> dict:
-        """
-        Generates absolute sandboxed storage partitions enforced by user isolation guidelines.
-        This is filesystem-based and shared across all drivers.
-        """
-        from synora_server.utils.storage_config import StorageManager
-        storage_root = StorageManager.get_instance().get_storage_root()
-        
-        conversations_dir = storage_root / "conversations" / f"user_{user_id}"
-        vector_dir = storage_root / "vector_db" / "collections" / f"user_{user_id}"
-        
-        conversations_dir.mkdir(parents=True, exist_ok=True)
-        vector_dir.mkdir(parents=True, exist_ok=True)
-        
-        return {
-            "conversations_path": conversations_dir,
-            "vector_path": vector_dir
-        }

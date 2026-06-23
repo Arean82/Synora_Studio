@@ -131,3 +131,10 @@ export async function retryDLQJob(token, jobId) {
     });
     return resp.json();
 }
+
+export async function fetchTelemetryAnalytics(token) {
+    const resp = await fetch('/api/telemetry/analytics', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return resp.json();
+}

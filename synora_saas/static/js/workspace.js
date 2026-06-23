@@ -1,6 +1,8 @@
 // workspace.js - Chat streaming and Arena logic
 import { App } from './state.js';
-import { initiateChatStream, fetchModels, fetchAdminUsers, fetchAdminStats, fetchMemoryCollections, generateShareLink, fetchAdminTelemetry, updateTenantRateLimit, fetchAdminDLQ, retryDLQJob } from './api.js';
+import { initiateChatStream, fetchModels, fetchAdminUsers, fetchAdminStats, fetchMemoryCollections, generateShareLink, fetchAdminTelemetry, updateTenantRateLimit, fetchAdminDLQ, retryDLQJob, fetchTelemetryAnalytics } from './api.js';
+
+let analyticsChartInstance = null;
 import { getActiveSystemPrompt } from './settings_main.js';
 
 let adminPollerInterval = null;
@@ -564,7 +566,6 @@ export async function pollAdminTelemetryAndDLQ() {
 
 export async function loadAdminDashboard() {
     const table = document.getElementById('admin-users-table');
-    const statsContainer = document.getElementById('admin-stats-container');
 
     if (table) {
         table.innerHTML = '<tr><td colspan="7" style="padding:10px;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</td></tr>';
@@ -648,19 +649,68 @@ export async function loadAdminDashboard() {
                 });
             }
         }
+        try {
+            const analyticsRes = await fetchTelemetryAnalytics(App.token);
+            if (analyticsRes.success) {
+                const totalCostEl = document.getElementById('telemetry-total-cost');
+                if (totalCostEl) {
+                    totalCostEl.textContent = '$' + analyticsRes.cost.toFixed(4);
+                }
 
-        if (statsRes.success && statsContainer) {
-            const agg = statsRes.stats.aggregate;
-            statsContainer.innerHTML = `
-                <div style="display:flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                    <span style="color:var(--text-muted);">Total Inbound Prompt Tokens:</span>
-                    <span style="font-family:monospace; color:var(--accent-cyan);">${agg.total_prompt.toLocaleString()}</span>
-                </div>
-                <div style="display:flex; justify-content: space-between; padding-top: 8px;">
-                    <span style="color:var(--text-muted);">Total Outbound Inference Tokens:</span>
-                    <span style="font-family:monospace; color:var(--accent-success);">${agg.total_completion.toLocaleString()}</span>
-                </div>
-            `;
+                // Initialize or Update Chart.js
+                const canvas = document.getElementById('analyticsChart');
+                if (canvas && typeof Chart !== 'undefined') {
+                    const daily = analyticsRes.usage.daily_trend || [];
+                    // reverse daily so chronological
+                    daily.reverse();
+
+                    const labels = daily.map(d => d.date);
+                    const dataPoints = daily.map(d => d.daily_total);
+
+                    if (analyticsChartInstance) {
+                        analyticsChartInstance.destroy();
+                    }
+
+                    const ctx = canvas.getContext('2d');
+                    analyticsChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Daily Token Usage',
+                                data: dataPoints,
+                                borderColor: '#06b6d4', // cyan-500
+                                backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: '#cbd5e1' } // slate-300
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: { color: '#94a3b8' },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { color: '#94a3b8' },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load analytics chart", e);
         }
 
         // Bind click listener for retry-dlq via event delegation

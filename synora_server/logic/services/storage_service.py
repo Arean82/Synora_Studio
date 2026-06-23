@@ -3,30 +3,27 @@
 
 import os
 import logging
+import urllib.parse
+import configparser
 from pathlib import Path
-from datetime import datetime
 
 from .base_service import BaseService, ServiceRegistry
 from synora_server.utils.storage_config import StorageManager
-from synora_server.utils.path_utils import get_app_settings
+from synora_server.logic.storage_drivers.postgres_driver import PostgreSQLStorageDriver
+from synora_server.logic.storage_drivers.base_driver import ConcurrencyError
 
 logger = logging.getLogger("SynoraStorageService")
 
 class StorageService(BaseService):
     """
-    Central storage service managing database connections, tenant sharding partitions,
-    and optimistic concurrency control for concurrent SQLite, Turso, or PostgreSQL access.
+    Central storage service managing PostgreSQL connections and optimistic concurrency control.
     """
     def __init__(self):
         super().__init__()
-        self.base_dir = StorageManager.get_instance().get_storage_root()
-        self.conversations_dir = self.base_dir / "synora_server" / "data" / "conversations"
-        self.conversations_dir.mkdir(parents=True, exist_ok=True)
-        
-        self.drivers = {}  # Cache drivers per tenant_id to avoid redundant instantiation
+        self.drivers = {}  # Cache drivers per tenant_id
 
     def on_initialize(self) -> bool:
-        logger.info("Initializing Synora Storage Service...")
+        logger.info("Initializing Synora Storage Service (PostgreSQL)...")
         # Pre-warm the default tenant connection
         self.get_driver("default_user")
         return True
@@ -36,57 +33,39 @@ class StorageService(BaseService):
         self.drivers.clear()
         return True
 
+    def _get_pg_connection_string(self, tenant_id: str) -> str:
+        """Reads config.ini to dynamically build the PostgreSQL connection string for the chat database."""
+        config = configparser.ConfigParser()
+        config_path = StorageManager.get_instance().get_storage_root() / "synora_server" / "data" / "config.ini"
+        
+        if config_path.exists():
+            config.read(str(config_path))
+            
+        user = config.get("TENANT_DB", "pg_user", fallback="synora") if config.has_section("TENANT_DB") else "synora"
+        password = config.get("TENANT_DB", "pg_password", fallback="synora_secure_pw") if config.has_section("TENANT_DB") else "synora_secure_pw"
+        host = config.get("TENANT_DB", "pg_host", fallback="localhost") if config.has_section("TENANT_DB") else "localhost"
+        port = config.get("TENANT_DB", "pg_port", fallback="5432") if config.has_section("TENANT_DB") else "5432"
+        db = config.get("TENANT_DB", "pg_chat_db", fallback="synora_default_user") if config.has_section("TENANT_DB") else "synora_default_user"
+        
+        # If a custom tenant is active, replace the default db name
+        if tenant_id != "default_user":
+            db = f"synora_{tenant_id}"
+            
+        encoded_user = urllib.parse.quote_plus(user)
+        encoded_password = urllib.parse.quote_plus(password)
+        
+        return f"postgresql://{encoded_user}:{encoded_password}@{host}:{port}/{db}"
+
     def get_driver(self, tenant_id: str):
         """
-        Thread-safe driver instantiation and caching per tenant.
-        Applies dynamic database path sharding.
+        Thread-safe PostgreSQL driver instantiation and caching per tenant.
         """
         if tenant_id in self.drivers:
             return self.drivers[tenant_id]
 
-        # Resolve isolated database path for SQLite/libSQL files
-        if tenant_id == "default_user":
-            db_path = self.conversations_dir / "chat_history.db"
-        else:
-            db_path = self.conversations_dir / "tenants" / tenant_id / "chat_history.db"
-
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-        settings = get_app_settings()
-        db_type = str(settings.value("database_type", "turso")).lower().strip()
-
-        logger.info(f"Instantiating database driver for tenant '{tenant_id}' (Type: {db_type})")
-
-        if db_type in ("postgres", "postgresql"):
-            url = settings.value("database_url") or os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_DATABASE_URL")
-            if not url:
-                raise ConnectionError(
-                    f"PostgreSQL Database URL is not configured. Configure 'database_url' in settings or environment."
-                )
-            # Dynamic template routing per tenant
-            url = url.replace("{tenant_id}", tenant_id)
-            from synora_server.logic.storage_drivers.postgres_driver import PostgreSQLStorageDriver
-            driver = PostgreSQLStorageDriver(url)
-
-        elif db_type in ("turso", "libsql"):
-            url = settings.value("database_url") or os.environ.get("TURSO_DATABASE_URL")
-            token = settings.value("database_auth_token") or os.environ.get("TURSO_AUTH_TOKEN")
-            
-            if not url:
-                # Local libSQL offline zero-configuration
-                url = f"file:{db_path.as_posix()}"
-                token = None
-            else:
-                url = url.replace("{tenant_id}", tenant_id)
-                if token:
-                    token = token.replace("{tenant_id}", tenant_id)
-            
-            from synora_server.logic.storage_drivers.libsql_driver import LibSQLStorageDriver
-            driver = LibSQLStorageDriver(url, token)
-
-        else:
-            from synora_server.logic.storage_drivers.libsql_driver import LibSQLStorageDriver
-            url = f"file:{db_path.as_posix()}"
-            driver = LibSQLStorageDriver(url, None)
+        url = self._get_pg_connection_string(tenant_id)
+        logger.info(f"Instantiating PostgreSQL driver for tenant '{tenant_id}'")
+        driver = PostgreSQLStorageDriver(url)
 
         # Cache driver instance
         self.drivers[tenant_id] = driver
@@ -96,7 +75,6 @@ class StorageService(BaseService):
                           conv_id: int = None, model_id: str = "", messages_html: str = None) -> int:
         """Saves or updates a conversation for a tenant with Optimistic Concurrency Control (OCC)."""
         driver = self.get_driver(tenant_id)
-        from synora_server.logic.storage_drivers.base_driver import ConcurrencyError
         try:
             return driver.save_conversation(
                 conversation=conversation,

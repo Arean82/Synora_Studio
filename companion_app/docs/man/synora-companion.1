@@ -6,7 +6,7 @@ synora-companion \- Synora Studio Headless Administration Toolkit
 [\-\-headless] [\-\-action \fIACTION\fR] [\fIOPTIONS\fR...]
 .SH DESCRIPTION
 .B synora-companion
-is the core administration toolkit for Synora Studio. It provides utilities for SaaS database migration, tenant provisioning, network configuration, and destructive platform maintenance. When run without the \fB\-\-headless\fR flag, it launches an interactive PySide6 graphical interface.
+is the core administration toolkit for Synora Studio. It provides utilities for tenant provisioning, network configuration, and destructive platform maintenance. When run without the \fB\-\-headless\fR flag, it launches an interactive PySide6 graphical interface.
 
 .PP
 \fBGRACEFUL DEGRADATION\fR
@@ -23,7 +23,7 @@ Execute the toolkit in headless mode. Useful for automated remote deployments an
 .TP
 .B \-\-action \fIACTION\fR
 Specifies an automated action to execute.
-Available actions: \fBbackup\fR, \fBcreate-user\fR, \fBweb-config\fR, \fBdanger-zone\fR, \fBmigrate\fR, \fBreset-admin\fR.
+Available actions: \fBbackup\fR, \fBcreate-user\fR, \fBweb-config\fR, \fBdanger-zone\fR, \fBreset-admin\fR.
 .TP
 .B \-\-demo-user
 Injects a pre-verified 'demo@grid.net' demonstration account into the live SaaS database.

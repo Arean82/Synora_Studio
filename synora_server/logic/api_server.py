@@ -228,6 +228,83 @@ class APIServer:
                     del self.conversation_history[session_id]
             return jsonify({"status": "cleared"})
         
+        @self.app.route('/v1/rag/documents/<tenant_id>', methods=['GET'])
+        def list_rag_documents(tenant_id):
+            """
+            List RAG Documents
+            ---
+            tags:
+              - RAG
+            parameters:
+              - in: path
+                name: tenant_id
+                required: true
+                type: string
+            responses:
+              200:
+                description: List of indexed document titles
+            """
+            from synora_server.logic.vector_db import VectorDatabase
+            db = VectorDatabase.get_instance()
+            docs = db.list_documents(tenant_id)
+            return jsonify({"documents": docs})
+
+        @self.app.route('/v1/rag/documents/<tenant_id>/<path:document_title>', methods=['DELETE'])
+        def delete_rag_document(tenant_id, document_title):
+            """
+            Delete RAG Document
+            ---
+            tags:
+              - RAG
+            parameters:
+              - in: path
+                name: tenant_id
+                required: true
+                type: string
+              - in: path
+                name: document_title
+                required: true
+                type: string
+            responses:
+              200:
+                description: Status of document deletion
+            """
+            from synora_server.logic.vector_db import VectorDatabase
+            db = VectorDatabase.get_instance()
+            success = db.delete_document(tenant_id, document_title)
+            return jsonify({"success": success})
+
+        @self.app.route('/v1/telemetry/analytics', methods=['GET'])
+        def get_telemetry_analytics():
+            """
+            Get system-wide analytics for SaaS dashboard.
+            ---
+            tags:
+              - Analytics
+            responses:
+              200:
+                description: Analytics payload with cost and token usage
+            """
+            try:
+                from synora_server.logic.tenant.tenant_db import TenantDatabaseManager, PricingCalculator
+                db = TenantDatabaseManager()
+                usage = db.get_global_usage()
+                
+                total_prompt = usage.get('aggregate', {}).get('total_prompt', 0) or 0
+                total_completion = usage.get('aggregate', {}).get('total_completion', 0) or 0
+                
+                cost = PricingCalculator.calculate_cost(total_prompt, total_completion)
+                
+                return jsonify({
+                    "success": True,
+                    "usage": usage,
+                    "cost": cost
+                })
+            except Exception as e:
+                import logging
+                logging.error(f"Error fetching analytics: {e}")
+                return jsonify({"success": False, "error": str(e)}), 500
+
         @self.app.route('/health', methods=['GET'])
         def health():
             """

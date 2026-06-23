@@ -200,6 +200,62 @@ def register_api_routes(app, db, get_provider_base_url):
                     
         return jsonify({"success": True, "collections": collections})
 
+    @app.route('/api/rag/documents', methods=['GET'])
+    def list_rag_documents_saas():
+        user = getattr(request, 'tenant', None)
+        if not user:
+            return jsonify({"success": False, "error": "Unauthorized"}), 401
+            
+        tenant_id = str(user.get('id', 'default'))
+        try:
+            from synora_server.logic.vector_db import VectorDatabase
+            db_inst = VectorDatabase.get_instance()
+            docs = db_inst.list_documents(tenant_id)
+            return jsonify({"success": True, "documents": docs})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+    @app.route('/api/rag/documents/<path:doc_name>', methods=['DELETE'])
+    def delete_rag_document_saas(doc_name):
+        user = getattr(request, 'tenant', None)
+        if not user:
+            return jsonify({"success": False, "error": "Unauthorized"}), 401
+            
+        tenant_id = str(user.get('id', 'default'))
+        try:
+            from synora_server.logic.vector_db import VectorDatabase
+            db_inst = VectorDatabase.get_instance()
+            success = db_inst.delete_document(tenant_id, doc_name)
+            return jsonify({"success": success})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+    @app.route('/api/telemetry/analytics', methods=['GET'])
+    def get_telemetry_analytics_saas():
+        user = getattr(request, 'tenant', None)
+        if not user or user.get('key_type') != 'admin_funded':
+            return jsonify({"success": False, "error": "Unauthorized"}), 401
+            
+        try:
+            from synora_server.logic.tenant.tenant_db import TenantDatabaseManager, PricingCalculator
+            db = TenantDatabaseManager()
+            usage = db.get_global_usage()
+            
+            total_prompt = usage.get('aggregate', {}).get('total_prompt', 0) or 0
+            total_completion = usage.get('aggregate', {}).get('total_completion', 0) or 0
+            
+            cost = PricingCalculator.calculate_cost(total_prompt, total_completion)
+            
+            return jsonify({
+                "success": True,
+                "usage": usage,
+                "cost": cost
+            })
+        except Exception as e:
+            import logging
+            logging.error(f"Error fetching analytics: {e}")
+            return jsonify({"success": False, "error": str(e)}), 500
+
     @app.route('/v1/chat/completions', methods=['POST'])
     @app.route('/v2/chat/completions', methods=['POST'])
     def proxy_chat_completion():

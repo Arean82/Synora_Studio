@@ -116,16 +116,6 @@ Once the build completes, the standalone compiled application will be located in
 
 ---
 
-## 📦 Core Feature: Unified Database Migration (`--action migrate`)
-
-The Companion App toolkit acts as the **Single Source of Truth** for all database migrations. 
-
-If you are scaling from a local Turso/SQLite database to an Enterprise Database (PostgreSQL/MySQL), you can launch the interactive relocation wizard to securely transfer all data without zero loss:
-
-```bash
-cd companion_app
-python companion_app.py --action migrate
-```
 
 ## 🔑 Core Feature: Universal Admin Credentials Recovery (`--action reset-admin`)
 

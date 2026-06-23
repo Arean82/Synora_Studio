@@ -145,7 +145,7 @@ Because the next step uses a headless deployment tool that bypasses the GUI data
 ```bash
 sudo nano /opt/synora/bin/web/config.ini
 ```
-Find the `[TENANT_DB]` section. You can use the default Turso SQLite database or uncomment the PostgreSQL/MySQL sections to connect to an enterprise database. 
+Find the `[TENANT_DB]` section. Fill in your PostgreSQL database credentials (`pg_user`, `pg_password`, etc.).
 
 > **No SQL Scripts Required!**
 > You do *not* need to run any `.sql` initialization scripts. The Synora Studio drivers are programmed to run `CREATE TABLE IF NOT EXISTS` automatically. As soon as you start the application, it will scan your `config.ini` and automatically build the entire database schema for you.

@@ -2,9 +2,9 @@
 
 The Synora Web Portal acts as a gateway for multiple tenants to access the backend API Server. To guarantee absolute data privacy between tenants, the ecosystem employs a strict isolation model.
 
-## 🗄️ Relational Data (`tenant_db.sqlite`)
+## 🗄️ Relational Data (`synora_saas` PostgreSQL Database)
 
-The Web Portal provisions a dedicated SQLite (or Turso) database upon the first boot.
+The Web Portal provisions a dedicated PostgreSQL database upon the first boot.
 - **Tenant Isolation:** Users are tied to unique `tenant_id` UUIDs.
 - **Data Encapsulation:** A user's Chat History, RAG Document Metadata, and API Keys are strictly segregated by their `tenant_id`.
 - **Stateless Server:** The API Server itself holds NO relational state. When the Web Portal makes a request, it passes an authenticated JWT containing the `tenant_id`, which the server uses to temporarily retrieve the required data from the database.

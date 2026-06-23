@@ -151,6 +151,67 @@ class VectorDatabase:
             print(f"[VectorDB] Search operation failed on {collection_name}: {e}")
             return []
 
+    def list_documents(self, tenant_id: str) -> list:
+        """Retrieves a list of uniquely ingested document titles for a tenant."""
+        if not self.client:
+            return []
+            
+        vector_size = 384  # Standard dense dim used by RAGService
+        versioned_name = f"user_{tenant_id}_{vector_size}"
+        
+        try:
+            if not self.client.collection_exists(versioned_name):
+                return []
+                
+            response = self.client.scroll(
+                collection_name=versioned_name,
+                scroll_filter=models.Filter(
+                    must=[models.FieldCondition(key="tenant_id", match=models.MatchValue(value=tenant_id))]
+                ),
+                limit=10000,
+                with_payload=True,
+                with_vectors=False
+            )
+            
+            docs = set()
+            if response and response[0]:
+                for point in response[0]:
+                    doc_title = point.payload.get("document")
+                    if doc_title:
+                        docs.add(doc_title)
+            return list(docs)
+        except Exception as e:
+            print(f"[VectorDB] Error listing documents for {tenant_id}: {e}")
+            return []
+
+    def delete_document(self, tenant_id: str, document_title: str) -> bool:
+        """Purges all vector chunks associated with a specific document."""
+        if not self.client:
+            return False
+            
+        vector_size = 384
+        versioned_name = f"user_{tenant_id}_{vector_size}"
+        
+        try:
+            if not self.client.collection_exists(versioned_name):
+                return False
+                
+            self.client.delete(
+                collection_name=versioned_name,
+                points_selector=models.FilterSelector(
+                    filter=models.Filter(
+                        must=[
+                            models.FieldCondition(key="tenant_id", match=models.MatchValue(value=tenant_id)),
+                            models.FieldCondition(key="document", match=models.MatchValue(value=document_title))
+                        ]
+                    )
+                )
+            )
+            return True
+        except Exception as e:
+            print(f"[VectorDB] Error deleting document {document_title}: {e}")
+            return False
+
     def wipe_db(self):
         """Deletes all collections for clean factory reset."""
         if not self.client:

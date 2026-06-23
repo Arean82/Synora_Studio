@@ -43,12 +43,6 @@ class SaaSSettingsDialogClass(QDialog):
         if hasattr(self.ui, 'btn_reset_admin'):
             self.ui.btn_reset_admin.clicked.connect(self.on_reset_admin)
             
-        # SaaS Control Buttons
-        if hasattr(self.ui, 'pushButton'):
-            self.ui.pushButton.clicked.connect(self.restart_saas_server)
-        if hasattr(self.ui, 'pushButton_2'):
-            self.ui.pushButton_2.clicked.connect(self.toggle_saas_server)
-        
         # Connect new Tenant Management/Telemetry signals if present
         if hasattr(self.ui, 'btn_refresh_telemetry'):
             self.ui.btn_refresh_telemetry.clicked.connect(self.refresh_telemetry)
@@ -127,6 +121,14 @@ class SaaSSettingsDialogClass(QDialog):
         # Reliability & Rates Block
         if hasattr(self.ui, 'spn_rpm'):
             self.ui.spn_rpm.setValue(self.config.get_int("RELIABILITY", "rpm", 60))
+        if hasattr(self.ui, 'spn_local_cost'):
+            # Fallback to get_float or parse string
+            cost_str = self.config.get_str("RELIABILITY", "local_model_cost", "0.0")
+            try:
+                cost_val = float(cost_str)
+            except:
+                cost_val = 0.0
+            self.ui.spn_local_cost.setValue(cost_val)
         if hasattr(self.ui, 'chk_failover_enable'):
             self.ui.chk_failover_enable.setChecked(self.config.get_bool("RELIABILITY", "failover_enable", True))
         if hasattr(self.ui, 'txt_failover_seq'):
@@ -146,46 +148,10 @@ class SaaSSettingsDialogClass(QDialog):
                 
             if is_running:
                 self.ui.lbl_status.setText("<span style='color:green; font-weight:bold;'>🟢 RUNNING</span> (Online)")
-                if hasattr(self.ui, 'pushButton'): 
-                    self.ui.pushButton.setEnabled(True)
-                    self.ui.pushButton.setText("RESTART SaaS Node")
-                    self.ui.pushButton.setStyleSheet("background-color: #2563eb; color: white; font-weight: bold; padding: 5px;")
-                if hasattr(self.ui, 'pushButton_2'): 
-                    self.ui.pushButton_2.setText("STOP SaaS Node")
-                    self.ui.pushButton_2.setStyleSheet("background-color: #dc2626; color: white; font-weight: bold; padding: 5px;")
             else:
                 self.ui.lbl_status.setText("<span style='color:red; font-weight:bold;'>🔴 OFFLINE</span> (Stopped)")
-                if hasattr(self.ui, 'pushButton'): 
-                    self.ui.pushButton.setEnabled(False)
-                    self.ui.pushButton.setStyleSheet("background-color: #64748b; color: white; font-weight: bold; padding: 5px;")
-                if hasattr(self.ui, 'pushButton_2'): 
-                    self.ui.pushButton_2.setText("START SaaS Node")
-                    self.ui.pushButton_2.setStyleSheet("background-color: #16a34a; color: white; font-weight: bold; padding: 5px;")
 
-    def toggle_saas_server(self):
-        parent = self.parent()
-        if parent and hasattr(parent, 'saas_server'):
-            if parent.saas_server.running:
-                self.config.set_val("NETWORK", "enabled", False)
-                parent.saas_server.stop()
-            else:
-                self.config.set_val("NETWORK", "enabled", True)
-                parent.saas_server.host = "0.0.0.0" if self.ui.cbo_host.currentIndex() == 1 else "127.0.0.1"
-                parent.saas_server.port = self.ui.spn_port.value()
-                parent.saas_server.start_server()
-            self.config.save()
-        self.hydrate_ui()
 
-    def restart_saas_server(self):
-        parent = self.parent()
-        if parent and hasattr(parent, 'saas_server') and parent.saas_server.running:
-            parent.saas_server.stop()
-            self.config.set_val("NETWORK", "enabled", True)
-            parent.saas_server.host = "0.0.0.0" if self.ui.cbo_host.currentIndex() == 1 else "127.0.0.1"
-            parent.saas_server.port = self.ui.spn_port.value()
-            parent.saas_server.start_server()
-            self.config.save()
-        self.hydrate_ui()
 
     def on_reset_admin(self):
         """Triggers the secure reset sequence for the SaaS Master Admin account."""
@@ -253,6 +219,8 @@ class SaaSSettingsDialogClass(QDialog):
                 QMessageBox.warning(self, "Validation Error", "Requests Per Minute (RPM) Limit must be a positive integer.")
                 return
             self.config.set_val("RELIABILITY", "rpm", rpm_val)
+        if hasattr(self.ui, 'spn_local_cost'):
+            self.config.set_val("RELIABILITY", "local_model_cost", str(self.ui.spn_local_cost.value()))
             
         if hasattr(self.ui, 'chk_failover_enable'):
             self.config.set_val("RELIABILITY", "failover_enable", self.ui.chk_failover_enable.isChecked())

@@ -40,7 +40,7 @@ Before starting the servers, you must manually point the development environment
 ```bash
 nano ~/Downloads/Synora_Studio/web/config.ini
 ```
-Find the `[TENANT_DB]` section. You can use the default Turso SQLite database or uncomment the PostgreSQL/MySQL sections. 
+Find the `[TENANT_DB]` section. Fill in your PostgreSQL database credentials (`pg_user`, `pg_password`, etc.).
 
 > **No SQL Scripts Required!**
 > The application will automatically run `CREATE TABLE IF NOT EXISTS` the moment you launch the server in the next step.

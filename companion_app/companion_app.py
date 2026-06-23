@@ -20,7 +20,7 @@ else:
 
 sys.path.insert(0, ROOT_DIR)
 
-from companion_app.core.controller_saas_migrator import SaasMigratorController
+# removed SaasMigratorController
 from companion_app.core.controller_create_tenant import CreateTenantController
 from companion_app.core.controller_network_config import NetworkConfigController
 from companion_app.core.controller_backup import BackupController
@@ -60,10 +60,7 @@ def run_headless_migration(args=None):
         print(f"Executing automated action: {args.action}")
         if args.action == "backup":
             return BackupController.run_cli_action(getattr(args, 'target_dir', None))
-        elif args.action == "migrate":
-            from synora_server.logic.migration_bridge import run_interactive_cli_migration
-            run_interactive_cli_migration()
-            return 0
+        # migrate action removed
         elif args.action == "create-user":
             return CreateTenantController.run_cli_action(args)
         elif args.action == "web-config":
@@ -78,7 +75,7 @@ def run_headless_migration(args=None):
             
     while True:
         print("\nMain Menu:")
-        print("  1. 📦 Database Relocator (Chat DB & SaaS DB)")
+        print("  1. 📦 [Removed - Database Relocator] -> See standalone pg scripts")
         print("  2. 👤 Create SaaS Tenant")
         print("  3. ⚙️ Background Service Installation")
         print("  4. 💾 Backup Local SaaS Database")
@@ -93,8 +90,7 @@ def run_headless_migration(args=None):
             return 0
             
         if choice == "1":
-            from synora_server.logic.migration_bridge import run_interactive_cli_migration
-            run_interactive_cli_migration()
+            print("Migration has been moved to standalone python scripts/migrate_to_pg.py")
         elif choice == "2":
             CreateTenantController.run_cli_interactive()
         elif choice == "3":
@@ -203,8 +199,8 @@ def run_gui_migration():
             
             # Load and wire each UI Tab to its isolated controller
             self.saas_tab = loader.load(os.path.join(UI_ASSETS_DIR, "saas_db.ui"), self)
-            self.mainTabs.addTab(wrap_in_scroll(self.saas_tab), "📦 Database Relocator")
-            self.saas_controller = SaasMigratorController(self.saas_tab)
+            self.mainTabs.addTab(wrap_in_scroll(self.saas_tab), "📦 Database Backups")
+            # SaasMigratorController removed
             # The Backup tool is injected directly into the SaaS Tab UI
             self.backup_controller = BackupController(self.saas_tab)
             btn_backup = self.saas_tab.findChild(QPushButton, "btn_backup")
@@ -246,7 +242,7 @@ def run_gui_migration():
 def main():
     parser = argparse.ArgumentParser(description="Companion App / Admin Dashboard")
     parser.add_argument("--headless", "--cli", action="store_true", dest="headless", help="Run in headless/CLI mode")
-    parser.add_argument("--action", type=str, choices=["migrate", "backup", "create-user", "web-config", "reset-admin", "danger-zone"], help="Automated scriptable action to perform")
+    parser.add_argument("--action", type=str, choices=["backup", "create-user", "web-config", "reset-admin", "danger-zone"], help="Automated scriptable action to perform")
     parser.add_argument("--target-dir", type=str, help="Target directory for backup")
     parser.add_argument("--username", type=str, help="Username for create-user action")
     parser.add_argument("--email", type=str, help="Email for create-user action")
