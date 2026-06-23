@@ -303,12 +303,16 @@ async function loadAdminSaaSConfig() {
             const elPort = document.getElementById('nc-smtp-port');
             const elUser = document.getElementById('nc-smtp-user');
             const elPass = document.getElementById('nc-smtp-pass');
+            const elSenderName = document.getElementById('nc-smtp-sender-name');
+            const elSenderEmail = document.getElementById('nc-smtp-sender-email');
             
             if (elEnable) elEnable.checked = p.smtp_enabled || false;
             if (elHost) elHost.value = p.smtp_host || "";
             if (elPort) elPort.value = p.smtp_port || 587;
             if (elUser) elUser.value = p.smtp_user || "";
             if (elPass) elPass.value = p.smtp_password || "";
+            if (elSenderName) elSenderName.value = p.smtp_sender_name || "Synora Studio Security";
+            if (elSenderEmail) elSenderEmail.value = p.smtp_sender_email || "alertbot@synorastudio.local";
         }
     } catch(e) {
         console.error("Admin SaaS config load failed:", e);
@@ -323,7 +327,9 @@ export async function saveAdminSaaSConfig() {
         smtp_host: document.getElementById('nc-smtp-host')?.value || "",
         smtp_port: document.getElementById('nc-smtp-port')?.value || 587,
         smtp_user: document.getElementById('nc-smtp-user')?.value || "",
-        smtp_password: document.getElementById('nc-smtp-pass')?.value || ""
+        smtp_password: document.getElementById('nc-smtp-pass')?.value || "",
+        smtp_sender_name: document.getElementById('nc-smtp-sender-name')?.value || "Synora Studio Security",
+        smtp_sender_email: document.getElementById('nc-smtp-sender-email')?.value || "alertbot@synorastudio.local"
     };
     
     try {
@@ -573,12 +579,16 @@ export function setupNodeConfigListeners() {
     const smtpPort = document.getElementById('nc-smtp-port');
     const smtpUser = document.getElementById('nc-smtp-user');
     const smtpPass = document.getElementById('nc-smtp-pass');
+    const smtpSenderName = document.getElementById('nc-smtp-sender-name');
+    const smtpSenderEmail = document.getElementById('nc-smtp-sender-email');
     
     if (smtpEnable) smtpEnable.addEventListener('change', saveAdminSaaSConfig);
     if (smtpHost) smtpHost.addEventListener('input', saveAdminSaaSConfig);
     if (smtpPort) smtpPort.addEventListener('input', saveAdminSaaSConfig);
     if (smtpUser) smtpUser.addEventListener('input', saveAdminSaaSConfig);
     if (smtpPass) smtpPass.addEventListener('input', saveAdminSaaSConfig);
+    if (smtpSenderName) smtpSenderName.addEventListener('input', saveAdminSaaSConfig);
+    if (smtpSenderEmail) smtpSenderEmail.addEventListener('input', saveAdminSaaSConfig);
     
     // System Instruction Manager Bindings
     const btnAdd = document.getElementById('btn-sys-add');

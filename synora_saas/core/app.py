@@ -67,24 +67,32 @@ def create_saas_app():
     
     def send_alert_email(to_email, subject, html_content):
         try:
-            smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
-            smtp_port = int(os.getenv("SMTP_PORT", "587"))
-            smtp_user = os.getenv("SMTP_USER", "")
-            smtp_pass = os.getenv("SMTP_PASS", "")
+            from synora_server.logic.tenant.config_manager import SaaSConfigManager
+            saas_cfg = SaaSConfigManager()
+            
+            if not saas_cfg.get_bool("SMTP_RELAY", "enabled", False):
+                return False
+                
+            smtp_host = saas_cfg.get_str("SMTP_RELAY", "host", "smtp.gmail.com")
+            smtp_port = saas_cfg.get_int("SMTP_RELAY", "port", 587)
+            smtp_user = saas_cfg.get_str("SMTP_RELAY", "user", "")
+            smtp_pass = saas_cfg.get_str("SMTP_RELAY", "password", "")
+            sender_name = saas_cfg.get_str("SMTP_RELAY", "sender_name", "Synora Studio Security")
+            sender_email = saas_cfg.get_str("SMTP_RELAY", "sender_email", "alertbot@synorastudio.local")
             
             if not smtp_user or not smtp_pass:
                 return False
                 
             msg = MIMEMultipart("alternative")
             msg["Subject"] = subject
-            msg["From"] = f"Synora Studio Security <{smtp_user}>"
+            msg["From"] = f"{sender_name} <{sender_email}>"
             msg["To"] = to_email
             msg.attach(MIMEText(html_content, "html"))
             
             with smtplib.SMTP(smtp_host, smtp_port) as server:
                 server.starttls()
                 server.login(smtp_user, smtp_pass)
-                server.sendmail(smtp_user, to_email, msg.as_string())
+                server.sendmail(sender_email, to_email, msg.as_string())
             return True
         except Exception as e:
             print(f"[SMTP Warning]: Autonomous alert failed: {e}")
