@@ -22,6 +22,17 @@ class APIServer:
         self.conversation_history = OrderedDict()  # Store history per session with LRU capability
         self._history_lock = threading.Lock()  # Lock for thread-safe history access
         self.MAX_HISTORY_SESSIONS = 100  # Safeguard to prevent memory leaks
+        try:
+            from flasgger import Swagger
+            self.swagger = Swagger(self.app, template={
+                "info": {
+                    "title": "Synora Studio Headless API",
+                    "description": "Enterprise-grade AI chat ecosystem and RAG platform.",
+                    "version": "1.0.0"
+                }
+            })
+        except ImportError:
+            self.swagger = None
         self.setup_routes()
         self.setup_security()
     
@@ -61,6 +72,15 @@ class APIServer:
     def setup_routes(self):
         @self.app.route('/v1/models', methods=['GET'])
         def list_models():
+            """
+            List available models
+            ---
+            tags:
+              - Models
+            responses:
+              200:
+                description: A list of available AI models
+            """
             return jsonify({
                 "data": [{
                     "id": self.llm_client.current_model or "unknown",
@@ -72,6 +92,39 @@ class APIServer:
         
         @self.app.route('/v1/chat/completions', methods=['POST'])
         def chat_completion():
+            """
+            Chat Completions endpoint
+            ---
+            tags:
+              - Chat
+            parameters:
+              - in: body
+                name: body
+                required: true
+                schema:
+                  type: object
+                  properties:
+                    messages:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          role:
+                            type: string
+                          content:
+                            type: string
+                    stream:
+                      type: boolean
+                    temperature:
+                      type: number
+                    max_tokens:
+                      type: integer
+                    session_id:
+                      type: string
+            responses:
+              200:
+                description: Successful response (can be stream or JSON)
+            """
             data = request.get_json(silent=True) or {}
             messages = data.get('messages', [])
             stream = data.get('stream', False)
@@ -156,17 +209,128 @@ class APIServer:
         
         @self.app.route('/v1/chat/history/<session_id>', methods=['DELETE'])
         def clear_history(session_id):
+            """
+            Clear Conversation History
+            ---
+            tags:
+              - Chat
+            parameters:
+              - in: path
+                name: session_id
+                required: true
+                type: string
+            responses:
+              200:
+                description: Status of the deletion operation
+            """
             with self._history_lock:
                 if session_id in self.conversation_history:
                     del self.conversation_history[session_id]
             return jsonify({"status": "cleared"})
         
+        @self.app.route('/v1/rag/documents/<tenant_id>', methods=['GET'])
+        def list_rag_documents(tenant_id):
+            """
+            List RAG Documents
+            ---
+            tags:
+              - RAG
+            parameters:
+              - in: path
+                name: tenant_id
+                required: true
+                type: string
+            responses:
+              200:
+                description: List of indexed document titles
+            """
+            from synora_server.logic.vector_db import VectorDatabase
+            db = VectorDatabase.get_instance()
+            docs = db.list_documents(tenant_id)
+            return jsonify({"documents": docs})
+
+        @self.app.route('/v1/rag/documents/<tenant_id>/<path:document_title>', methods=['DELETE'])
+        def delete_rag_document(tenant_id, document_title):
+            """
+            Delete RAG Document
+            ---
+            tags:
+              - RAG
+            parameters:
+              - in: path
+                name: tenant_id
+                required: true
+                type: string
+              - in: path
+                name: document_title
+                required: true
+                type: string
+            responses:
+              200:
+                description: Status of document deletion
+            """
+            from synora_server.logic.vector_db import VectorDatabase
+            db = VectorDatabase.get_instance()
+            success = db.delete_document(tenant_id, document_title)
+            return jsonify({"success": success})
+
+        @self.app.route('/v1/telemetry/analytics', methods=['GET'])
+        def get_telemetry_analytics():
+            """
+            Get system-wide analytics for SaaS dashboard.
+            ---
+            tags:
+              - Analytics
+            responses:
+              200:
+                description: Analytics payload with cost and token usage
+            """
+            try:
+                from synora_server.logic.tenant.tenant_db import TenantDatabaseManager, PricingCalculator
+                db = TenantDatabaseManager()
+                usage = db.get_global_usage()
+                
+                total_prompt = usage.get('aggregate', {}).get('total_prompt', 0) or 0
+                total_completion = usage.get('aggregate', {}).get('total_completion', 0) or 0
+                
+                cost = PricingCalculator.calculate_cost(total_prompt, total_completion)
+                
+                return jsonify({
+                    "success": True,
+                    "usage": usage,
+                    "cost": cost
+                })
+            except Exception as e:
+                import logging
+                logging.error(f"Error fetching analytics: {e}")
+                return jsonify({"success": False, "error": str(e)}), 500
+
         @self.app.route('/health', methods=['GET'])
         def health():
+            """
+            Health Check
+            ---
+            tags:
+              - System
+            responses:
+              200:
+                description: Current status and active model
+            """
             return jsonify({"status": "running", "model": self.llm_client.current_model})
             
         @self.app.route('/v1/system/shutdown', methods=['POST'])
         def system_shutdown():
+            """
+            Graceful Shutdown
+            ---
+            tags:
+              - System
+            responses:
+              200:
+                description: Initiates server shutdown
+              403:
+                description: Unauthorized access (must be localhost)
+            """
             if request.remote_addr not in ['127.0.0.1', '::1', 'localhost']:
                 return jsonify({"error": "Unauthorized"}), 403
             

@@ -19,6 +19,10 @@ The server uses persistent, bidrectional Socket.IO streams for low-latency chat 
 
 The server exposes standard HTTP endpoints for synchronous, non-streaming operations.
 
+### 📚 Interactive Swagger UI
+The API Server natively hosts an interactive OpenAPI dashboard. Once the server is running, developers can browse, test, and authenticate against all REST endpoints directly in their browser.
+- **URL:** `http://localhost:5000/apidocs`
+
 ### `POST /api/v1/auth/verify`
 Verifies an incoming API key against a provider SDK (e.g., checks if an OpenAI key has billing enabled) before the Web Portal saves it to the tenant database.
 

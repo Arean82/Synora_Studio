@@ -33,9 +33,10 @@ class PostgreSQLConnectionPool:
     def _create_connection(self):
         """Creates a fresh pg8000 connection from the URL."""
         import pg8000.dbapi
-        parsed = urlparse(self._url)
-        user = parsed.username or ""
-        password = parsed.password or ""
+        import urllib.parse
+        parsed = urllib.parse.urlparse(self._url)
+        user = urllib.parse.unquote(parsed.username) if parsed.username else ""
+        password = urllib.parse.unquote(parsed.password) if parsed.password else ""
         host = parsed.hostname or "localhost"
         port = parsed.port or 5432
         database = parsed.path.lstrip('/') or "postgres"
@@ -168,12 +169,16 @@ class PostgreSQLStorageDriver(BaseStorageDriver):
             # Index high-traffic timestamp column to preserve sidebar speed over scale
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON conversations(timestamp);')
 
-            # Migration check: Add version column for OCC
+            # Migration check: Add version column for OCC only if it doesn't exist
             try:
-                cursor.execute('ALTER TABLE conversations ADD COLUMN version INTEGER DEFAULT 1')
+                cursor.execute("""
+                    SELECT column_name 
+                    FROM information_schema.columns 
+                    WHERE table_name='conversations' AND column_name='version'
+                """)
+                if not cursor.fetchone():
+                    cursor.execute('ALTER TABLE conversations ADD COLUMN version INTEGER DEFAULT 1')
             except Exception as e: 
-                import logging
-                logging.error(f"Caught exception: {e}", exc_info=True)
                 conn.rollback()
                 
             # Phase 8: JSON Config Purge

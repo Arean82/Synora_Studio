@@ -58,37 +58,7 @@
        <property name="rightMargin">
         <number>15</number>
        </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="text">
-            <string>STOP SaaS Node</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>RESTART SaaS Node</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
+
        <item>
         <widget class="QFrame" name="network_frame">
          <property name="frameShape">
@@ -505,6 +475,32 @@ font: 600 9pt &quot;Segoe UI&quot;;</string>
             </property>
             <property name="value">
              <number>60</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lbl_local_cost">
+            <property name="text">
+             <string>Local Model Rate ($ / 1k tokens):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="spn_local_cost">
+            <property name="minimum">
+             <double>0.0000</double>
+            </property>
+            <property name="maximum">
+             <double>10.0000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.0001</double>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="value">
+             <double>0.0000</double>
             </property>
            </widget>
           </item>
