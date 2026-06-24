@@ -2,7 +2,7 @@
 
 The **Universal API Server** acts as a bridge between your local LLM and any external IDE or application. It exposes an **OpenAI-compatible REST API**, allowing you to integrate powerful local intelligence into your existing development workflow.
 
-[Features](#-features) • [Getting Started](#-getting-started) • [API Endpoints](#-api-endpoints) • [Health Check Example](#-health-check-example) • [Chat Completions](#-chat-completions) • [Code Integration](#-code-integration) • [Testing the API](#-testing-the-api) • [](#-ide-integration-guide) • [Key Technical Notes](#-key-technical-notes)
+[Features](#-features) • [Getting Started](#-getting-started) • [API Endpoints](#-api-endpoints) • [Health Check Example](#-health-check-example) • [Chat Completions](#-chat-completions) • [Code Integration](#-code-integration) • [Testing the API](#-testing-the-api) • [IDE Integration Guide](#-ide-integration-guide) • [Key Technical Notes](#-key-technical-notes)
 
 
 VS Code extension `.vsix` file is available in the `extension/` folder.
@@ -16,6 +16,7 @@ VS Code extension `.vsix` file is available in the `extension/` folder.
 - 📏 **Max Tokens Control:** Set response length limit per request.
 - 💬 **System Messages:** Support for custom system instructions per conversation.
 - 🔄 **Session Management:** Clear conversation history via API endpoint.
+- 📚 **Interactive Swagger UI:** Accessible at `http://localhost:5000/apidocs` when the server is running. Allows developers to natively test REST endpoints and explore schemas.
 ---
 
 ## 🚀 Getting Started
