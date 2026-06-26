@@ -1,6 +1,6 @@
 // main.js - Application Bootstrap and Event Routing
 import { App, saveSession, loadSession, clearSession } from './state.js';
-import { login, register, validatePassport, forgotPassword, resetPassword } from './auth.js';
+import { fetchProfile, login, register, validatePassport, forgotPassword, resetPassword } from './auth.js';
 import { updateProfile } from './api.js';
 import { 
     fillPrompt, toggleArenaMode, startNewOrbit, loadModels,
@@ -9,11 +9,31 @@ import {
 } from './workspace.js';
 import { loadSettingsHub, switchSettingsTab } from './settings_hub.js';
 
-export function initMainApp() {
+export async function initMainApp() {
     console.log("System initialized. Synora client loaded.");
     setupEventListeners();
     
-    if (loadSession()) {
+    // Auto-login via URL Token
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+        try {
+            const data = await fetchProfile(token);
+            if (data.success) {
+                // Clear the token from the URL for security
+                window.history.replaceState({}, document.title, window.location.pathname);
+                saveSession(data.user, token);
+                launchWorkspace();
+            } else {
+                console.error("Auto-login failed:", data.error);
+                clearSessionState();
+            }
+        } catch (e) {
+            console.error("Auto-login error:", e);
+            clearSessionState();
+        }
+    } else if (loadSession()) {
         launchWorkspace();
     } else {
         clearSessionState();

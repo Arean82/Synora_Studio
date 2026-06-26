@@ -12,6 +12,11 @@ Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step
 3. **Usage Accounting:** Tracks token consumption and session telemetry per user.
 4. **Decoupled Connectivity:** The web portal does not process AI models or RAG chunking locally. It forwards all requests to the central API Server over `REST` and `Socket.IO`.
 
+## 🔗 Auto-Login via URL
+External applications or links can automatically authenticate a user into the SaaS workspace by appending a valid JWT token to the URL query string:
+`http://localhost:8888/?token=YOUR_JWT_TOKEN`
+The frontend will seamlessly intercept this token, validate it, establish a secure session, and drop the user directly into the active dashboard.
+
 ## 📚 Advanced Documentation
 
 - [USER_MANUAL_SAAS.md](docs/USER_MANUAL_SAAS.md) - End-user guide for operating the web dashboard.

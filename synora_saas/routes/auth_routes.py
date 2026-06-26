@@ -1,5 +1,5 @@
 # synora_saas/routes/auth_routes.py
-# Module containing functions: register_auth_routes, validate_passport, register_user.
+# Module containing functions: register_auth_routes, validate_passport, register_user, get_current_user.
 
 import os
 import time
@@ -513,3 +513,11 @@ def register_auth_routes(app, db, send_alert_email):
             "user": user,
             "message": f"SSO Authentication successful. Welcome, {user['username']}."
         })
+
+    @app.route('/api/me', methods=['GET'])
+    @app.route('/v1/me', methods=['GET'])
+    def get_current_user():
+        user = getattr(request, 'tenant', None)
+        if not user:
+            return jsonify({"success": False, "error": "Unauthorized"}), 401
+        return jsonify({"success": True, "user": user})
