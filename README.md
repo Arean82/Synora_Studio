@@ -9,6 +9,7 @@ There is no monolithic entry point. You must run, scale, and distribute each com
 ### ✨ Key Features
 - **Self-Learning Model Ranking**: Models are automatically sorted and ranked dynamically based on your usage frequency, pushing the most relevant models to the top of the Desktop and SaaS portals.
 - **Interactive OpenAPI Dashboard**: The backend hosts an interactive Swagger UI (`http://localhost:5000/apidocs`) allowing 3rd-party developers to easily browse and test REST endpoints.
+- **OpenTelemetry Observability**: Fully integrated OTel tracing with W3C Context Propagation across the SaaS and API Server boundaries, using cost-effective `TraceIdRatioBased` sampling (5%) and non-blocking `BatchSpanProcessor`s.
 
 ---
 
@@ -102,3 +103,4 @@ Synora Studio enforces a strict security perimeter:
 All legacy architectural plans, headless guides, and compilation manuals have been archived in the `/docs` directory. 
 - Build scripts and PyInstaller pipelines are stored in `/build_scripts`.
 - Deprecated monolithic files are safely archived in `/obsolete files`.
+- **[OPENTELEMETRY_GUIDE.md](docs/OPENTELEMETRY_GUIDE.md)** - A complete beginner's guide to viewing distributed traces visually with Jaeger.

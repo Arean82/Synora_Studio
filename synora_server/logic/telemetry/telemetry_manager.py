@@ -12,7 +12,9 @@ from synora_server.logic.services.base_service import BaseService, ServiceRegist
 try:
     from opentelemetry import trace
     from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
+    from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+    from opentelemetry.propagate import extract
     OTEL_AVAILABLE = True
 except ImportError:
     OTEL_AVAILABLE = False
@@ -54,12 +56,13 @@ class TelemetryManager(BaseService):
         """Initializes OpenTelemetry Tracer if available."""
         if OTEL_AVAILABLE:
             try:
-                provider = TracerProvider()
-                # processor = SimpleSpanProcessor(ConsoleSpanExporter())
-                # provider.add_span_processor(processor)
+                sampler = TraceIdRatioBased(0.05)
+                provider = TracerProvider(sampler=sampler)
+                processor = BatchSpanProcessor(ConsoleSpanExporter())
+                provider.add_span_processor(processor)
                 trace.set_tracer_provider(provider)
                 self.tracer = trace.get_tracer(__name__)
-                logger.info("OpenTelemetry configured successfully. (Console Exporter Disabled)")
+                logger.info("OpenTelemetry configured successfully with BatchSpanProcessor and 5% Sampling.")
             except Exception as e:
                 logger.warning(f"Failed to initialize OpenTelemetry: {e}")
 
@@ -97,7 +100,16 @@ class TelemetryManager(BaseService):
         
         # OpenTelemetry Trace Emit (Optional)
         if self.tracer:
-            with self.tracer.start_as_current_span("record_request") as span:
+            # Check if current request has traceparent header if running in Flask
+            ctx = None
+            try:
+                from flask import request
+                if request:
+                    ctx = extract(request.headers)
+            except Exception:
+                pass
+                
+            with self.tracer.start_as_current_span("record_request", context=ctx) as span:
                 span.set_attribute("tenant_id", tenant_id)
                 span.set_attribute("latency_seconds", latency)
                 span.set_attribute("tokens", tokens)

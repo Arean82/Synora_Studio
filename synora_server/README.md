@@ -14,6 +14,7 @@ Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step
 3. **Database Management:** Binds to the designated tenant database (SQLite, PostgreSQL, or libSQL/Turso).
 4. **Multiplexing:** Handles high-concurrency event streams over `Flask-SocketIO` on port `5000`.
 5. **Dynamic Self-Learning:** Tracks and persists AI model usage statistics, injecting base and dynamic `Rank` metrics into model discovery payloads for frontend optimization.
+6. **Distributed Tracing (OpenTelemetry):** Central observability orchestrator via `BatchSpanProcessor` and `TraceIdRatioBased` sampling, natively parsing incoming W3C `traceparent` contexts.
 
 ## 📚 Advanced Documentation
 

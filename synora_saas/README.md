@@ -11,6 +11,7 @@ Please refer to the detailed [INSTALLATION.md](INSTALLATION.md) for step-by-step
 2. **BYOK Management (Bring Your Own Key):** Allows individual tenants to securely upload and encrypt their own OpenAI/Google API keys, which are passed off to the Server module securely.
 3. **Usage Accounting:** Tracks token consumption and session telemetry per user.
 4. **Decoupled Connectivity:** The web portal does not process AI models or RAG chunking locally. It forwards all requests to the central API Server over `REST` and `Socket.IO`.
+5. **Observability (OpenTelemetry):** Natively instruments incoming HTTP requests and correctly injects W3C `traceparent` contexts when proxying requests to the API Server, enabling full distributed tracing.
 
 ## 🔗 Auto-Login via URL
 External applications or links can automatically authenticate a user into the SaaS workspace by appending a valid JWT token to the URL query string:

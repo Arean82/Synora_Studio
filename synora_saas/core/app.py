@@ -23,6 +23,16 @@ from synora_server.logic.llm_client import LLMClient
 from synora_server.utils.storage_config import StorageManager
 from PySide6.QtCore import QThread, Signal
 
+try:
+    from opentelemetry import trace
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.sampling import TraceIdRatioBased
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+    from opentelemetry.propagate import inject
+    OTEL_AVAILABLE = True
+except ImportError:
+    OTEL_AVAILABLE = False
+
 # Import Modular Routes
 from synora_saas.routes import (
     register_auth_routes,
@@ -41,6 +51,20 @@ def create_saas_app():
     template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'templates'))
     static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'static'))
     
+    # Initialize OTel Tracer
+    saas_tracer = None
+    if OTEL_AVAILABLE:
+        try:
+            sampler = TraceIdRatioBased(0.05)
+            provider = TracerProvider(sampler=sampler)
+            processor = BatchSpanProcessor(ConsoleSpanExporter())
+            provider.add_span_processor(processor)
+            trace.set_tracer_provider(provider)
+            saas_tracer = trace.get_tracer("synora_saas")
+            logger.info("SaaS OpenTelemetry configured successfully (5% Sampling).")
+        except Exception as e:
+            logger.warning(f"Failed to initialize SaaS OpenTelemetry: {e}")
+
     import mimetypes
     mimetypes.add_type('text/css', '.css')
     mimetypes.add_type('application/javascript', '.js')
@@ -128,6 +152,22 @@ def create_saas_app():
     @app.before_request
     def record_start_time():
         request.start_time = time.perf_counter()
+        
+        # Start manual span
+        if saas_tracer:
+            exempt_starts = ['/static', '/health', '/app_icon.ico', '/favicon.ico']
+            if not any(request.path.startswith(prefix) for prefix in exempt_starts):
+                span = saas_tracer.start_span(f"{request.method} {request.path}")
+                span.set_attribute("http.method", request.method)
+                span.set_attribute("http.url", request.url)
+                
+                # Make the span current in context and store it
+                from opentelemetry.context import attach, detach
+                from opentelemetry.trace import set_span_in_context
+                
+                ctx = set_span_in_context(span)
+                request.otel_token = attach(ctx)
+                request.otel_span = span
 
     @app.after_request
     def log_telemetry_metrics(response):
@@ -165,6 +205,16 @@ def create_saas_app():
                 }, daemon=True).start()
             except:
                 pass
+                
+        span = getattr(request, 'otel_span', None)
+        otel_token = getattr(request, 'otel_token', None)
+        if span and otel_token:
+            span.set_attribute("http.status_code", response.status_code)
+            span.end()
+            try:
+                from opentelemetry.context import detach
+                detach(otel_token)
+            except: pass
                 
         return response
 
