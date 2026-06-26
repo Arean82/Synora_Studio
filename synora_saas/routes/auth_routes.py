@@ -1,5 +1,5 @@
 # synora_saas/routes/auth_routes.py
-# Module containing functions: register_auth_routes, validate_passport, register_user.
+# Module containing functions: register_auth_routes, validate_passport, register_user, get_current_user.
 
 import os
 import time
@@ -65,7 +65,15 @@ def register_auth_routes(app, db, send_alert_email):
             
         workspace = db.get_user_workspace(user_id)
         
-        welcome_html = f"<h2>Welcome to the Multi-Tenant Grid, {username}!</h2><p>Your secured SaaS sandbox has been successfully provisioned.</p><p><b>Key Type Tier:</b> {key_type.upper()}</p>"
+        try:
+            from synora_server.utils.path_utils import get_resource_path
+            template_path = get_resource_path(os.path.join("data", "email_templates", "welcome.html"))
+            with open(template_path, 'r', encoding='utf-8') as f:
+                welcome_html = f.read()
+            welcome_html = welcome_html.replace("{username}", username).replace("{key_type}", key_type.upper())
+        except Exception as e:
+            print(f"[Email Template Error] Could not load welcome.html: {e}")
+            welcome_html = f"<h2>Welcome to the Multi-Tenant Grid, {username}!</h2><p>Your secured SaaS sandbox has been successfully provisioned.</p><p><b>Key Type Tier:</b> {key_type.upper()}</p>"
         import threading
         threading.Thread(target=send_alert_email, args=(email, "Workspace Provisoned - Synora Studio", welcome_html), daemon=True).start()
 
@@ -118,7 +126,15 @@ def register_auth_routes(app, db, send_alert_email):
         print(f"6-Digit OTP:  {otp_code}")
         print(f"==========================================\n")
         
-        email_html = f"<h3>Synora Studio Password Reset</h3><p>Your password reset code is: <b style='font-size:24px; letter-spacing:2px;'>{otp_code}</b></p><p>This code expires in 10 minutes.</p>"
+        try:
+            from synora_server.utils.path_utils import get_resource_path
+            template_path = get_resource_path(os.path.join("data", "email_templates", "password_reset.html"))
+            with open(template_path, 'r', encoding='utf-8') as f:
+                email_html = f.read()
+            email_html = email_html.replace("{otp_code}", otp_code)
+        except Exception as e:
+            print(f"[Email Template Error] Could not load password_reset.html: {e}")
+            email_html = f"<h3>Synora Studio Password Reset</h3><p>Your password reset code is: <b style='font-size:24px; letter-spacing:2px;'>{otp_code}</b></p><p>This code expires in 10 minutes.</p>"
         import threading
         threading.Thread(target=send_alert_email, args=(email, "Password Reset Code", email_html), daemon=True).start()
         
@@ -497,3 +513,11 @@ def register_auth_routes(app, db, send_alert_email):
             "user": user,
             "message": f"SSO Authentication successful. Welcome, {user['username']}."
         })
+
+    @app.route('/api/me', methods=['GET'])
+    @app.route('/v1/me', methods=['GET'])
+    def get_current_user():
+        user = getattr(request, 'tenant', None)
+        if not user:
+            return jsonify({"success": False, "error": "Unauthorized"}), 401
+        return jsonify({"success": True, "user": user})

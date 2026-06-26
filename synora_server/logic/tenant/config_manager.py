@@ -52,6 +52,8 @@ class SaaSConfigManager:
                     ("SMTP_RELAY", "port"): "587",
                     ("SMTP_RELAY", "user"): "",
                     ("SMTP_RELAY", "password"): "",
+                    ("SMTP_RELAY", "sender_name"): "Synora Studio Security",
+                    ("SMTP_RELAY", "sender_email"): "alertbot@synorastudio.local",
                     ("RELIABILITY", "rpm"): "60",
                     ("RELIABILITY", "failover_enable"): "true",
                     ("RELIABILITY", "failover_seq"): "google,openai,ollama",
@@ -113,6 +115,8 @@ host = smtp.gmail.com
 port = 587
 user = 
 password = 
+sender_name = Synora Studio Security
+sender_email = alertbot@synorastudio.local
 
 [RELIABILITY]
 # Requests Per Minute (RPM) Limit for tenants/users

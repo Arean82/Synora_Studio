@@ -121,7 +121,9 @@ def register_admin_routes(app, db):
                     "smtp_host": saas_cfg.get_str("SMTP_RELAY", "host", "smtp.gmail.com"),
                     "smtp_port": saas_cfg.get_int("SMTP_RELAY", "port", 587),
                     "smtp_user": saas_cfg.get_str("SMTP_RELAY", "user", ""),
-                    "smtp_password": saas_cfg.get_str("SMTP_RELAY", "password", "")
+                    "smtp_password": saas_cfg.get_str("SMTP_RELAY", "password", ""),
+                    "smtp_sender_name": saas_cfg.get_str("SMTP_RELAY", "sender_name", "Synora Studio Security"),
+                    "smtp_sender_email": saas_cfg.get_str("SMTP_RELAY", "sender_email", "alertbot@synorastudio.local")
                 }
                 return jsonify({"success": True, "data": data})
                 
@@ -132,6 +134,8 @@ def register_admin_routes(app, db):
                 if "smtp_port" in payload: saas_cfg.set_val("SMTP_RELAY", "port", int(payload["smtp_port"]))
                 if "smtp_user" in payload: saas_cfg.set_val("SMTP_RELAY", "user", payload["smtp_user"])
                 if "smtp_password" in payload: saas_cfg.set_val("SMTP_RELAY", "password", payload["smtp_password"])
+                if "smtp_sender_name" in payload: saas_cfg.set_val("SMTP_RELAY", "sender_name", payload["smtp_sender_name"])
+                if "smtp_sender_email" in payload: saas_cfg.set_val("SMTP_RELAY", "sender_email", payload["smtp_sender_email"])
                 saas_cfg.save()
                 return jsonify({"success": True, "message": "SaaS Config Synced"})
         except Exception as e:

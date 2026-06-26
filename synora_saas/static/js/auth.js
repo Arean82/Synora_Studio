@@ -1,4 +1,12 @@
 // auth.js - Authentication flow utilities
+export async function fetchProfile(token) {
+  const resp = await fetch('/api/me', {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return resp.json();
+}
+
 export async function login(usernameOrEmail, password) {
   const resp = await fetch('/api/login', {
     method: 'POST',
